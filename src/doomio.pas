@@ -778,13 +778,20 @@ begin
 end;
 
 procedure TDoomIO.PlayMusic(const MusicID : Ansistring);
+var
+  NewId : Ansistring;
 begin
   if (not SoundVersion) or (not Option_Music) then Exit;
   try
     if MusicID = '' then Sound.Silence;
     if MusicOff then Exit;
-    if Sound.MusicExists(MusicID) then Sound.PlayMusic(MusicID)
-                                  else PlayMusic('level'+IntToStr(Random(23)+2));
+    if Sound.MusicExists(MusicID) then 
+    begin
+      Sound.PlayMusic(MusicID)
+    end else begin
+      NewId := 'level'+IntToStr(Random(23)+2);
+      if Sound.MusicExists(NewId) then PlayMusic(NewId);
+    end;
   except
     on e : Exception do
     begin
