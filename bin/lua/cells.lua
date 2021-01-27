@@ -3,7 +3,7 @@ function DoomRL.loadcells()
 	register_cell "floor"
 	{
 		name       = "floor",
-		ascii      = "ù",
+		ascii      = "Ã¹",
 		asciilow   = '.',
 		set        = CELLSET_FLOORS,
 		blname     = "blood",
@@ -16,7 +16,7 @@ function DoomRL.loadcells()
 	register_cell "floorc"
 	{
 		name       = "floor",
-		ascii      = "ù",
+		ascii      = "Ã¹",
 		asciilow   = '.',
 		set        = CELLSET_FLOORS,
 		blname     = "blood",
@@ -29,7 +29,7 @@ function DoomRL.loadcells()
 	register_cell "floorb"
 	{
 		name       = "floor",
-		ascii      = "ù",
+		ascii      = "Ã¹",
 		asciilow   = '.',
 		set        = CELLSET_FLOORS,
 		blname     = "blood",
@@ -44,7 +44,7 @@ function DoomRL.loadcells()
 	register_cell "wall"
 	{
 		name       = "stone wall",
-		blname     = "blooded wall",
+		blname     = "bloodied wall",
 		ascii      = "#",
 		color      = LIGHTGRAY,
 		blcolor    = RED,
@@ -63,7 +63,7 @@ function DoomRL.loadcells()
 	register_cell "dwall"
 	{
 		name       = "base wall",
-		blname     = "blooded wall",
+		blname     = "bloodied wall",
 		ascii      = "#",
 		color      = DARKGRAY,
 		blcolor    = RED,
@@ -83,7 +83,7 @@ function DoomRL.loadcells()
 	register_cell "rwall"
 	{
 		name       = "bloodstone",
-		blname     = "blooded bloodstone",
+		blname     = "bloodied bloodstone",
 		ascii      = "#",
 		color      = RED,
 		blcolor    = LIGHTRED,
@@ -102,7 +102,7 @@ function DoomRL.loadcells()
 	register_cell "iwall"
 	{
 		name       = "ice wall",
-		blname     = "blooded ice wall",
+		blname     = "bloodied ice wall",
 		ascii      = "#",
 		color      = LIGHTBLUE,
 		blcolor    = RED,
@@ -122,7 +122,7 @@ function DoomRL.loadcells()
 	register_cell "cwall1"
 	{
 		name       = "cave wall",
-		blname     = "blooded cave wall",
+		blname     = "bloodied cave wall",
 		ascii      = "#",
 		color      = DARKGRAY,
 		blcolor    = RED,
@@ -138,7 +138,7 @@ function DoomRL.loadcells()
 	register_cell "cwall2"
 	{
 		name       = "cave wall",
-		blname     = "blooded cave wall",
+		blname     = "bloodied cave wall",
 		ascii      = "#",
 		color      = BROWN,
 		blcolor    = RED,
@@ -154,7 +154,7 @@ function DoomRL.loadcells()
 	register_cell "cwall3"
 	{
 		name       = "cave wall",
-		blname     = "blooded cave wall",
+		blname     = "bloodied cave wall",
 		ascii      = "#",
 		color      = RED,
 		blcolor    = LIGHTRED,
@@ -173,7 +173,7 @@ function DoomRL.loadcells()
 	register_cell "gwall"
 	{
 		name       = "green wall",
-		blname     = "blooded green wall",
+		blname     = "bloodied green wall",
 		ascii      = "#",
 		color      = GREEN,
 		blcolor    = RED,
@@ -192,7 +192,7 @@ function DoomRL.loadcells()
 	register_cell "crate"
 	{
 		name       = "crate",
-		blname     = "blooded crate",
+		blname     = "bloodied crate",
 		ascii      = "#",
 		color      = BLUE,
 		blcolor    = RED,
@@ -207,7 +207,7 @@ function DoomRL.loadcells()
 	register_cell "ycrate"
 	{
 		name       = "crate",
-		blname     = "blooded crate",
+		blname     = "bloodied crate",
 		ascii      = "#",
 		color      = BROWN,
 		blcolor    = RED,
@@ -605,7 +605,7 @@ function DoomRL.loadcells()
 	register_cell "crate_ammo"
 	{
 		name       = "crate",
-		blname     = "blooded crate",
+		blname     = "bloodied crate",
 		ascii      = "#",
 		color      = LIGHTRED,
 		blcolor    = RED,
@@ -631,7 +631,7 @@ function DoomRL.loadcells()
 	register_cell "crate_armor"
 	{
 		name       = "crate",
-		blname     = "blooded crate",
+		blname     = "bloodied crate",
 		ascii      = "#",
 		color      = YELLOW,
 		blcolor    = RED,
