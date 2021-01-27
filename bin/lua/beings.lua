@@ -171,7 +171,7 @@ function DoomRL.loadnpcs()
 		resist = { fire = 75, bullet = 50 },
 
 		desc            = "Lost Souls are the miserable, wandering spirits of those condemned to Hell without a body of their own. They eagerly fling themselves towards threats, seeking to either find a body to posess, or death. Shattering them like clay pidgeons is equal parts self-defense and mercy.",
-		kill_desc_melee = "was posessed by a lost soul",
+		kill_desc_melee = "was overwhelmed by a lost soul",
 	}
 
 	register_being "cacodemon"
