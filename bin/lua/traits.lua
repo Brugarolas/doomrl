@@ -4,8 +4,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Ironman",
 		desc   = "Increases hitpoints by 20% starting HP/lv.",
-		quote  = "\"Just a couple of broken ribs, it's nothing. To stop me... you've got to smash my head or take my heart out.\"",
-		full   = "You're a diehard piece of shit. You'll keep on fighting until all your bones are broken and you have no blood left. Every level of this trait increases your health by 20% of your starting HP.",
+		quote  = "\"It's gonna take a hell of a lot more than THAT to put ME down.\"",
+		full   = "You're as tough a bastard as they come, or maybe just a hardcore masochist. Either way, you can take some punishment, and require a lot more effort to kill. Every level of this trait increases your health by 20% of your starting HP.",
 		abbr   = "Iro",
 
 		OnPick = function (being)
@@ -19,8 +19,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Finesse",
 		desc   = "Attack time by -15%/lv.",
-		quote  = "\"Dance! Dance, bonedaddy!\"",
-		full   = "Have you heard of an itchy trigger finger? Yours are itchier than the chicken pox, and because of that you can fire rounds and attack 15% faster with every level of this trait.",
+		quote  = "\"The rangemaster always said to take things slow and steady. But FUCK him.\"",
+		full   = "You were never one for trigger discipline, and a combination of forearm strength and an itchy trigger finger mean you can fire a lot faster than most of your peers would consider reasonable. Each level of this trait allows you to fire 15% faster.",
 		abbr   = "Fin",
 
 		OnPick = function (being)
@@ -32,8 +32,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Hellrunner",
 		desc   = "Movecost -15%/lv, Dodge chance +15%/lv.",
-		quote  = "\"Ohh, here it comes! Here comes the night train! Choo choo cha boogie!\"",
-		full   = "You're like a train on legs - not only do you move 15% faster for every level of this trait but you also get an extra 15% chance to dodge those pesky bullets coming your way.",
+		quote  = "\"Don't stop me now, I'm having such a good time!\"",
+		full   = "Runner's high and adrenaline are an ideal pairing for your situation, and moving targets are a lot harder to hit. Each level of this trait allows you to move 15% faster, and dodge projectiles 15% more often.",
 		abbr = "HR",
 
 		OnPick = function (being)
@@ -46,8 +46,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Tough as nails",
 		desc   = "Increases body armor by 1/lv.",
-		quote  = "\"The horrors of Hell could not kill you!\"",
-		full   = "That sound you're hearing isn't from the bullets flying off the walls, but from the bullets flying off of YOU! Your skin is so hard that you'll shrug off 1 more point of damage for every level of this trait.",
+		quote  = "\"Oh come on, I barely felt that!\"",
+		full   = "Your skin walks the line between 'callused' and 'a chitinous shell,' and takes more effort to break. Each level of this trait reduces all damage taken by one point.",
 		abbr   = "TaN",
 
 		OnPick = function (being)
@@ -59,8 +59,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Son of a bitch",
 		desc   = "Increases damage by 1/lv.",
-		quote  = "\"Kill them all, let God sort them out.\"",
-		full   = "You're the meanest, toughest bastard in your entire squad. You relish pain and enjoy dishing it out even more. Even demons know you by name, because with every level of this trait, you do 1 more damage than your average Marine.",
+		quote  = "\"We can't expect God to do all the work.\"",
+		full   = "You've been a budding weapon enthusiast for as long as you can remember, and know how to maximize the effectiveness of every single one. Each level of this trait increases all damage dealt by one point.",
 		abbr   = "SoB",
 
 		OnPick = function (being)
@@ -72,8 +72,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Son of a gun",
 		desc   = "Pistol: firing time -20%/lv, Dmg+1/lv.",
-		quote  = "\"Dig the prowess, the capacity for violence!\"",
-		full   = "You love your pistols. You clean them every day and make sure they are always in top condition. You know your pistols so well that for every level of this trait you can fire them 20% faster and deal 1 more damage.",
+		quote  = "\"Six shots. More than enough to kill anything that moves.\"",
+		full   = "The other Marines tended to underappreciate handguns. But you, you love your sidearms, and maintain and tweak them to operate at peak performance. Each level of this trait increases pistol firing speed by 20%, and damage by one point.",
 		abbr   = "SoG",
 
 		OnPick = function (being)
@@ -85,8 +85,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Reloader",
 		desc   = "Each level reduces reload time by 20%.",
-		quote  = "\"The humanity! My big gun is out of bullets! I can't believe it!\"",
-		full   = "So you're out of ammo... no problem! You're especially gifted at keeping your gun well-fed - for every level of this trait, you can reload your gun 20% faster than the average marine!",
+		quote  = "\"Firing a gun is easy. It's reloading that's dangerous.\"",
+		full   = "On your downtime, you always liked practicing speed-loading so you would never get caught with your pants down. Now, that muscle memory is more valuable than ever. Each level of this trait increases base reload speed by 20%.",
 		abbr   = "Rel",
 
 		OnPick = function (being)
@@ -97,9 +97,9 @@ function DoomRL.load_traits()
 	register_trait "eagle"
 	{
 		name   = "Eagle Eye",
-		desc   = "Each level increases to hit chance by 2.",
+		desc   = "Each level increases to-hit chance by 2.",
 		quote  = "\"One in the heart and one in the head, and don't you hesitate.\"",
-		full   = "You could knock a fly off the wall at 200 yards, but you prefer to hunt bigger, nastier prey. With each level of this trait, you'll increase your chance to hit by 2 points.",
+		full   = "You've got a hand so steady, it might as well be mechanical. Plus, those breathing techniques help keep it steady in spite of the stress. Each level of this trait increases your to-hit chance by 2.",
 		abbr   = "EE",
 
 		OnPick = function (being)
@@ -110,9 +110,9 @@ function DoomRL.load_traits()
 	register_trait "brute"
 	{
 		name   = "Brute",
-		desc   = "Increases melee damage by +3/lv.",
-		quote  = "\"There's nothing wrong that I can't fix... with my hands!\"",
-		full   = "You don't need a gun - guns are for wusses! With each level of this trait you'll deal 3 more damage while bashing your enemies with your hands, knives, body parts, or whatever else is available. Also your melee accuracy increases by 2.",
+		desc   = "Increases melee damage by +3/lv and to-hit by +2/lv.",
+		quote  = "\"How about a quick nosejob-dental combo procedure?\"",
+		full   = "Sure, guns are nice and all, but you work best up close and personal, brawling, stabbing, or however else you can bring the fight directly to them. Each level of this trait increases melee damage by 3 points, and melee to-hit by 2 points.",
 		abbr   = "Bru",
 
 		OnPick = function (being)
@@ -125,8 +125,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Juggler",
 		desc   = "Uses melee weapon if prepared.",
-		quote  = "\"Allow me to communicate to you my desire to have your guns.\"",
-		full   = "Your hands are so nimble you could work at a circus.  Unfortunately, the army got you first. The only benefit of your skill now is that you instantly swap prepared and quickkeyed weapons, and automatically use a prepared melee weapon when need arises!",
+		quote  = "\"Everything within arm's reach.\"",
+		full   = "You've memorized every pocket, holster, and sling on your equipment rig so well, you could swap weapons in your sleep without so much as a fumble. This trait lets you instantly swap between hotkeyed weapons, and instantly pull your knife in close quarters.",
 		abbr   = "Jug",
 
 		OnPick = function (being)
@@ -138,8 +138,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Berserker",
 		desc   = "Gives chance of berserking in melee.",
-		quote  = "\"Who's a man and a half? I'm a man and a half! Berserker packin' man and a half!\"",
-		full   = "You hate this place, you hate these stupid monsters, and you HATE that this is all happening to you. In fact you hate it so much that there's a chance that you'll fly into a berserk rage when you repeatedly smack someone in melee, or get hit hard enough. (NOTE: You do NOT get the healing effect of a Berserk Pack.)",
+		quote  = "\"Curse, bless, me now with your fierce tears, I pray.\"",
+		full   = "Years of therapy helped you get such a keen handle on your aggression, but now, now is time to let that all vanish until this whole mess is sorted. Until you're safe, your temper's one of the only tools you can count on. This trait adds a chance of entering a berserk state on landing melee strikes, or when taking damage.",
 		abbr   = "Ber",
 
 		OnPick = function (being)
@@ -151,8 +151,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Dualgunner",
 		desc   = "Allows dual pistol firing.",
-		quote  = "\"The only thing I believe is I need another gun.\"",
-		full   = "You're the kind of guy for whom one is never enough. When you and your buddies cruised bars Earthside, you always had a beer in each hand and when you left, you left with two girls. Where you're going now there aren't beer or girls, but there are guns! This trait lets you wield two pistols at once, firing them almost as fast as one (120% time taken).",
+		quote  = "\"Dodge this.\"",
+		full   = "When you find yourself with the cocktail mix of ambidexterity, finesse, and recklessness that you have, what possible thing could you do with it? Dual-wield handguns, that's what.",
 		abbr   = "DG",
 
 		OnPick = function (being)
@@ -164,8 +164,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Dodgemaster",
 		desc   = "First dodge in turn always succeeds.",
-		quote  = "\"Knock, knock. Who's there? Me, me, me, me, ME!\"",
-		full   = "The battlefield is a dance for you! Each first sidestep after your move will automatically succeed.",
+		quote  = "\"Flow like water.\"",
+		full   = "They can't kill what they can't hit, and nobody knows this better than you. Your keen reflexes and honed muscle memory make you a slippery target to pin down. This trait makes the first dodge attempt after a movement automatically succeed.",
 		author = "Kornel",
 		abbr   = "DM",
 
@@ -178,8 +178,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Intuition",
 		desc   = "Provides additional sense.",
-		quote  = "\"As I stride knee deep through the dead, all is clear. I know what must be done.\"",
-		full   = "Something's kept you alive all these years. Call it a sixth sense, call it a survival instinct, call it blind friggin' luck. All you know for sure is that where other men die, you live. The first level of this trait lets you evaluate levers and sense powerups, the second level lets you sense monsters.",
+		quote  = "\"Never miss a single detail, lest it bite you in the ass later.\"",
+		full   = "You've always kept an eye on every little bit of your environment, and can often get a good idea of what's going on. Where others march blindly ahead, you watch for every hint you can find. The first level of this trait lets you evaluate levers and reveal powerup locations, the second level reveals monster locations.",
 		author = "Derek",
 		abbr   = "Int",
 
@@ -198,8 +198,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Whizkid",
 		desc   = "Increases maximum amount of mod slots",
-		quote  = "\"Not big guns, but they are guns!  And I need guns!\"",
-		full   = "You were always a brainy guy... Mom said you could have been an inventor but the Marine Corps picked you up first. Whether it's a toaster or a chaingun, there's always room for improvement! And with each level of this trait you can increase the number of mod slots on a weapon by 2 (by 1 for armor/boot).",
+		quote  = "\"If that don't work, use more gun.\"",
+		full   = "You never settle for stock, and always find ways to maximize an object's potential through whatever technical means you've got. Each level of this trait increases the maximum mod slots for weapons by 2, and 1 for armor and boots.",
 		author = "Kornel",
 		abbr   = "WK",
 
@@ -211,9 +211,9 @@ function DoomRL.load_traits()
 	register_trait "badass"
 	{
 		name   = "Badass",
-		desc   = "Decreases knockback taken and increases health decay limit",
-		quote  = "\"Who's the man? I'm the man! How bad? Real bad! I'm a 12.0 on a 10.0 scale of badness!\"",
-		full   = "You're the ultimate badass. Your blood runs so cold that it could make Hell freeze over (if they weren't too scared to take you). For each level, your maximum health before decay sets in is 50% higher, and you're knocked back one space less.",
+		desc   = "Knockback resistence +1/lv and health decay limit +50%/lv",
+		quote  = "\"I'm a bad bitch, you can't kill me!\"",
+		full   = "You're the roughest, toughest, meanest son of a bitch out there, and whether through adrenaline, luck, or sheer force of will, you can hold your ground and keep pushing in the face of anything. Each level of this trait reduces knockback taken by one square, and increases maximum health before decay by 50%.",
 		author = "Malek",
 		abbr   = "Bad",
 
@@ -227,8 +227,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Shottyman",
 		desc   = "Allows shotgun reloading on the move.",
-		quote  = "\"At this particular moment in time I don't believe I have a more deepfelt respect for any object than this shotgun...\"",
-		full   = "You and your shotgun have been through a lot together. You take care of him, and he \"takes care\" of any dumb bastard to get in your way. Through it all, you've learned that, in the middle of a firefight, if you stand still to reload, you die. So by taking this trait you gain the ability to reload shotguns on the move... ALL shotguns, and it surprisingly works for rocket launchers too!",
+		quote  = "\"Never stop moving! NEVER!\"",
+		full   = "You've mastered the fine art of not dropping small objects while jogging, and that skill couldn't be more useful in your current situation. This trait allows you to reload all shotguns and rocket launchers while moving.",
 		author = "Malek",
 		abbr   = "SM",
 
@@ -241,9 +241,9 @@ function DoomRL.load_traits()
 	register_trait "triggerhappy"
 	{
 		name   = "Triggerhappy",
-		desc   = "+1 rapid weapon shots per weapon.",
-		quote  = "\"Ooh, I like it! The sugar-sweet kiss of heavy ordinance!\"",
-		full   = "\"Shoot first and shoot fast\" has always been your motto. And nobody shoots faster than you. With each weapon you get an extra rapid shot per level of this trait.",
+		desc   = "+1/lv rapid weapon shots per weapon.",
+		quote  = "\"TODO - Ooh, I like it! The sugar-sweet kiss of heavy ordinance!\"",
+		full   = "TODO - \"Shoot first and shoot fast\" has always been your motto. And nobody shoots faster than you. With each weapon you get an extra rapid shot per level of this trait. (note to self: figure out what the fuck that means)",
 		author = "Kornel",
 		abbr   = "TH",
 
@@ -256,8 +256,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Blademaster",
 		desc   = "Free action after melee kill.",
-		quote  = "\"Aaah! Chainsaw! The great communicator!\"",
-		full   = "You've mastered melee combat. Each time you finish off an opponent, you're immediately ready for another kill, and gain a free action!",
+		quote  = "\"Never get in a knife fight with a chef.\"",
+		full   = "You've become a master at the art of melee combat. Actually, ALL the arts of melee combat. Your stance and balance is perfect, no matter the weapon you wield. This trait grants a free action immediately after a melee kill.",
 		author = "Kornel",
 		abbr   = "MBm",
 		master = true,
@@ -271,8 +271,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Vampyre",
 		desc   = "+10% target MaxHP added to HP after melee kill.",
-		quote  = "\"I crave for blood on this kind of night...\"",
-		full   = "You hunger for blood! Each time you finish off an opponent with a melee attack, 10% of the target's max HP is added to your HP.",
+		quote  = "\"What a convenient night to have a curse...\"",
+		full   = "It turns out your pale skin wasn't just a Vitamin D deficiency after all! Unfortunately, the 'immortality' thing doesn't seem to come with the package, but you'll take what you can get. This trait enables the ability to heal for 10% of your target's maximum HP after killing them.",
 		author = "Kornel",
 		abbr   = "MVm",
 		master = true,
@@ -285,9 +285,9 @@ function DoomRL.load_traits()
 	register_trait "malicious"
 	{
 		name   = "Malicious Blades",
-		desc   = "Allows dual attack using blades and gives 75% melee resist if blade in off-hand",
-		quote  = "\"Don't need a gun! Guns are for wusses!\"",
-		full   = "Knives, knives, knives! You can attack with a blade in each hand at the same time, and while carrying a blade in your off-hand, you parry 75% melee damage, and shield against 50% bullet, shrapnel and fire damage!",
+		desc   = "Allows dual-wielding knives, with defense bonuses from off-hand knife.",
+		quote  = "\"Never bring a knife to a gunfight. But what about TWO knives??\"",
+		full   = "It turns out a knife in each hand isn't as absurd and impractical as doing it with guns! This trait enables dual-wielding knives. Additionally, an off-hand blade will negate 75% of incoming melee damage, and 50% of incoming bullet, shrapnel, and fire damage.",
 		abbr   = "MMB",
 		master = true,
 
@@ -301,8 +301,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Bullet Dance",
 		desc   = "Allows triggerhappy to work on pistols",
-		quote  = "\"Righteousness -- and superior firepower -- has triumphed!\"",
-		full   = "Pistols are your game -- you can squeeze an additional shot from each of your pistols for each level of Triggerhappy at half the time cost!",
+		quote  = "\"TODO - Righteousness -- and superior firepower -- has triumphed!\"",
+		full   = "TODO - Pistols are your game -- you can squeeze an additional shot from each of your pistols for each level of Triggerhappy at half the time cost! (note to self: figure out how triggerhappy works lmao)",
 		abbr   = "MBD",
 		master = true,
 
@@ -314,9 +314,9 @@ function DoomRL.load_traits()
 	register_trait "gunkata"
 	{
 		name   = "Gun Kata",
-		desc   = "Free action after pistol kill.",
-		quote  = "\"Not without incident.\"",
-		full   = "You've mastered the martial art of pistol combat. After each successful dodge you can fire your pistols in almost no time. Also, each time you finish off an opponent, you immediately reload your guns!",
+		desc   = "Free pistol shot after dodge, and instant reload after kill.",
+		quote  = "\"It means nothing, but it sure SOUNDS cool.\"",
+		full   = "Nothing is more familiar to you in combat than your pistols, and you've learned to control them better than anything else. This trait allows you to fire a pistol instantly after dodging, and will reload it for free after a kill with them.",
 		author = "Kornel",
 		abbr   = "MGK",
 		master = true,
@@ -330,8 +330,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Sharpshooter",
 		desc   = "Pistol shots always deal max damage",
-		quote  = "\"My cause is just... my will is strong...\"",
-		full   = "You always hit them where it counts! Each pistol shot you inflict deals maximum possible damage!",
+		quote  = "\"Boom...headshot.\"",
+		full   = "You've finally overridden the reflexes from training that taught you to sensibly aim for center of mass, and managed the far more difficult feat: reflexively aiming for the head! This trait makes every pistol shot that hits deal maximum damage.",
 		abbr   = "MSs",
 		master = true,
 
@@ -361,8 +361,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Army of the Dead",
 		desc   = "Shotguns ignore armor.",
-		quote  = "\"Might makes light! And I feel mighty!\"",
-		full   = "You're the fucking army of justice. When you fire your trusty shotgun, no armor is a protection!",
+		quote  = "\"The best scalpels are breach-loaded.\"",
+		full   = "Nobody knows what you're packing into your shells, but whatever it is cleaves through armor like it's a wet paper towel, and not even Hell's most well-equipped armies can stop you now! This trait allows shotguns to ignore an enemy's armor.",
 		author = "Kornel",
 		abbr   = "MAD",
 		master = true,
@@ -375,9 +375,9 @@ function DoomRL.load_traits()
 	register_trait "shottyhead"
 	{
 		name   = "Shottyhead",
-		desc   = "Shotgun fire time is %20",
+		desc   = "Shotguns fire 66% faster.",
 		quote  = "\"Groovy.\"",
-		full   = "Shotgun is the gun on the move! While you can already reload on the move, this trait allows you to cut firetime to 1/3rd of the original!",
+		full   = "You've become the fastest gun in the West, or more specifically, the fastest shotgun in the West! You know shotguns better than whatever dude invented them by now. This trait reduces shotgun firing speed to a third of its default.",
 		abbr   = "MSh",
 		master = true,
 
@@ -389,9 +389,9 @@ function DoomRL.load_traits()
 	register_trait "fireangel"
 	{
 		name   = "Fireangel",
-		desc   = "Explosion damage has no effect, only direct hits.",
-		quote  = "\"Woo baby, I'm burnin' out of control!\"",
-		full   = "You love heat, you're the angel of fire! No explosion affects you, unless you take a direct hit.",
+		desc   = "Grants explosive splash damage immunity.",
+		quote  = "\"Can't take the heat? Get outta the kitchen!\"",
+		full   = "What's a little flash burn when you've had your barracks AC unit fail on Mars? It's nothing, that's what! This trait makes you immune to explosive splash damage, only direct hits can still harm you.",
 		author = "Kornel",
 		abbr   = "MFa",
 		master = true,
@@ -405,8 +405,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Ammochain",
 		desc   = "Rapid-fire shots take 1 ammo per volley.",
-		quote  = "\"Hey, Chaingun! The hell with respect!\"",
-		full   = "True gunners do not think of such unimportant things like ammo supply! As long as you use your trusty chain-fire weapons you only use up one ammo per volley!",
+		quote  = "\"Don't think about it too hard.\"",
+		full   = "You've managed to cheat the very laws of physics with your belt-fed firearms! The very implications of this ability are ground-shaking, but this is all you can really think to use it for. This trait makes all firing volleys from chainguns consume only one bullet.",
 		author = "Kornel",
 		abbr   = "MAc",
 		master = true,
@@ -420,8 +420,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Cateye",
 		desc   = "Increases sight range by 2.",
-		quote  = "\"Huh? Whuzzat? Whuzzat? I like what I see!\"",
-		full   = "Your eyes are so sharp they could cut through concrete. This trait lets you see your enemies from two spaces further away - and that means more time to shoot them!",
+		quote  = "\"Nya~\"",
+		full   = "As a kid, you heard carrots were good for your eyes. So, you haven't stopped eating them since, and look at you now! This trait increases your view radius by two.",
 		abbr   = "MCe",
 		master = true,
 
@@ -433,9 +433,9 @@ function DoomRL.load_traits()
 	register_trait "entrenchment"
 	{
 		name   = "Entrenchment",
-		desc   = "When chainfiring your resistances get a +30% bonus",
-		quote  = "\"Hoy, hoy, I'm the boy... Packin' 80 pounds of heavenly joy!\"",
-		full   = "Once the barrels get rollin' you become one hardcore fighting platform... when chainfiring a rapid weapon you get +30% to all resistances!",
+		desc   = "30% bonus to all resistences while chainfiring.",
+		quote  = "\"I AM THE BLIND SCALES OF JUSTICE!!\"",
+		full   = "In order to go about staying in one place while unloading an absurd amount of lead with an enormous weapon, you have to clench about every muscle in your body. As it turns out, that makes you a fair bit tougher in the process. This trait grants a 30% bonus to all resistences while chainfiring.",
 		abbr   = "MEn",
 		master = true,
 
@@ -448,8 +448,8 @@ function DoomRL.load_traits()
 	{
 		name   = "Survivalist",
 		desc   = "No minimum damage taken, medpacks heal over 100%",
-		quote  = "\"You want a piece of me? C'mon, c'mon. Come at me with it!\"",
-		full   = "You're the mean motherfucker who gets through every predicament! Half the time you completely shrug off damage that would graze others and you heal over 100% using simple medpacks!",
+		quote  = "\"Improvise. Adapt. Overcome.\"",
+		full   = "You're about as sturdy as they come, with skin thicker than a Cyberdemon's ass. This trait removes minimum damage, preventing low-damage hits from being rounded up, and negating them entirely. In addition, medpacks overcharge health.",
 		abbr   = "MSv",
 		master = true,
 
@@ -462,9 +462,9 @@ function DoomRL.load_traits()
 	register_trait "running"
 	{
 		name   = "Running Man",
-		desc   = "Running time *2, no to hit penalty",
+		desc   = "Running time doubled, no to hit penalty",
 		quote  = "\"Movin' right along.\"",
-		full   = "You're the man on the run! Not only can you run twice as long, but you do not suffer any aiming penalties while doing so!",
+		full   = "Cardio is your middle name, you could outpace your squad in a marathon, even without all the adrenaline! Your mastery of breathing techniques even lets you keep your hands steady, too! This trait doubles how long you can sprint, and removes the to-hit penalty.",
 		abbr   = "MRM",
 		master = true,
 
@@ -477,9 +477,9 @@ function DoomRL.load_traits()
 	register_trait "gunrunner"
 	{
 		name   = "Gunrunner",
-		desc   = "Running time *1.5, free non-rapid shot if run moving",
+		desc   = "Running time +50%, free non-rapid shot while running",
 		quote  = "\"Movin' right along.\"",
-		full   = "You're the man on the run! Not only can you run longer, but while running with a loaded non-rapid weapon in your hands, every move you automatically shoot the nearest enemy for free!",
+		full   = "You're a machine built on muscle memory, and with nothing but target-rich environments ahead of you, you barely need to think! This trait increases your sprinting time by 50%, and any enemy in range will be automatically shot at with the weapon in hand.",
 		abbr   = "MGr",
 		master = true,
 
@@ -492,9 +492,9 @@ function DoomRL.load_traits()
 	register_trait "scavenger"
 	{
 		name   = "Scavenger",
-		desc   = "Allows dissasembling uniques and exotics into mods",
-		quote  = "\"I do need a gun. I need a big gun. I need a really big gun...\"",
-		full   = "Whether it's a unique, exotic, assembled or modified gun, you can always make use of it! Just Unload it once it's fully unloaded and you can scrap it for a useful mod pack!",
+		desc   = "Allows dissasembling weapons into mods.",
+		quote  = "\"Nothing's worthless when you have a multitool!\"",
+		full   = "You've always had a knack for taking things apart. Putting them back together is still a work in progress skillset, but salvaging parts from whatever guns you can get ahold of is a cakewalk for you. This trait enables you to turn any weapon into a mod pack by pressing 'unload' on an already unlaoded weapon.",
 		abbr   = "MSc",
 		master = true,
 
