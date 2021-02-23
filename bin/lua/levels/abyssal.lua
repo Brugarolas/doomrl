@@ -95,7 +95,7 @@ register_level "abyssal_plains"
 		local res = level.status
 		if res > 1 then return end
 		if res == 0 and player.x > 29 and player.x < 49 and player.y > 8 and player.y < 13 then
-			ui.msg("Suddenly you're trapped in!")
+			ui.msg("The walls suddenly close in around you, trapping you!")
 			player:play_sound("door.close")
 			generator.transmute( "gwall", "floor" )
 			generator.transmute( "floor", "rwall", area.new( 28, 9, 28, 12 ) )
@@ -121,13 +121,13 @@ register_level "abyssal_plains"
 
 	OnExit = function ()
 		if level.data.kill_all  then
-			ui.msg("Sure can make a guy miss the REAL plains...")
-			player:add_history("He slaughtered the beasts living there.")
+			ui.msg("The plains of hell would almost be beautiful if not for all the evil incarnate around.")
+			player:add_history("They wiped out the Hellspawn residing there.")
  	 		player:add_badge("skull1")
 			if core.is_challenge("challenge_aora") then player:add_badge("skull2") end
 		else
-			ui.msg("Damn, that was way too close for comfort!.")
-			player:add_history("He barely escaped the trap set for him.")
+			ui.msg("You can't help but feel like your escape was one Hell of a close shave.")
+			player:add_history("They narrowly escaped a deadly trap.")
 		end
 	end,
 
