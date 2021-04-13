@@ -161,7 +161,10 @@ begin
   HOF.Init;
   FLevel := TLevel.Create;
   if not GraphicsVersion then
+  begin
     UI.GameUI.Map.SetMap( FLevel );
+    UI.GameUI.Map.SetEnabled( True );
+  end;
   DataLoaded := True;
   IO.LoadStop;
 end;
@@ -176,6 +179,8 @@ begin
   FreeAndNil(FLevel);
   FreeAndNil(ColorOverrides);
   FreeAndNil(Cells);
+  if not GraphicsVersion then
+    UI.GameUI.Map.SetEnabled(False);
 end;
 
 constructor TDoom.Create;
