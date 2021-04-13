@@ -2253,7 +2253,7 @@ var State       : TDoomLuaState;
 begin
   State.Init(L);
   Being := State.ToObject(1) as TBeing;
-  Being.ApplyDamage(State.ToInteger(2),TBodyTarget( State.ToInteger(3) ), TDamageType( State.ToInteger(4,Byte(Damage_Bullet)) ), State.ToObjectOrNil(2) as TItem );
+  Being.ApplyDamage(State.ToInteger(2),TBodyTarget( State.ToInteger(3) ), TDamageType( State.ToInteger(4,Byte(Damage_Bullet)) ), State.ToObjectOrNil(5) as TItem );
   Result := 0;
 end;
 
