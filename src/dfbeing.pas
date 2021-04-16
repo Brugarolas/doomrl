@@ -225,7 +225,6 @@ uses vlualibrary, vluaentitynode, vuid, vdebug, vvision, vmaparea, vluasystem,
 
 function TBeing.getStrayChance( defender : TBeing; missile : byte ) : byte;
 var miss     : Integer;
-var Modifier : Real;
 
 begin
   if IsPlayer       then Exit(0);
@@ -234,8 +233,6 @@ begin
   miss := Missiles[missile].MissBase +
           Missiles[missile].MissDist *
           Distance( FPosition, defender.FPosition );
-  Modifier := 100;
-		  
 
   if defender.IsPlayer then
   begin
@@ -246,8 +243,7 @@ begin
       Exit(100);
     end;
   end;
-  Modifier := defender.getDodgeMod;
-  miss += Round( 100-Modifier );
+  miss += defender.getDodgeMod;
   Exit( Clamp( miss, 0, 95 ) );
 end;
 
