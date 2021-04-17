@@ -381,10 +381,10 @@ begin
       iImage := Textures.Texture[ FLogoTexture ].Image;
       iSizeX := IO.Driver.GetSizeX;
       iSizeY := IO.Driver.GetSizeY;
-      iMinY  := Floor(iSizeY / 25) * (-8);
+      iMinY  := Floor(iSizeY / 25) * (-11);
       if (FMode <> MenuModeLogo) and (FMode <> MenuModeDonator)
-        then begin iMaxY  := Floor(iSizeY / 25) * 24; iMinY := Floor(iSizeY / 25) * (-10); end
-        else iMaxY  := Floor(iSizeY / 25) * 20;
+        then begin iMaxY  := Floor(iSizeY / 25) * 31; iMinY := Floor(iSizeY / 25) * (-16); end
+        else iMaxY  := Floor(iSizeY / 25) * 21;
       iMinX  := (iSizeX - (iMaxY - iMinY)) / 2;
       iMaxX  := (iSizeX + (iMaxY - iMinY)) / 2;
 
