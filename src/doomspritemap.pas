@@ -68,7 +68,7 @@ private
   FCosActive      : Boolean;
   FGlowActive     : Boolean;
   FLightMap       : array[0..MAXX] of array[0..MAXY] of Byte;
-  FCellCodeBase   : array[0..15] of Byte;
+  FCellCodeBase   : array[0..255] of Byte;
 private
   procedure ApplyEffect;
   procedure UpdateLightMap;
@@ -149,29 +149,77 @@ begin
   FTarget.Create(0,0);
   FTexturesLoaded := False;
   FSpriteEngine := TSpriteEngine.Create;
+  FSpriteEngine.FTexUnit.y := 1.0 / 64;
   FGridActive     := False;
   FLastCoord.Create(0,0);
   Recalculate;
 
   iCellRow := SpriteCellRow;
 
-  FCellCodeBase[0      ] := 3*iCellRow+  iCellRow+2; // missing!
-  FCellCodeBase[1      ] := 3*iCellRow+  iCellRow+2;
-  FCellCodeBase[  2    ] := 3*iCellRow+4*iCellRow+2;
-  FCellCodeBase[1+2    ] := 3*iCellRow+3*iCellRow+2;
-  FCellCodeBase[    4  ] := 3*iCellRow+4*iCellRow+0;
-  FCellCodeBase[1+  4  ] := 3*iCellRow+3*iCellRow+0;
-  FCellCodeBase[  2+4  ] := 3*iCellRow+          1;
-  FCellCodeBase[1+2+4  ] := 3*iCellRow+2*iCellRow+1;
-
-  FCellCodeBase[      8] := 3*iCellRow+  iCellRow+1;
-  FCellCodeBase[1    +8] := 3*iCellRow+  iCellRow  ;
-  FCellCodeBase[  2  +8] := 3*iCellRow+          2;
-  FCellCodeBase[1+2  +8] := 3*iCellRow+2*iCellRow+2;
-  FCellCodeBase[    4+8] := 3*iCellRow+          0;
-  FCellCodeBase[1+  4+8] := 3*iCellRow+2*iCellRow+0;
-  FCellCodeBase[  2+4+8] := 3*iCellRow+3*iCellRow+1;
-  FCellCodeBase[1+2+4+8] := 3*iCellRow+4*iCellRow+1;
+  FCellCodeBase[  0]:=14*iCellRow+2; FCellCodeBase[  1]:=14*iCellRow+2; FCellCodeBase[  2]:= 4*iCellRow+2; FCellCodeBase[  3]:= 4*iCellRow+2;
+  FCellCodeBase[  4]:=14*iCellRow+2; FCellCodeBase[  5]:=14*iCellRow+2; FCellCodeBase[  6]:= 4*iCellRow+2; FCellCodeBase[  7]:= 4*iCellRow+2;
+  FCellCodeBase[  8]:= 7*iCellRow+2; FCellCodeBase[  9]:= 7*iCellRow+2; FCellCodeBase[ 10]:= 6*iCellRow+2; FCellCodeBase[ 11]:= 2*iCellRow+2;
+  FCellCodeBase[ 12]:= 7*iCellRow+2; FCellCodeBase[ 13]:= 7*iCellRow+2; FCellCodeBase[ 14]:= 6*iCellRow+2; FCellCodeBase[ 15]:= 2*iCellRow+2;
+  FCellCodeBase[ 16]:= 7*iCellRow+0; FCellCodeBase[ 17]:= 7*iCellRow+0; FCellCodeBase[ 18]:= 6*iCellRow+0; FCellCodeBase[ 19]:= 6*iCellRow+0;
+  FCellCodeBase[ 20]:= 7*iCellRow+0; FCellCodeBase[ 21]:= 7*iCellRow+0; FCellCodeBase[ 22]:= 2*iCellRow+0; FCellCodeBase[ 23]:= 2*iCellRow+0;
+  FCellCodeBase[ 24]:= 3*iCellRow+1; FCellCodeBase[ 25]:= 3*iCellRow+1; FCellCodeBase[ 26]:= 5*iCellRow+1; FCellCodeBase[ 27]:=15*iCellRow+0;
+  FCellCodeBase[ 28]:= 3*iCellRow+1; FCellCodeBase[ 29]:= 3*iCellRow+1; FCellCodeBase[ 30]:=15*iCellRow+1; FCellCodeBase[ 31]:= 2*iCellRow+1;
+  FCellCodeBase[ 32]:=14*iCellRow+2; FCellCodeBase[ 33]:=14*iCellRow+2; FCellCodeBase[ 34]:= 4*iCellRow+2; FCellCodeBase[ 35]:= 4*iCellRow+2;
+  FCellCodeBase[ 36]:=14*iCellRow+2; FCellCodeBase[ 37]:=14*iCellRow+2; FCellCodeBase[ 38]:= 4*iCellRow+2; FCellCodeBase[ 39]:= 4*iCellRow+2;
+  FCellCodeBase[ 40]:= 7*iCellRow+2; FCellCodeBase[ 41]:= 7*iCellRow+2; FCellCodeBase[ 42]:= 6*iCellRow+2; FCellCodeBase[ 43]:= 2*iCellRow+2;
+  FCellCodeBase[ 44]:= 7*iCellRow+2; FCellCodeBase[ 45]:= 7*iCellRow+2; FCellCodeBase[ 46]:= 6*iCellRow+2; FCellCodeBase[ 47]:= 2*iCellRow+2;
+  FCellCodeBase[ 48]:= 7*iCellRow+0; FCellCodeBase[ 49]:= 7*iCellRow+0; FCellCodeBase[ 50]:= 6*iCellRow+0; FCellCodeBase[ 51]:= 6*iCellRow+0;
+  FCellCodeBase[ 52]:= 7*iCellRow+0; FCellCodeBase[ 53]:= 7*iCellRow+0; FCellCodeBase[ 54]:= 2*iCellRow+0; FCellCodeBase[ 55]:= 2*iCellRow+0;
+  FCellCodeBase[ 56]:= 3*iCellRow+1; FCellCodeBase[ 57]:= 3*iCellRow+1; FCellCodeBase[ 58]:= 5*iCellRow+1; FCellCodeBase[ 59]:=15*iCellRow+0;
+  FCellCodeBase[ 60]:= 3*iCellRow+1; FCellCodeBase[ 61]:= 3*iCellRow+1; FCellCodeBase[ 62]:=15*iCellRow+1; FCellCodeBase[ 63]:= 2*iCellRow+1;
+  FCellCodeBase[ 64]:= 4*iCellRow+1; FCellCodeBase[ 65]:= 4*iCellRow+1; FCellCodeBase[ 66]:= 4*iCellRow+0; FCellCodeBase[ 67]:= 4*iCellRow+0;
+  FCellCodeBase[ 68]:= 4*iCellRow+1; FCellCodeBase[ 69]:= 4*iCellRow+1; FCellCodeBase[ 70]:= 4*iCellRow+0; FCellCodeBase[ 71]:= 4*iCellRow+0;
+  FCellCodeBase[ 72]:= 3*iCellRow+2; FCellCodeBase[ 73]:= 3*iCellRow+2; FCellCodeBase[ 74]:= 5*iCellRow+2; FCellCodeBase[ 75]:=13*iCellRow+0;
+  FCellCodeBase[ 76]:= 3*iCellRow+2; FCellCodeBase[ 77]:= 3*iCellRow+2; FCellCodeBase[ 78]:= 5*iCellRow+2; FCellCodeBase[ 79]:=13*iCellRow+0;
+  FCellCodeBase[ 80]:= 3*iCellRow+0; FCellCodeBase[ 81]:= 3*iCellRow+0; FCellCodeBase[ 82]:= 5*iCellRow+0; FCellCodeBase[ 83]:= 5*iCellRow+0;
+  FCellCodeBase[ 84]:= 3*iCellRow+0; FCellCodeBase[ 85]:= 3*iCellRow+0; FCellCodeBase[ 86]:=13*iCellRow+1; FCellCodeBase[ 87]:=13*iCellRow+1;
+  FCellCodeBase[ 88]:= 6*iCellRow+1; FCellCodeBase[ 89]:= 6*iCellRow+1; FCellCodeBase[ 90]:= 7*iCellRow+1; FCellCodeBase[ 91]:=11*iCellRow+1;
+  FCellCodeBase[ 92]:= 6*iCellRow+1; FCellCodeBase[ 93]:= 6*iCellRow+1; FCellCodeBase[ 94]:=11*iCellRow+0; FCellCodeBase[ 95]:= 9*iCellRow+1;
+  FCellCodeBase[ 96]:= 4*iCellRow+1; FCellCodeBase[ 97]:= 4*iCellRow+1; FCellCodeBase[ 98]:= 4*iCellRow+0; FCellCodeBase[ 99]:= 4*iCellRow+0;
+  FCellCodeBase[100]:= 4*iCellRow+1; FCellCodeBase[101]:= 4*iCellRow+1; FCellCodeBase[102]:= 4*iCellRow+0; FCellCodeBase[103]:= 4*iCellRow+0;
+  FCellCodeBase[104]:= 0*iCellRow+2; FCellCodeBase[105]:= 0*iCellRow+2; FCellCodeBase[106]:=14*iCellRow+0; FCellCodeBase[107]:= 1*iCellRow+2;
+  FCellCodeBase[108]:= 0*iCellRow+2; FCellCodeBase[109]:= 0*iCellRow+2; FCellCodeBase[110]:=14*iCellRow+0; FCellCodeBase[111]:= 1*iCellRow+2;
+  FCellCodeBase[112]:= 3*iCellRow+0; FCellCodeBase[113]:= 3*iCellRow+0; FCellCodeBase[114]:= 5*iCellRow+0; FCellCodeBase[115]:= 5*iCellRow+0;
+  FCellCodeBase[116]:= 3*iCellRow+0; FCellCodeBase[117]:= 3*iCellRow+0; FCellCodeBase[118]:=13*iCellRow+1; FCellCodeBase[119]:=13*iCellRow+1;
+  FCellCodeBase[120]:=12*iCellRow+0; FCellCodeBase[121]:=12*iCellRow+0; FCellCodeBase[122]:=10*iCellRow+1; FCellCodeBase[123]:=13*iCellRow+2;
+  FCellCodeBase[124]:=12*iCellRow+0; FCellCodeBase[125]:=12*iCellRow+0; FCellCodeBase[126]:=12*iCellRow+2; FCellCodeBase[127]:= 9*iCellRow+0;
+  FCellCodeBase[128]:=14*iCellRow+2; FCellCodeBase[129]:=14*iCellRow+2; FCellCodeBase[130]:= 4*iCellRow+2; FCellCodeBase[131]:= 4*iCellRow+2;
+  FCellCodeBase[132]:=14*iCellRow+2; FCellCodeBase[133]:=14*iCellRow+2; FCellCodeBase[134]:= 4*iCellRow+2; FCellCodeBase[135]:= 4*iCellRow+2;
+  FCellCodeBase[136]:= 7*iCellRow+2; FCellCodeBase[137]:= 7*iCellRow+2; FCellCodeBase[138]:= 6*iCellRow+2; FCellCodeBase[139]:= 2*iCellRow+2;
+  FCellCodeBase[140]:= 7*iCellRow+2; FCellCodeBase[141]:= 7*iCellRow+2; FCellCodeBase[142]:= 6*iCellRow+2; FCellCodeBase[143]:= 2*iCellRow+2;
+  FCellCodeBase[144]:= 7*iCellRow+0; FCellCodeBase[145]:= 7*iCellRow+0; FCellCodeBase[146]:= 6*iCellRow+0; FCellCodeBase[147]:= 6*iCellRow+0;
+  FCellCodeBase[148]:= 7*iCellRow+0; FCellCodeBase[149]:= 7*iCellRow+0; FCellCodeBase[150]:= 2*iCellRow+0; FCellCodeBase[151]:= 2*iCellRow+0;
+  FCellCodeBase[152]:= 3*iCellRow+1; FCellCodeBase[153]:= 3*iCellRow+1; FCellCodeBase[154]:= 5*iCellRow+1; FCellCodeBase[155]:=15*iCellRow+0;
+  FCellCodeBase[156]:= 3*iCellRow+1; FCellCodeBase[157]:= 3*iCellRow+1; FCellCodeBase[158]:=15*iCellRow+1; FCellCodeBase[159]:= 2*iCellRow+1;
+  FCellCodeBase[160]:=14*iCellRow+2; FCellCodeBase[161]:=14*iCellRow+2; FCellCodeBase[162]:= 4*iCellRow+2; FCellCodeBase[163]:= 4*iCellRow+2;
+  FCellCodeBase[164]:=14*iCellRow+2; FCellCodeBase[165]:=14*iCellRow+2; FCellCodeBase[166]:= 4*iCellRow+2; FCellCodeBase[167]:= 4*iCellRow+2;
+  FCellCodeBase[168]:= 7*iCellRow+2; FCellCodeBase[169]:= 7*iCellRow+2; FCellCodeBase[170]:= 6*iCellRow+2; FCellCodeBase[171]:= 2*iCellRow+2;
+  FCellCodeBase[172]:= 7*iCellRow+2; FCellCodeBase[173]:= 7*iCellRow+2; FCellCodeBase[174]:= 6*iCellRow+2; FCellCodeBase[175]:= 2*iCellRow+2;
+  FCellCodeBase[176]:= 7*iCellRow+0; FCellCodeBase[177]:= 7*iCellRow+0; FCellCodeBase[178]:= 6*iCellRow+0; FCellCodeBase[179]:= 6*iCellRow+0;
+  FCellCodeBase[180]:= 7*iCellRow+0; FCellCodeBase[181]:= 7*iCellRow+0; FCellCodeBase[182]:= 2*iCellRow+0; FCellCodeBase[183]:= 2*iCellRow+0;
+  FCellCodeBase[184]:= 3*iCellRow+1; FCellCodeBase[185]:= 3*iCellRow+1; FCellCodeBase[186]:= 5*iCellRow+1; FCellCodeBase[187]:=15*iCellRow+0;
+  FCellCodeBase[188]:= 3*iCellRow+1; FCellCodeBase[189]:= 3*iCellRow+1; FCellCodeBase[190]:=15*iCellRow+1; FCellCodeBase[191]:= 2*iCellRow+1;
+  FCellCodeBase[192]:= 4*iCellRow+1; FCellCodeBase[193]:= 4*iCellRow+1; FCellCodeBase[194]:= 4*iCellRow+0; FCellCodeBase[195]:= 4*iCellRow+0;
+  FCellCodeBase[196]:= 4*iCellRow+1; FCellCodeBase[197]:= 4*iCellRow+1; FCellCodeBase[198]:= 4*iCellRow+0; FCellCodeBase[199]:= 4*iCellRow+0;
+  FCellCodeBase[200]:= 3*iCellRow+2; FCellCodeBase[201]:= 3*iCellRow+2; FCellCodeBase[202]:= 5*iCellRow+2; FCellCodeBase[203]:=13*iCellRow+0;
+  FCellCodeBase[204]:= 3*iCellRow+2; FCellCodeBase[205]:= 3*iCellRow+2; FCellCodeBase[206]:= 5*iCellRow+2; FCellCodeBase[207]:=13*iCellRow+0;
+  FCellCodeBase[208]:= 0*iCellRow+0; FCellCodeBase[209]:= 0*iCellRow+0; FCellCodeBase[210]:=14*iCellRow+1; FCellCodeBase[211]:=14*iCellRow+1;
+  FCellCodeBase[212]:= 0*iCellRow+0; FCellCodeBase[213]:= 0*iCellRow+0; FCellCodeBase[214]:= 1*iCellRow+0; FCellCodeBase[215]:= 1*iCellRow+0;
+  FCellCodeBase[216]:=11*iCellRow+2; FCellCodeBase[217]:=11*iCellRow+2; FCellCodeBase[218]:=12*iCellRow+1; FCellCodeBase[219]:=10*iCellRow+0;
+  FCellCodeBase[220]:=11*iCellRow+2; FCellCodeBase[221]:=11*iCellRow+2; FCellCodeBase[222]:=10*iCellRow+2; FCellCodeBase[223]:= 9*iCellRow+2;
+  FCellCodeBase[224]:= 4*iCellRow+1; FCellCodeBase[225]:= 4*iCellRow+1; FCellCodeBase[226]:= 4*iCellRow+0; FCellCodeBase[227]:= 4*iCellRow+0;
+  FCellCodeBase[228]:= 4*iCellRow+1; FCellCodeBase[229]:= 4*iCellRow+1; FCellCodeBase[230]:= 4*iCellRow+0; FCellCodeBase[231]:= 4*iCellRow+0;
+  FCellCodeBase[232]:= 0*iCellRow+2; FCellCodeBase[233]:= 0*iCellRow+2; FCellCodeBase[234]:=14*iCellRow+0; FCellCodeBase[235]:= 1*iCellRow+2;
+  FCellCodeBase[236]:= 0*iCellRow+2; FCellCodeBase[237]:= 0*iCellRow+2; FCellCodeBase[238]:=14*iCellRow+0; FCellCodeBase[239]:= 1*iCellRow+2;
+  FCellCodeBase[240]:= 0*iCellRow+0; FCellCodeBase[241]:= 0*iCellRow+0; FCellCodeBase[242]:=14*iCellRow+1; FCellCodeBase[243]:=14*iCellRow+1;
+  FCellCodeBase[244]:= 0*iCellRow+0; FCellCodeBase[245]:= 0*iCellRow+0; FCellCodeBase[246]:= 1*iCellRow+0; FCellCodeBase[247]:= 1*iCellRow+0;
+  FCellCodeBase[248]:= 0*iCellRow+1; FCellCodeBase[249]:= 0*iCellRow+1; FCellCodeBase[250]:= 8*iCellRow+1; FCellCodeBase[251]:= 8*iCellRow+0;
+  FCellCodeBase[252]:= 0*iCellRow+1; FCellCodeBase[253]:= 0*iCellRow+1; FCellCodeBase[254]:= 8*iCellRow+2; FCellCodeBase[255]:= 1*iCellRow+1;
 
 end;
 
@@ -514,8 +562,7 @@ begin
 end;
 
 function TDoomSpriteMap.GetCellShift(cell: TCoord2D): Byte;
-var Base, CellRow : Byte;
-const ExtCode = [ 1+2, 1+4, 2+8, 4+8, 1+2+4, 1+2+8, 1+4+8, 2+4+8, 1+2+4+8 ];
+var Code : Byte;
   function StickyCode( Coord : TCoord2D; Res : Byte ) : Byte;
   begin
     if not Doom.Level.isProperCoord( Coord ) then Exit(Res);
@@ -525,42 +572,16 @@ const ExtCode = [ 1+2, 1+4, 2+8, 4+8, 1+2+4, 1+2+8, 1+4+8, 2+4+8, 1+2+4+8 ];
     Exit( 0 );
   end;
 begin
-  Base :=
-    StickyCode( cell.ifInc( 0,-1), 1 ) +
-    StickyCode( cell.ifInc(-1, 0), 2 ) +
-    StickyCode( cell.ifInc(+1, 0), 4 ) +
-    StickyCode( cell.ifInc( 0,+1), 8 );
-  CellRow := SpriteCellRow;
-  if Base in ExtCode then
-  case Base of
-    1+2   : if StickyCode( cell.IfInc( -1, -1 ), 1 ) <> 0 then Exit( 2*CellRow+2 );
-    1+4   : if StickyCode( cell.IfInc( +1, -1 ), 1 ) <> 0 then Exit( 2*CellRow+0 );
-    2+8   : if StickyCode( cell.IfInc( -1, +1 ), 1 ) <> 0 then Exit( 2 );
-    4+8   : if StickyCode( cell.IfInc( +1, +1 ), 1 ) <> 0 then Exit( 0 );
-    1+2+4 : if (
-      ( StickyCode( cell.IfInc( -1, -1 ), 1 ) <> 0 ) and
-      ( StickyCode( cell.IfInc( +1, -1 ), 1 ) <> 0 )
-      ) then Exit( 2*CellRow+1 );
-    1+2+8 : if (
-      ( StickyCode( cell.IfInc( -1, -1 ), 1 ) <> 0 ) and
-      ( StickyCode( cell.IfInc( -1, +1 ), 1 ) <> 0 )
-      ) then Exit( CellRow+2 );
-    1+4+8 : if (
-      ( StickyCode( cell.IfInc( +1, -1 ), 1 ) <> 0 ) and
-      ( StickyCode( cell.IfInc( +1, +1 ), 1 ) <> 0 )
-      ) then Exit( CellRow+0 );
-    2+4+8 : if (
-      ( StickyCode( cell.IfInc( -1, +1 ), 1 ) <> 0 ) and
-      ( StickyCode( cell.IfInc( +1, +1 ), 1 ) <> 0 )
-      ) then Exit( 1 );
-    1+2+4+8 : if (
-      ( StickyCode( cell.IfInc( -1, -1 ), 1 ) <> 0 ) and
-      ( StickyCode( cell.IfInc( -1, +1 ), 1 ) <> 0 ) and
-      ( StickyCode( cell.IfInc( +1, -1 ), 1 ) <> 0 ) and
-      ( StickyCode( cell.IfInc( +1, +1 ), 1 ) <> 0 )
-      ) then Exit( CellRow+1 );
-  end;
-  Exit( FCellCodeBase[ Base ] );
+  Code :=
+    StickyCode( cell.ifInc(-1,-1), 1 ) +
+    StickyCode( cell.ifInc( 0,-1), 2 ) +
+    StickyCode( cell.ifInc( 1,-1), 4 ) +
+    StickyCode( cell.ifInc(-1, 0), 8 ) +
+    StickyCode( cell.ifInc( 1, 0), 16 ) +
+    StickyCode( cell.ifInc(-1, 1), 32 ) +
+    StickyCode( cell.ifInc( 0, 1), 64 ) +
+    StickyCode( cell.ifInc( 1, 1), 128 );
+  Exit( FCellCodeBase[ Code ] );
 end;
 
 
@@ -589,7 +610,7 @@ begin
       begin
         Spr := Cells[Bottom].Sprite;
         if CF_MULTISPRITE in Cells[Bottom].Flags then
-          Spr.SpriteID += Doom.Level.Rotation[c] - 3*SpriteCellRow;
+          Spr.SpriteID += Doom.Level.Rotation[c];
         if F_GTSHIFT in Cells[Bottom].Flags
           then PushLitSprite( X, Y, Spr, FFluidX, FFluidY )
           else PushLitSprite( X, Y, Spr );

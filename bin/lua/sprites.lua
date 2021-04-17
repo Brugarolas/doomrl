@@ -22,6 +22,8 @@ core.declare( "TERRAIN_ROW_10", 256+144 )
 core.declare( "TERRAIN_ROW_15", 256+224 )
 core.declare( "TERRAIN_ROW_16", 256+240 )
 
+core.declare( "TERRAIN_ROW_17", 512 )
+
 
 core.declare( "SPRITE_PLAYER",          OBJECT_ROW_1 + 1 )
 core.declare( "SPRITE_PLAYER_KNIFE",    OBJECT_ROW_1 + 2 )
@@ -163,12 +165,6 @@ core.declare( "SPRITE_FLOOR",     TERRAIN_ROW_1 + 1 )
 core.declare( "SPRITE_CAVEFLOOR", TERRAIN_ROW_2 + 1 )
 core.declare( "SPRITE_HELLFLOOR", TERRAIN_ROW_3 + 1 )
 
-core.declare( "SPRITE_WALL",      TERRAIN_ROW_10 + 1 )
-core.declare( "SPRITE_CAVEWALL",  TERRAIN_ROW_10 + 4 )
-core.declare( "SPRITE_BRICKWALL", TERRAIN_ROW_10 + 7 )
-core.declare( "SPRITE_TECHWALL",  TERRAIN_ROW_10 + 10 )
-core.declare( "SPRITE_BOSSWALL",  TERRAIN_ROW_10 + 13 )
-
 core.declare( "SPRITE_WATER",     TERRAIN_ROW_15 + 1 )
 core.declare( "SPRITE_ACID",      TERRAIN_ROW_15 + 3 )
 core.declare( "SPRITE_LAVA",      TERRAIN_ROW_15 + 5 )
@@ -178,6 +174,12 @@ core.declare( "SPRITE_WBOX",      TERRAIN_ROW_15 + 9 )
 
 core.declare( "SPRITE_YBOXC",     TERRAIN_ROW_16 + 8 )
 core.declare( "SPRITE_WBOXC",     TERRAIN_ROW_16 + 9 )
+
+core.declare( "SPRITE_WALL",      TERRAIN_ROW_17 + 1 )
+core.declare( "SPRITE_CAVEWALL",  TERRAIN_ROW_17 + 4 )
+core.declare( "SPRITE_BRICKWALL", TERRAIN_ROW_17 + 7 )
+core.declare( "SPRITE_TECHWALL",  TERRAIN_ROW_17 + 10 )
+core.declare( "SPRITE_BOSSWALL",  TERRAIN_ROW_17 + 13 )
 
 assert( HARDSPRITE_PLAYER  == SPRITE_PLAYER )
 assert( HARDSPRITE_HIT     == SPRITE_BLAST )
