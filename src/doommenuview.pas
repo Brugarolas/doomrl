@@ -211,10 +211,10 @@ end;
 
 procedure TMainMenuViewer.CreateSubLogo;
 begin
-  TConUIText.Create( Self, Rectangle(28,10,48,3),
-    '@rDRL @R'+VERSION_STRING+#10+
-    '@rby @RKornel Kisielewicz'#10+
-    '@rgraphics by @RDerek Yu' ).BackColor:=Black;
+  TConUIText.Create( Self, Rectangle(28,10,22,3),
+    ' @rDRL @R'+VERSION_STRING+#10+
+    ' @rby @RKornel Kisielewicz'#10+
+    ' @rgraphics by @RDerek Yu' ).BackColor:=Black;
 end;
 
 procedure TMainMenuViewer.InitMain;
