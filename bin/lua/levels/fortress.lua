@@ -63,7 +63,7 @@ register_level "unholy_cathedral"
 			level    = 200,
 			weight   = 0,
 			group    = "weapon-melee",
-			desc     = "You don't want to know who's scythe this is...",
+			desc     = "You don't want to know whose scythe this is...",
 			flags    = { IF_UNIQUE, IF_HALFKNOCK, IF_NUKERESIST },
 
 			type        = ITEMTYPE_MELEE,
