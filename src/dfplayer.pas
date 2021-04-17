@@ -649,6 +649,7 @@ var iLevel      : TLevel;
     iAlt        : Boolean;
     iMoveResult : TMoveResult;
     iTempSC     : LongInt;
+    iStartNode  : TAStarNode;
     function RunStopNear : boolean;
     begin
       if iLevel.isProperCoord( FPosition.ifIncX(+1) ) and iLevel.cellFlagSet( FPosition.ifIncX(+1), CF_RUNSTOP ) then Exit( True );
@@ -782,7 +783,8 @@ try
       continue;
     end;
 
-    
+    iStartNode := nil;
+
     if FRun.Active
       then
         if FPathRun then
@@ -794,6 +796,7 @@ try
             Continue;
           end;
           iDir := NewDirection( FPosition, FPath.Start.Coord );
+          iStartNode := FPath.Start;
           FPath.Start := FPath.Start.Child;
         end
         else iDir := FRun.Dir
@@ -879,7 +882,14 @@ try
            FSpeedCount := iTempSC;
          end;
        MoveBeing : Attack( iLevel.Being[ iMove ] );
-       MoveDoor  : iLevel.CallHook( iMove, Self, CellHook_OnAct );
+       MoveDoor  :
+         if iLevel.CallHook( iMove, Self, CellHook_OnAct ) and (iStartNode <> nil) then
+           FPath.Start := iStartNode
+         else
+         begin
+           FPathRun := False;
+           FRun.Stop;
+         end;
     end;
     if FRun.Active and (not FPathRun) then
       if RunStopNear or
