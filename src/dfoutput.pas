@@ -519,6 +519,7 @@ begin
       iDone := True;
     end;
   until iDone;
+  MsgUpDate;
 end;
 
 function TDoomUI.ChooseTarget(aActionName : string; aRange: byte;
