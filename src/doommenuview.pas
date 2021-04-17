@@ -7,16 +7,16 @@ type TChallengeDesc = record Name : AnsiString; Desc : AnsiString; end;
 const ChallengeType : array[1..4] of TChallengeDesc =
 ((
    Name : 'Angel Game';
-   Desc : 'Play one of the DoomRL classic challenge games that place restrictions on play style or modify play behaviour.'#10#10'Reach @yPrivate FC@> rank to unlock!';
+   Desc : 'Play one of the DRL classic challenge games that place restrictions on play style or modify play behaviour.'#10#10'Reach @yPrivate FC@> rank to unlock!';
 ),(
    Name : 'Dual-angel Game';
-   Desc : 'Mix two DoomRL challenge game types. Only the first counts highscore-wise - the latter is your own challenge!'#10#10'Reach @ySergeant@> rank to unlock!';
+   Desc : 'Mix two DRL challenge game types. Only the first counts highscore-wise - the latter is your own challenge!'#10#10'Reach @ySergeant@> rank to unlock!';
 ),(
    Name : 'Archangel Game';
-   Desc : 'Play one of the DoomRL challenge in it''s ultra hard form. Do not expect fairness here!'#10#10'Reach @ySergeant@> rank to unlock!';
+   Desc : 'Play one of the DRL challenge in it''s ultra hard form. Do not expect fairness here!'#10#10'Reach @ySergeant@> rank to unlock!';
 ),(
    Name : 'Custom Challenge';
-   Desc : 'Play one of many custom DoomRL challenge levels and episodes. Download new ones from the @yCustom game/Download Mods@> option in the main menu.';
+   Desc : 'Play one of many custom DRL challenge levels and episodes. Download new ones from the @yCustom game/Download Mods@> option in the main menu.';
 ));
 
 
@@ -173,7 +173,7 @@ begin
   CreateSubLogo;
   FMode   := MenuModeLogo;
   if GraphicsVersion then
-    TGLUILabel.Create( Self, IO.TextSheet, IO.FMsgFont, Point( 10, 10 ), 'DoomRL version 0.9.9.7G' );
+    TGLUILabel.Create( Self, IO.TextSheet, IO.FMsgFont, Point( 10, 10 ), 'DRL version 0.9.9.7G' );
 
   TConUIText.Create( Self, Rectangle(2,14,77,11), AnsiString( LuaSystem.ProtectedCall( ['DoomRL','logo_text'], [] ) ) );
 end;
@@ -212,7 +212,7 @@ end;
 procedure TMainMenuViewer.CreateSubLogo;
 begin
   TConUIText.Create( Self, Rectangle(28,10,48,3),
-    '@rDoom Roguelike @R'+VERSION_STRING+#10+
+    '@rDRL @R'+VERSION_STRING+#10+
     '@rby @RKornel Kisielewicz'#10+
     '@rgraphics by @RDerek Yu' ).BackColor:=Black;
 end;

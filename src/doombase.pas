@@ -264,7 +264,7 @@ begin
   iResult    := TMenuResult.Create;
   Doom.Load;
 
-  if not FileExists(ConfigurationPath+'doom.prc') then DoomFirst;
+  if not FileExists(ConfigurationPath+'drl.prc') then DoomFirst;
 
   IO.RunUILoop( TMainMenuViewer.CreateMain( IO.Root ) );
   if FState <> DSQuit then
@@ -560,9 +560,9 @@ end;
 procedure TDoom.DoomFirst;
 var T : Text;
 begin
-  Assign(T,ConfigurationPath+'doom.prc');
+  Assign(T,ConfigurationPath+'drl.prc');
   Rewrite(T);
-  Writeln(T,'Doom was already run.');
+  Writeln(T,'DRL was already run.');
   Close(T);
   IO.RunUILoop( TMainMenuViewer.CreateFirst( IO.Root ) );
 end;
@@ -579,7 +579,7 @@ end;
 destructor TDoom.Destroy;
 begin
   UnLoad;
-  Log('Doom destroyed.');
+  Log('DRL destroyed.');
   FreeAndNil( IO );
   inherited Destroy;
 end;

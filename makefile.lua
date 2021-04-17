@@ -4,7 +4,7 @@ VALKYRIE_ROOT = VALKYRIE_ROOT or os.getenv("FPCVALKYRIE_ROOT") or "../fpcvalkyri
 dofile (VALKYRIE_ROOT.."scripts/lua_make.lua")
 
 makefile = {
-	name = "doomrl",
+	name = "drl",
 	fpc_params = {
 		"-Fu"..VALKYRIE_ROOT.."src",
 		"-Fu"..VALKYRIE_ROOT.."libs",
@@ -19,6 +19,11 @@ makefile = {
 			"-k-macosx_version_min -k10.4",
 		},
 	},
+	fpc_source_params = {
+		["doomrl.pas"] = {
+			"-odrl.exe",
+		},
+	},
 	pre_build = function()
 		local v = make.readversion( "bin/version.txt" )
 		local s = make.gitrevision()
@@ -31,10 +36,10 @@ makefile = {
 	source_files = { "doomrl.pas", "makewad.pas", "drlwad.pas" },
 	publish = {
 		lq = {
-			exec = { "doomrl" },
+			exec = { "drl" },
 			files = { "config.lua" },
 			os = {
-				WINDOWS = { "fmod64.dll", "fmod.dll", "lua5.1.dll", "zlib1.dll", "SDL.dll", "SDL_image.dll", "libpng12.dll", "doomrl_console.bat" },
+				WINDOWS = { "fmod64.dll", "fmod.dll", "lua5.1.dll", "zlib1.dll", "SDL.dll", "SDL_image.dll", "libpng12.dll", "drl_console.bat" },
 				LINUX   = { "unix_notes.txt", "doomrl_gnome-terminal", "doomrl_konsole", "doomrl_xterm" },
 				MACOSX  = { "unix_notes.txt" },
 			},
@@ -46,13 +51,13 @@ makefile = {
 				wav        = "*.wav",
 				music      = "*.mid",
 			},
-			other = { "keybindings.lua", "colors.lua", "sound.lua", "music.lua", "manual.txt", "version.txt", "version_api.txt", "doomrl.wad", "core.wad" },
+			other = { "keybindings.lua", "colors.lua", "sound.lua", "music.lua", "manual.txt", "version.txt", "version_api.txt", "drl.wad", "core.wad" },
 		},
 		hq = {
-			exec = { "doomrl" },
+			exec = { "drl" },
 			files = { { "confighq.lua", "config.lua" } },
 			os = {
-				WINDOWS = { "fmod64.dll", "fmod.dll", "lua5.1.dll", "zlib1.dll", "SDL.dll", "SDL_image.dll", "libpng12.dll", "doomrl_console.bat" },
+				WINDOWS = { "fmod64.dll", "fmod.dll", "lua5.1.dll", "zlib1.dll", "SDL.dll", "SDL_image.dll", "libpng12.dll", "drl_console.bat" },
 				LINUX   = { "unix_notes.txt", "doomrl_gnome-terminal", "doomrl_konsole", "doomrl_xterm" },
 				MACOSX  = { "unix_notes.txt" },
 			},
@@ -64,7 +69,7 @@ makefile = {
 				wavhq      = "*.wav",
 				mp3        = "*.mp3",
 			},
-			other = { "keybindings.lua", "colors.lua", "soundhq.lua", "musichq.lua", "manual.txt", "version.txt", "version_api.txt", "doomrl.wad", "core.wad" },
+			other = { "keybindings.lua", "colors.lua", "soundhq.lua", "musichq.lua", "manual.txt", "version.txt", "version_api.txt", "drl.wad", "core.wad" },
 		}
 	},
 	commands = {
@@ -77,14 +82,14 @@ makefile = {
 		install = function() makefile.commands.installhq() end,
 		installhq = function()
 			if OS == "WINDOWS" then	
-				make.generate_iss( "doomrl.iss", "hq", PUBLISH_DIR ) 
+				make.generate_iss( "drl.iss", "hq", PUBLISH_DIR ) 
 			elseif OS == "MACOSX" then
 				make.generate_bundle( "hq", PUBLISH_DIR ) 
 			end
 		end,
 		installlq = function()
 			if OS == "WINDOWS" then	
-				make.generate_iss( "doomrl.iss", "lq", PUBLISH_DIR ) 
+				make.generate_iss( "drl.iss", "lq", PUBLISH_DIR ) 
 			elseif OS == "MACOSX" then
 				make.generate_bundle( "lq", PUBLISH_DIR ) 
 			end
@@ -101,7 +106,7 @@ makefile = {
 	},
 	install = {
 		guid        = "E78C63C9-9849-45FA-8315-2AE38A293E2E",
-		name        = "DoomRL",
+		name        = "DRL",
 		publisher   = "ChaosForge",
 		license     = "bin\\license.txt",
 		info_after  = "bin\\install_after.txt",
@@ -111,12 +116,12 @@ makefile = {
 		iss_url     = "http://www.chaosforge.org/",
 		iss_nocomp  = { "wad", "mp3" },
 		iss_eicons  = {
-			{ name = "DoomRL", exe = "doomrl" },
-			{ name = "DoomRL (console mode)", exe = "doomrl", parameters = "-console" },
-			{ name = "DoomRL Manual", file = "manual.txt" },
+			{ name = "DRL", exe = "drl" },
+			{ name = "DRL (console mode)", exe = "drl", parameters = "-console" },
+			{ name = "DRL Manual", file = "manual.txt" },
 			{ name = "ChaosForge Website", url = "http://www.chaosforge.org/" },
-			{ name = "DoomRL Website", url = "https://drl.chaosforge.org/" },
-			{ name = "DoomRL Forum", url = "http://forum.chaosforge.org/" },
+			{ name = "DRL Website", url = "https://drl.chaosforge.org/" },
+			{ name = "DRL Forum", url = "http://forum.chaosforge.org/" },
 		},
 		dmg_size   = 128000,
 		app_icon   = "bin/iconfile.icns",
