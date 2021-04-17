@@ -370,7 +370,6 @@ end
 
 function generator.reset()
 	core.log("generator.reset()")
-	ui.clear_feel()
 	generator.OnKill    = nil
 	generator.OnKillAll = nil
 	generator.OnEnter   = nil

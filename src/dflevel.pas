@@ -469,6 +469,7 @@ begin
   FFloorCell := LuaSystem.Defines[LuaSystem.Get(['generator','styles',FStyle,'floor'])];
   if LuaSystem.Get(['diff',Doom.Difficulty,'respawn']) then Include( FFlags, LF_RESPAWN );
   ToHitBonus := LuaSystem.Get(['diff',Doom.Difficulty,'tohitbonus']);
+  FFeeling := '';
 end;
 
 procedure TLevel.AfterGeneration( aGenerated : Boolean );
