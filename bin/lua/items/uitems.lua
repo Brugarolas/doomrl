@@ -846,6 +846,7 @@ function DoomRL.load_doom_unique_items()
 		name     = "Angelic Armor",
 		color    = YELLOW,
 		sprite   = SPRITE_AARMOR,
+		coscolor = { 1.0,1.0,0.0,1.0 },
 		glow     = { 1.0,1.0,0.0,1.0 },
 		level    = 200,
 		weight   = 0,
