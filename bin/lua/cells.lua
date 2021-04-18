@@ -322,6 +322,22 @@ function DoomRL.loadcells()
 		end,
 	}
 
+	register_cell "ldoorb"
+	{
+		name       = "locked door",
+		ascii      = "+",
+		color      = BROWN,
+		armor      = 6,
+		hp         = 6,
+		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_FRAGILE, CF_OVERLAY, CF_STICKWALL, CF_RUNSTOP},
+		sprite     = SPRITE_HELLDOOR,
+
+		OnAct = function(c,being)
+			being:msg("The door is locked.")
+			return false
+		end,
+	}
+
 -- End Doors --
 
 -- Stairs --
