@@ -1289,6 +1289,8 @@ begin
   end;
   UI.Blink(White,1000);
   Level.FArea.ForAllCells( @Level.NukeCell );
+  Level.RecalcWalls( Level.FArea, True );
+  Level.RecalcFluids;
   Result := 0;
 end;
 
