@@ -32,7 +32,7 @@ TLevel = class(TLuaMapNode, IConUIASCIIMap)
     procedure AfterGeneration( aGenerated : Boolean );
     procedure PreEnter;
     procedure RecalcFluids;
-    procedure RecalcWalls( aArea : TArea );
+    procedure RecalcWalls( aArea : TArea; aMerge : Boolean );
     procedure Leave;
     procedure Clear;
     procedure FullClear;
@@ -505,7 +505,7 @@ var c : TCoord2D;
 begin
   if GraphicsVersion then
   begin
-    RecalcWalls( FArea );
+    RecalcWalls( FArea, True );
 
     UI.GameUI.UpdateMinimap;
     RecalcFluids;
@@ -554,13 +554,16 @@ begin
        FluidFlag( cc.ifInc(+1, 0), 8 );
 end;
 
-procedure TLevel.RecalcWalls( aArea : TArea );
+procedure TLevel.RecalcWalls( aArea : TArea; aMerge : Boolean );
 var c : TCoord2D;
+    shiftArea : TArea;
 begin
+  shiftArea := aArea;
+  if aMerge then shiftArea := FArea;
   for c in aArea do
   begin
     if CF_MULTISPRITE in Cells[CellBottom[c]].Flags then
-      Map.r[c.x,c.y] := SpriteMap.GetCellShift(c, aArea);
+      Map.r[c.x,c.y] := SpriteMap.GetCellShift(c, shiftArea);
   end;
 end;
 
@@ -1345,14 +1348,18 @@ function lua_level_recalc_walls(L: Plua_State): Integer; cdecl;
 var State : TDoomLuaState;
     Level : TLevel;
     Area : TArea;
+    Merge : Boolean;
 begin
   State.Init(L);
   Level := State.ToObject(1) as TLevel;
   Area := Level.FArea;
+  Merge := False;
   if State.StackSize >= 2 then
     Area := State.ToArea(2);
+  if State.StackSize >= 3 then
+    Merge := State.ToBoolean(3);
   if GraphicsVersion then
-    Level.RecalcWalls( Area );
+    Level.RecalcWalls( Area, Merge );
   Exit( 0 );
 end;
 
