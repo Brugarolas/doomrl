@@ -31,7 +31,7 @@ TLevel = class(TLuaMapNode, IConUIASCIIMap)
     procedure Init( nStyle : byte; nLNum : Word;nName : string; nSpecExit : string; nDepth : Word; nDangerLevel : Word);
     procedure AfterGeneration( aGenerated : Boolean );
     procedure PreEnter;
-    procedure RecalcFluids( aArea : TArea );
+    procedure RecalcFluids;
     procedure RecalcWalls( aArea : TArea );
     procedure Leave;
     procedure Clear;
@@ -73,7 +73,7 @@ TLevel = class(TLuaMapNode, IConUIASCIIMap)
     function CallHookCheck( Hook : Byte; const Params : array of Const ) : Boolean;
 
     procedure DropCorpse( aCoord : TCoord2D; CellID : Byte );
-    procedure DamageTile( coord : TCoord2D; dmg : Integer; DamageType : TDamageType );
+    function DamageTile( coord : TCoord2D; dmg : Integer; DamageType : TDamageType ) : Boolean;
     procedure Explosion( Sequence : Integer; coord : TCoord2D; Range, Delay : Integer; Damage : TDiceRoll; color : byte; ExplSound : Word; DamageType : TDamageType; aItem : TItem; aFlags : TExplosionFlags = []; aContent : Byte = 0; aDirectHit : Boolean = False );
     procedure Shotgun( source, target : TCoord2D; Damage : TDiceRoll; Shotgun : TShotgunData; aItem : TItem );
     procedure Respawn( Chance : byte );
@@ -508,7 +508,7 @@ begin
     RecalcWalls( FArea );
 
     UI.GameUI.UpdateMinimap;
-    RecalcFluids( FArea );
+    RecalcFluids;
     SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
   end;
 
@@ -516,7 +516,7 @@ begin
 
   if GraphicsVersion then
   begin
-    RecalcFluids( FArea );
+    RecalcFluids;
     SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
   end;
 
@@ -533,25 +533,25 @@ begin
 
 end;
 
-procedure TLevel.RecalcFluids( aArea : TArea );
+procedure TLevel.RecalcFluids;
 var cc : TCoord2D;
-  function FluidFlag( c : TCoord2D; CheckArea : TArea; Value : Byte ) : Byte;
+  function FluidFlag( c : TCoord2D; Value : Byte ) : Byte;
   begin
     if not isProperCoord( c ) then Exit( 0 );
-    if not CheckArea.Contains( c ) then Exit( Value );
-    if not (F_GFLUID in Cells[CellBottom[ c ]].Flags)
+    if (not (F_GFLUID in Cells[CellBottom[ c ]].Flags)) and
+      (not (CF_STICKWALL in Cells[CellBottom[ c ]].Flags))
       then Exit( Value )
       else Exit( 0 );
   end;
 begin
   if LF_SHARPFLUID in FFlags then Exit;
- for cc in aArea do
+ for cc in FArea do
    if F_GFLUID in Cells[CellBottom[ cc ]].Flags then
      Map.r[cc.x,cc.y] :=
-       FluidFlag( cc.ifInc( 0,-1), aArea, 1 ) +
-       FluidFlag( cc.ifInc( 0,+1), aArea, 2 ) +
-       FluidFlag( cc.ifInc(-1, 0), aArea, 4 ) +
-       FluidFlag( cc.ifInc(+1, 0), aArea, 8 );
+       FluidFlag( cc.ifInc( 0,-1), 1 ) +
+       FluidFlag( cc.ifInc( 0,+1), 2 ) +
+       FluidFlag( cc.ifInc(-1, 0), 4 ) +
+       FluidFlag( cc.ifInc(+1, 0), 8 );
 end;
 
 procedure TLevel.RecalcWalls( aArea : TArea );
@@ -713,19 +713,19 @@ begin
 end;
 
 
-procedure TLevel.DamageTile( coord : TCoord2D; Dmg : Integer; DamageType : TDamageType );
+function TLevel.DamageTile( coord : TCoord2D; Dmg : Integer; DamageType : TDamageType ) : Boolean;
 var cellID : byte;
     Heavy  : Boolean;
 begin
   Heavy := DamageType in [Damage_Acid, Damage_Fire, Damage_Plasma, Damage_SPlasma];
-  if not isProperCoord(coord) then Exit;
+  if not isProperCoord(coord) then Exit( False );
   cellID := Cell[Coord];
   
-  if LightFlag[ coord, lfPermanent ] then Exit;
-  if LightFlag[ coord, lfFresh ]     then Exit;
+  if LightFlag[ coord, lfPermanent ] then Exit( False );
+  if LightFlag[ coord, lfFresh ]     then Exit( False );
 
-  if (not Heavy) and (not (CF_FRAGILE in Cells[cellID].Flags)) then Exit;
-  if Cells[cellID].DR = 0 then Exit;
+  if (not Heavy) and (not (CF_FRAGILE in Cells[cellID].Flags)) then Exit( False );
+  if Cells[cellID].DR = 0 then Exit( False );
 
   dmg -= Cells[cellID].DR;
 
@@ -736,10 +736,10 @@ begin
     Damage_Plasma  : Dmg := Round( Dmg * 1.5 );
   end;
 
-  if dmg <= 0 then Exit;
+  if dmg <= 0 then Exit( False );
 
   HitPoints[coord] := Max(0,HitPoints[coord]-dmg);
-  if HitPoints[coord] > 0 then Exit;
+  if HitPoints[coord] > 0 then Exit( False );
   
   if CF_CORPSE in Cells[cellID].Flags then
     playSound( 'gib', coord );
@@ -749,6 +749,7 @@ begin
     else Cell[coord] := LuaSystem.Defines[ Cells[cellID].destroyto ];
 
   CallHook( coord, CellID, CellHook_OnDestroy );
+  Exit( True );
 end;
 
 
@@ -812,11 +813,14 @@ var a     : TCoord2D;
     iKnockbackValue : Byte;
     iNode : TNode;
     iItemUID : TUID;
+    iRecalc : Boolean;
 begin
   if not isProperCoord( coord ) then Exit;
 
   iItemUID := 0;
   if aItem <> nil then iItemUID := aItem.UID;
+
+  iRecalc := False;
 
   UI.Explosion( Sequence, coord, Range, Delay, Color, ExplSound, aFlags );
 
@@ -834,7 +838,7 @@ begin
         iDamage := Damage.Roll;
         if not (efNoDistanceDrop in aFlags) then
           iDamage := iDamage div Max(1,(Distance(a,coord)+1) div 2);
-        DamageTile( a, iDamage, DamageType );
+        if DamageTile( a, iDamage, DamageType ) then iRecalc := True;
         if Being[a] <> nil then
         with Being[a] do
         begin
@@ -864,10 +868,13 @@ begin
         if (aContent <> 0) and isEmpty( a, [ EF_NOITEMS, EF_NOSTAIRS, EF_NOBLOCK, EF_NOHARM ] ) then
         begin
           if (iDamage > 20) or ((efRandomContent in aFlags) and (Random(2) = 1)) then
+          begin
             Cell[a] := aContent;
+            iRecalc := True;
+          end;
         end;
       end;
-  if aContent <> 0 then RecalcFluids( FArea );
+  if iRecalc then RecalcFluids;
 end;
 
 procedure TLevel.Shotgun( source, target : TCoord2D; Damage : TDiceRoll; Shotgun : TShotgunData; aItem : TItem );
@@ -879,6 +886,7 @@ var a,b,tc  : TCoord2D;
     Reduce  : Single;
     Dir     : TDirection;
     iNode   : TNode;
+    iRecalc : Boolean;
     procedure SendShotgunBeam( s : TCoord2D; tcc : TCoord2D );
     var shb : TVisionRay;
         cnt : byte;
@@ -898,6 +906,8 @@ begin
   Range  := Shotgun.MaxRange;
   Spread := Shotgun.Spread;
   Reduce := Shotgun.Reduce;
+  
+  iRecalc := False;
 
   d   := Distance( source, target );
   if d = 0 then Exit;
@@ -939,11 +949,13 @@ begin
           ApplyDamage( dmg, Target_Torso, Shotgun.DamageType, aItem );
         end;
         
-        DamageTile( tc, dmg, Shotgun.DamageType );
+        if DamageTile( tc, dmg, Shotgun.DamageType ) then iRecalc := True;
         if cellFlagSet(tc,CF_BLOCKMOVE) then
           if isVisible(tc) then UI.Mark(tc,LightGray,'*',100);
       end;
   ClearLightMapBits([lfDamage]);
+  
+  if iRecalc then RecalcFluids;
 end;
 
 
@@ -1321,15 +1333,11 @@ end;
 function lua_level_recalc_fluids(L: Plua_State): Integer; cdecl;
 var State : TDoomLuaState;
     Level : TLevel;
-    Area : TArea;
 begin
   State.Init(L);
   Level := State.ToObject(1) as TLevel;
-  Area := Level.FArea;
-  if State.StackSize >= 2 then
-    Area := State.ToArea(2);
   if GraphicsVersion then
-    Level.RecalcFluids( Area );
+    Level.RecalcFluids;
   Exit( 0 );
 end;
 

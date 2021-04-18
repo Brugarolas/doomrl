@@ -1444,7 +1444,8 @@ begin
 	if iWeapon <> nil
       then playSound( iWeapon.Sounds.Fire )
       else playSound( FSounds.Melee );
-    TLevel(Parent).DamageTile( aWhere, rollMeleeDamage( iSlot ), Damage_Melee );
+    if TLevel(Parent).DamageTile( aWhere, rollMeleeDamage( iSlot ), Damage_Melee ) then
+      TLevel(Parent).RecalcFluids;
     if iWeapon <> nil then
       Dec( FSpeedCount, Inv.Slot[iSlot].UseTime * FTimes.Fire )
     else
@@ -1757,6 +1758,7 @@ var iDirection  : TDirection;
     iColor      : Byte;
     iToHit      : Integer;
     iDamage     : Integer;
+    iTileDamage : Integer;
     iBeing      : TBeing;
     iAimedBeing : TBeing;
     iRange      : Byte;
@@ -1852,8 +1854,11 @@ begin
       if (iAimedBeing = Player) and (iDodged) then UI.Msg('You dodge!');
 
       if aItem.Flags[ IF_DESTRUCTIVE ]
-        then iLevel.DamageTile( iCoord, iDamage * 2, aItem.DamageType )
-        else iLevel.DamageTile( iCoord, iDamage, aItem.DamageType );
+        then iTileDamage := 2 * iDamage
+        else iTileDamage := iDamage;
+
+      if iLevel.DamageTile( iCoord, iTileDamage, aItem.DamageType ) then
+        iLevel.RecalcFluids;
 
       if iLevel.isVisible( iCoord ) then
         UI.Msg('Boom!');
