@@ -37,6 +37,7 @@ type
     procedure GFXAnimationDraw;
     procedure GFXAnimationUpdate( aTime : DWord );
 
+    procedure SetUIHint( const aText : AnsiString );
     procedure SetTempHint( const aText : AnsiString );
     procedure SetHint( const aText : AnsiString );
     procedure Msg( const aText : AnsiString );
@@ -73,6 +74,7 @@ type
     procedure ASCIILoader( aStream : TStream; aName : Ansistring; aSize : DWord );
   private
     FHint       : AnsiString;
+    FUIHint     : AnsiString;
     FGameUI     : TDoomGameUI;
     FLastTick   : TDateTime;
     FASCII      : TASCIIImageMap;
@@ -168,6 +170,7 @@ begin
   Waiting := False;
   FGameUI := nil;
   FHint := '';
+  FUIHint := '';
   FAnimations := nil;
   if GraphicsVersion then FAnimations := TAnimationManager.Create;
   FASCII := TASCIIImageMap.Create( True );
@@ -270,17 +273,29 @@ begin
   Doom.Level.RevealBeings;
 end;
 
-procedure TDoomUI.SetHint ( const aText : AnsiString ) ;
+procedure TDoomUI.SetUIHint ( const aText : AnsiString ) ;
 begin
-  FHint := aText;
-  FGameUI.Hint.SetText( aText );
+  FUIHint := aText;
+  if aText = ''
+    then FGameUI.Hint.SetText( FHint )
+    else FGameUI.Hint.SetText( aText );
 end;
 
 procedure TDoomUI.SetTempHint ( const aText : AnsiString ) ;
 begin
-  if aText = ''
-    then FGameUI.Hint.SetText( FHint )
-    else FGameUI.Hint.SetText( aText );
+  if FUIHint = '' then
+  begin
+    if aText = ''
+      then FGameUI.Hint.SetText( FHint )
+      else FGameUI.Hint.SetText( aText );
+  end;
+end;
+
+procedure TDoomUI.SetHint ( const aText : AnsiString ) ;
+begin
+  FHint := aText;
+  if FUIHint = '' then
+    FGameUI.Hint.SetText( aText );
 end;
 
 procedure TDoomUI.Msg( const aText : AnsiString );

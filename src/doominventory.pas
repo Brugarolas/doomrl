@@ -277,7 +277,9 @@ begin
     iIdx := 1;
     if Slot[ efWeapon ] = nil then iIdx := 0;
     repeat
-      UI.SetHint( iArray[iIdx].Description );
+      if iArray[ iIdx ] = Slot[ efWeapon ] then UI.SetUIHint( iArray[iIdx].Description + ' (equipped)')
+        else if iArray[ iIdx ] = Slot[ efWeapon2 ] then UI.SetUIHint( iArray[iIdx].Description + ' (prepared)')
+        else UI.SetUIHint( iArray[iIdx].Description );
       iCommand := IO.WaitForCommand( [COMMAND_MSCRUP,COMMAND_MSCRDOWN,COMMAND_MLEFT,COMMAND_MRIGHT,COMMAND_ESCAPE,COMMAND_ENTER] );
       if iCommand = COMMAND_MSCRUP   then if iIdx = 0 then iIdx := iArray.Size-1 else iIdx -= 1;
       if iCommand = COMMAND_MSCRDOWN then iIdx := (iIdx + 1) mod iArray.Size;
@@ -291,10 +293,16 @@ begin
       end
       else
       if iArray[ iIdx ] <> Slot[ efWeapon ] then
+      begin
         DoScrollSwap := DoWear( iArray[ iIdx ] ) and (not FOwner.Flags[BF_QUICKSWAP]);
+        if Option_SoundEquipPickup
+          then TBeing(FOwner).PlaySound( iArray[ iIdx ].Sounds.Pickup )
+          else TBeing(FOwner).PlaySound( iArray[ iIdx ].Sounds.Reload );
+      end;
     end;
   end;
-  UI.SetHint('');
+  UI.SetUIHint('');
+  UI.MsgUpDate;
   FreeAndNil( iArray );
 end;
 
