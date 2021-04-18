@@ -47,6 +47,7 @@ register_level "deimos_lab"
 					generator.transmute( "gwall", "floor", level.data.vault1 )
 					level:drop_being("shambler",coord.new(39,10))
 					level:drop_being("shambler",coord.new(40,11))
+					level:recalc_walls( level.data.vault1:expanded(), true )
 					level:recalc_fluids()
 				end
 				return true
@@ -153,6 +154,7 @@ register_level "deimos_lab"
 			end
 
 			generator.transmute( "gwall", "floor", level.data.vault2 )
+			level:recalc_walls( level.data.vault2:expanded(), true )
 			ui.msg("The lab caches open.")
 
 			local unknown = { {}, {}, {} }
