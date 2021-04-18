@@ -1321,15 +1321,42 @@ begin
   Exit( 0 );
 end;
 
-const lua_level_lib : array[0..8] of luaL_Reg = (
-      ( name : 'drop_item';  func : @lua_level_drop_item),
-      ( name : 'drop_being'; func : @lua_level_drop_being),
-      ( name : 'player';     func : @lua_level_player),
-      ( name : 'play_sound'; func : @lua_level_play_sound),
-      ( name : 'nuke';       func : @lua_level_nuke),
-      ( name : 'explosion';  func : @lua_level_explosion),
-      ( name : 'clear_being';func : @lua_level_clear_being),
-      ( name : 'recalc_fluids';func : @lua_level_recalc_fluids),
+function lua_level_get_cell_bottom(L: Plua_State): Integer; cdecl;
+var State : TDoomLuaState;
+    Level : TLevel;
+begin
+  State.Init(L);
+  Level := State.ToObject(1) as TLevel;
+  State.Push( Level.CellToID( Level.getCellBottom( State.ToPosition( 2 ) ) ) );
+  Result := 1;
+end;
+
+function lua_level_get_cell_top(L: Plua_State): Integer; cdecl;
+var State : TDoomLuaState;
+    Level : TLevel;
+    CellID : Byte;
+begin
+  State.Init(L);
+  Level := State.ToObject(1) as TLevel;
+  CellID := Level.getCellTop( State.ToPosition( 2 ) );
+  if CellID = 0 then
+    State.PushNil()
+  else
+    State.Push( Level.CellToID( CellID ) );
+  Result := 1;
+end;
+
+const lua_level_lib : array[0..10] of luaL_Reg = (
+      ( name : 'drop_item';       func : @lua_level_drop_item),
+      ( name : 'drop_being';      func : @lua_level_drop_being),
+      ( name : 'player';          func : @lua_level_player),
+      ( name : 'play_sound';      func : @lua_level_play_sound),
+      ( name : 'nuke';            func : @lua_level_nuke),
+      ( name : 'explosion';       func : @lua_level_explosion),
+      ( name : 'clear_being';     func : @lua_level_clear_being),
+      ( name : 'recalc_fluids';   func : @lua_level_recalc_fluids),
+      ( name : 'get_cell_bottom'; func : @lua_level_get_cell_bottom),
+      ( name : 'get_cell_top';    func : @lua_level_get_cell_top),
       ( name : nil;          func : nil; )
 );
 
