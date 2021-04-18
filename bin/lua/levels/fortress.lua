@@ -122,7 +122,7 @@ register_level "unholy_cathedral"
 	end,
 
 	Create = function ()
-		level.style = 1
+		level.style = 3
 		generator.fill( "rwall", area.FULL )
 		local reward = "spear"
 		if statistics.kills == statistics.max_kills and DIFFICULTY >= DIFF_HARD then
@@ -133,18 +133,18 @@ register_level "unholy_cathedral"
 		end
 
 		local translation = {
-		['.'] = "floor",
-		[','] = {"floor", flags = {LFBLOOD} },
+		['.'] = "floorb",
+		[','] = {"floorb", flags = {LFBLOOD} },
 		['#'] = "rwall",
-		['+'] = "door",
+		['+'] = "doorb",
 		['>'] = "stairs",
 		['='] = "lava",
-		['$'] = { "odoor", item = reward },
-		['s'] = { "floor", being = "lostsoul" },
-		['d'] = { "floor", being = "demon" },
-		['S'] = { "floor", flags = { LFBLOOD }, being = core.ifdiff( 3, "lostsoul" ) },
-		['D'] = { "floor", being = core.ifdiff( 4, "demon" ) },
-		['A'] = { "floor", flags = { LFBLOOD }, being = "angel" },
+		['$'] = { "odoorb", item = reward },
+		['s'] = { "floorb", being = "lostsoul" },
+		['d'] = { "floorb", being = "demon" },
+		['S'] = { "floorb", flags = { LFBLOOD }, being = core.ifdiff( 3, "lostsoul" ) },
+		['D'] = { "floorb", being = core.ifdiff( 4, "demon" ) },
+		['A'] = { "floorb", flags = { LFBLOOD }, being = "angel" },
 		}
 
 		local map = [[
