@@ -35,9 +35,11 @@ register_level "the_chained_court"
 					for c in generator.each( "rwall", area.FULL_SHRINKED ) do
 						if level.light[ c ][ LFBLOOD ] then
 							level.light[ c ][ LFPERMANENT ] = false
-							level.map[ c ] = "floor"
+							level.map[ c ] = "floorb"
 						end
 					end
+					level:recalc_walls()
+					level:recalc_fluids()
 					level.status = 3
 					ui.msg("You hear a loud rumble!")
 					being.scount = being.scount - 1000

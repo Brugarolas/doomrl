@@ -51,51 +51,51 @@ register_level "the_vaults"
 	end,
 
 	Create = function ()
-		level.style = 1
+		level.style = 3
 		generator.fill( "rwall", area.FULL )
 
 		local vault_weapon = { level = 20, type = ITEMTYPE_RANGED, unique_mod = 5 }
 		local vault_armor  = { level = 20, type = {ITEMTYPE_ARMOR,ITEMTYPE_BOOTS}, unique_mod = 5 }
 
 		local translation = {
-			['.'] = "floor",
+			['.'] = "floorb",
 			['#'] = { "rwall", flags = { LFPERMANENT } },
 			['X'] = { "rwall", flags = { LFPERMANENT, LFBLOOD } },
 			['%'] = "rwall",
 			['='] = "lava",
 			['>'] = "stairs",
 
-			['|'] = { "floor", item = "cell" },
-			['-'] = { "floor", item = "rocket" },
-			['['] = { "floor", item = "pshell" },
-			[']'] = { "floor", item = "pammo" },
+			['|'] = { "floorb", item = "cell" },
+			['-'] = { "floorb", item = "rocket" },
+			['['] = { "floorb", item = "pshell" },
+			[']'] = { "floorb", item = "pammo" },
 
-			['A'] = { "floor", being = core.bydiff{ "baron", "baron", "mancubus", "arch" } },
-			['B'] = { "floor", being = core.bydiff{ "arachno", "arachno", "revenant" } },
+			['A'] = { "floorb", being = core.bydiff{ "baron", "baron", "mancubus", "arch" } },
+			['B'] = { "floorb", being = core.bydiff{ "arachno", "arachno", "revenant" } },
 
-			['a'] = { "floor", item = level:roll_item( vault_weapon ) },
-			['b'] = { "floor", item = level:roll_item( vault_weapon ) },
-			['c'] = { "floor", item = level:roll_item( vault_weapon ) },
-			['d'] = { "floor", item = level:roll_item( vault_weapon ) },
-			['e'] = { "floor", item = level:roll_item( vault_weapon ) },
-			['f'] = { "floor", item = level:roll_item( vault_weapon ) },
-			['g'] = { "floor", item = level:roll_item( vault_weapon ) },
-			['h'] = { "floor", item = level:roll_item( vault_weapon ) },
-			['i'] = { "floor", item = level:roll_item( vault_weapon ) },
-			['j'] = { "floor", item = level:roll_item( vault_weapon ) },
+			['a'] = { "floorb", item = level:roll_item( vault_weapon ) },
+			['b'] = { "floorb", item = level:roll_item( vault_weapon ) },
+			['c'] = { "floorb", item = level:roll_item( vault_weapon ) },
+			['d'] = { "floorb", item = level:roll_item( vault_weapon ) },
+			['e'] = { "floorb", item = level:roll_item( vault_weapon ) },
+			['f'] = { "floorb", item = level:roll_item( vault_weapon ) },
+			['g'] = { "floorb", item = level:roll_item( vault_weapon ) },
+			['h'] = { "floorb", item = level:roll_item( vault_weapon ) },
+			['i'] = { "floorb", item = level:roll_item( vault_weapon ) },
+			['j'] = { "floorb", item = level:roll_item( vault_weapon ) },
 
-			['1'] = { "floor", item = level:roll_item( vault_armor ) },
-			['2'] = { "floor", item = level:roll_item( vault_armor ) },
-			['3'] = { "floor", item = level:roll_item( vault_armor ) },
-			['4'] = { "floor", item = level:roll_item( vault_armor ) },
-			['5'] = { "floor", item = level:roll_item( vault_armor ) },
-			['6'] = { "floor", item = level:roll_item( vault_armor ) },
-			['7'] = { "floor", item = level:roll_item( vault_armor ) },
-			['8'] = { "floor", item = level:roll_item( vault_armor ) },
-			['9'] = { "floor", item = level:roll_item( vault_armor ) },
-			['0'] = { "floor", item = level:roll_item( vault_armor ) },
+			['1'] = { "floorb", item = level:roll_item( vault_armor ) },
+			['2'] = { "floorb", item = level:roll_item( vault_armor ) },
+			['3'] = { "floorb", item = level:roll_item( vault_armor ) },
+			['4'] = { "floorb", item = level:roll_item( vault_armor ) },
+			['5'] = { "floorb", item = level:roll_item( vault_armor ) },
+			['6'] = { "floorb", item = level:roll_item( vault_armor ) },
+			['7'] = { "floorb", item = level:roll_item( vault_armor ) },
+			['8'] = { "floorb", item = level:roll_item( vault_armor ) },
+			['9'] = { "floorb", item = level:roll_item( vault_armor ) },
+			['0'] = { "floorb", item = level:roll_item( vault_armor ) },
 
-			['*'] = { "floor", item = { "teleport", target = coord.new(4,11) } },
+			['*'] = { "floorb", item = { "teleport", target = coord.new(4,11) } },
 		}
 
 		local map = [[
