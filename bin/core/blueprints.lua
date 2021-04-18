@@ -241,6 +241,7 @@ core.register_blueprint "cell"
 	blsprite   = { false, core.TNUMBER },
 	color      = { false, core.TNUMBER, LIGHTGRAY },
 	coscolor   = { false, core.TTABLE },
+	overlay    = { false, core.TTABLE },
 	color_dark = { false, core.TNUMBER, DARKGRAY },
 	color_id   = { false, core.TIDIN("cells") },
 	blcolor    = { false, core.TNUMBER, 0 },
