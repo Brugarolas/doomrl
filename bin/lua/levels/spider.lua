@@ -35,27 +35,27 @@ register_level "spiders_lair"
 
 
 	Create = function ()
-		level.style = 1
-		generator.fill( "rwall", area.FULL )
+		level.style = 6
+		generator.fill( "cwall2", area.FULL )
 
 		local translation = {
-			['.'] = "floor",
-			[','] = { "floor", flags = { LFBLOOD } },
-			['#'] = "wall",
-			['X'] = "rwall",
+			['.'] = "floorc",
+			[','] = { "floorc", flags = { LFBLOOD } },
+			['#'] = "cwall2",
+			['X'] = { "cwall2", flags = { LFBLOOD } },
 			['>'] = "stairs",
 
-			['|'] = { "floor", item = "rocket" },
+			['|'] = { "floorc", item = "rocket" },
 
-			['A'] = { "floor", being = "arachno" },
-			['e'] = { "floor", being = core.ifdiff( 2, "arachno" ) },
-			['m'] = { "floor", being = core.ifdiff( 3, "arachno" ) },
-			['h'] = { "floor", being = core.ifdiff( 4, "arachno" ) },
+			['A'] = { "floorc", being = "arachno" },
+			['e'] = { "floorc", being = core.ifdiff( 2, "arachno" ) },
+			['m'] = { "floorc", being = core.ifdiff( 3, "arachno" ) },
+			['h'] = { "floorc", being = core.ifdiff( 4, "arachno" ) },
 
-			['1'] = { "floor", item = { "teleport", target = coord.new(8,7)   } },
-			['2'] = { "floor", item = { "teleport", target = coord.new(70,7)  } },
-			['3'] = { "floor", item = { "teleport", target = coord.new(8,13)  } },
-			['4'] = { "floor", item = { "teleport", target = coord.new(70,13) } },
+			['1'] = { "floorc", item = { "teleport", target = coord.new(8,7)   } },
+			['2'] = { "floorc", item = { "teleport", target = coord.new(70,7)  } },
+			['3'] = { "floorc", item = { "teleport", target = coord.new(8,13)  } },
+			['4'] = { "floorc", item = { "teleport", target = coord.new(70,13) } },
 		}
 
 		local map = [[
