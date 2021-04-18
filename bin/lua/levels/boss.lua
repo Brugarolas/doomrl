@@ -155,7 +155,10 @@ register_level "hellgate"
 			if DIFFICULTY > DIFF_EASY then
 				ui.msg("Suddenly the walls lower!")
 				player:play_sound("door.close")
-				generator.transmute( "wall", "floor", area.new( 9, 4, 29, 16 ) )
+				for _, a in ipairs { area.new( 9, 4, 29, 6 ), area.new( 9, 14, 29, 16 ) } do
+					generator.transmute( "wall", "floor", a )
+					level:recalc_walls( a:expanded(), true )
+				end
 			end
 			level.status = 2
 		end
@@ -164,6 +167,8 @@ register_level "hellgate"
 			player:play_sound("barrel.explode")
 			generator.transmute( "rwall", "floor", area.new( 53, 7, 60, 13 ) )
 			generator.transmute( "wall", "floor",  area.new( 60, 7, 74, 13 ) )
+			level:recalc_walls( area.new( 60, 6, 75, 14 ) )
+			level:recalc_fluids()
 			level.status = 3
 		end
 	end,
