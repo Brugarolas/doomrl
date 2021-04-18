@@ -45,7 +45,7 @@ type
   procedure SetTarget( aTarget : TCoord2D; aColor : TColor; aDrawPath : Boolean );
   procedure ClearTarget;
   procedure ToggleGrid;
-  function GetCellShift(cell: TCoord2D): Byte;
+  function GetCellShift(cell: TCoord2D; area: TArea): Byte;
   destructor Destroy; override;
 private
   FGridActive     : Boolean;
@@ -561,11 +561,12 @@ begin
       end;
 end;
 
-function TDoomSpriteMap.GetCellShift(cell: TCoord2D): Byte;
+function TDoomSpriteMap.GetCellShift(cell: TCoord2D; area: TArea): Byte;
 var Code : Byte;
-  function StickyCode( Coord : TCoord2D; Res : Byte ) : Byte;
+  function StickyCode( Coord : TCoord2D; Area : TArea; Res : Byte ) : Byte;
   begin
     if not Doom.Level.isProperCoord( Coord ) then Exit(Res);
+    if not Area.Contains( Coord ) then Exit( 0 );
     if ((CF_STICKWALL in Cells[Doom.Level.CellBottom[ Coord ]].Flags) or
       ((Doom.Level.CellTop[ Coord ] <> 0) and
       (CF_STICKWALL in Cells[Doom.Level.CellTop[ Coord ]].Flags))) then Exit( Res );
@@ -573,14 +574,14 @@ var Code : Byte;
   end;
 begin
   Code :=
-    StickyCode( cell.ifInc(-1,-1), 1 ) +
-    StickyCode( cell.ifInc( 0,-1), 2 ) +
-    StickyCode( cell.ifInc( 1,-1), 4 ) +
-    StickyCode( cell.ifInc(-1, 0), 8 ) +
-    StickyCode( cell.ifInc( 1, 0), 16 ) +
-    StickyCode( cell.ifInc(-1, 1), 32 ) +
-    StickyCode( cell.ifInc( 0, 1), 64 ) +
-    StickyCode( cell.ifInc( 1, 1), 128 );
+    StickyCode( cell.ifInc(-1,-1), area, 1 ) +
+    StickyCode( cell.ifInc( 0,-1), area, 2 ) +
+    StickyCode( cell.ifInc( 1,-1), area, 4 ) +
+    StickyCode( cell.ifInc(-1, 0), area, 8 ) +
+    StickyCode( cell.ifInc( 1, 0), area, 16 ) +
+    StickyCode( cell.ifInc(-1, 1), area, 32 ) +
+    StickyCode( cell.ifInc( 0, 1), area, 64 ) +
+    StickyCode( cell.ifInc( 1, 1), area, 128 );
   Exit( FCellCodeBase[ Code ] );
 end;
 

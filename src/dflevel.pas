@@ -31,7 +31,8 @@ TLevel = class(TLuaMapNode, IConUIASCIIMap)
     procedure Init( nStyle : byte; nLNum : Word;nName : string; nSpecExit : string; nDepth : Word; nDangerLevel : Word);
     procedure AfterGeneration( aGenerated : Boolean );
     procedure PreEnter;
-    procedure RecalcFluids;
+    procedure RecalcFluids( aArea : TArea );
+    procedure RecalcWalls( aArea : TArea );
     procedure Leave;
     procedure Clear;
     procedure FullClear;
@@ -504,14 +505,10 @@ var c : TCoord2D;
 begin
   if GraphicsVersion then
   begin
-    for c in FArea do
-    begin
-      if CF_MULTISPRITE in Cells[CellBottom[c]].Flags then
-        Map.r[c.x,c.y] := SpriteMap.GetCellShift(c);
-    end;
+    RecalcWalls( FArea );
 
     UI.GameUI.UpdateMinimap;
-    RecalcFluids;
+    RecalcFluids( FArea );
     SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
   end;
 
@@ -519,7 +516,7 @@ begin
 
   if GraphicsVersion then
   begin
-    RecalcFluids;
+    RecalcFluids( FArea );
     SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
   end;
 
@@ -536,24 +533,35 @@ begin
 
 end;
 
-procedure TLevel.RecalcFluids;
+procedure TLevel.RecalcFluids( aArea : TArea );
 var cc : TCoord2D;
-  function FluidFlag( c : TCoord2D; Value : Byte ) : Byte;
+  function FluidFlag( c : TCoord2D; CheckArea : TArea; Value : Byte ) : Byte;
   begin
-    if not isProperCoord( c ) then Exit(0);
+    if not isProperCoord( c ) then Exit( 0 );
+    if not CheckArea.Contains( c ) then Exit( Value );
     if not (F_GFLUID in Cells[CellBottom[ c ]].Flags)
       then Exit( Value )
       else Exit( 0 );
   end;
 begin
   if LF_SHARPFLUID in FFlags then Exit;
- for cc in FArea do
+ for cc in aArea do
    if F_GFLUID in Cells[CellBottom[ cc ]].Flags then
      Map.r[cc.x,cc.y] :=
-       FluidFlag( cc.ifInc( 0,-1), 1 ) +
-       FluidFlag( cc.ifInc( 0,+1), 2 ) +
-       FluidFlag( cc.ifInc(-1, 0), 4 ) +
-       FluidFlag( cc.ifInc(+1, 0), 8 );
+       FluidFlag( cc.ifInc( 0,-1), aArea, 1 ) +
+       FluidFlag( cc.ifInc( 0,+1), aArea, 2 ) +
+       FluidFlag( cc.ifInc(-1, 0), aArea, 4 ) +
+       FluidFlag( cc.ifInc(+1, 0), aArea, 8 );
+end;
+
+procedure TLevel.RecalcWalls( aArea : TArea );
+var c : TCoord2D;
+begin
+  for c in aArea do
+  begin
+    if CF_MULTISPRITE in Cells[CellBottom[c]].Flags then
+      Map.r[c.x,c.y] := SpriteMap.GetCellShift(c, aArea);
+  end;
 end;
 
 procedure TLevel.Leave;
@@ -859,7 +867,7 @@ begin
             Cell[a] := aContent;
         end;
       end;
-  if aContent <> 0 then RecalcFluids;
+  if aContent <> 0 then RecalcFluids( FArea );
 end;
 
 procedure TLevel.Shotgun( source, target : TCoord2D; Damage : TDiceRoll; Shotgun : TShotgunData; aItem : TItem );
@@ -1313,11 +1321,30 @@ end;
 function lua_level_recalc_fluids(L: Plua_State): Integer; cdecl;
 var State : TDoomLuaState;
     Level : TLevel;
+    Area : TArea;
 begin
   State.Init(L);
   Level := State.ToObject(1) as TLevel;
+  Area := Level.FArea;
+  if State.StackSize >= 2 then
+    Area := State.ToArea(2);
   if GraphicsVersion then
-    Level.RecalcFluids;
+    Level.RecalcFluids( Area );
+  Exit( 0 );
+end;
+
+function lua_level_recalc_walls(L: Plua_State): Integer; cdecl;
+var State : TDoomLuaState;
+    Level : TLevel;
+    Area : TArea;
+begin
+  State.Init(L);
+  Level := State.ToObject(1) as TLevel;
+  Area := Level.FArea;
+  if State.StackSize >= 2 then
+    Area := State.ToArea(2);
+  if GraphicsVersion then
+    Level.RecalcWalls( Area );
   Exit( 0 );
 end;
 
@@ -1346,7 +1373,7 @@ begin
   Result := 1;
 end;
 
-const lua_level_lib : array[0..10] of luaL_Reg = (
+const lua_level_lib : array[0..11] of luaL_Reg = (
       ( name : 'drop_item';       func : @lua_level_drop_item),
       ( name : 'drop_being';      func : @lua_level_drop_being),
       ( name : 'player';          func : @lua_level_player),
@@ -1355,6 +1382,7 @@ const lua_level_lib : array[0..10] of luaL_Reg = (
       ( name : 'explosion';       func : @lua_level_explosion),
       ( name : 'clear_being';     func : @lua_level_clear_being),
       ( name : 'recalc_fluids';   func : @lua_level_recalc_fluids),
+      ( name : 'recalc_walls';    func : @lua_level_recalc_walls),
       ( name : 'get_cell_bottom'; func : @lua_level_get_cell_bottom),
       ( name : 'get_cell_top';    func : @lua_level_get_cell_top),
       ( name : nil;          func : nil; )
