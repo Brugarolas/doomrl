@@ -487,7 +487,7 @@ begin
     iFlags  := Cells[iCell].Flags;
     if CF_OVERLAY in iFlags then
     begin
-      if (CF_STICKWALL in iFlags) and (not (CF_OPENABLE in iFlags )) then
+      if CF_OVERWALL in iFlags then
         PutCell(iCoord,iWall)
       else
         PutCell(iCoord,FFloorCell);
