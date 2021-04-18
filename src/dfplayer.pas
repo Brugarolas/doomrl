@@ -798,6 +798,8 @@ try
           iDir := NewDirection( FPosition, FPath.Start.Coord );
           iStartNode := FPath.Start;
           FPath.Start := FPath.Start.Child;
+          if FPath.Start = nil then
+            iStartNode := nil;
         end
         else iDir := FRun.Dir
       else iDir := CommandDirection( iCommand );
