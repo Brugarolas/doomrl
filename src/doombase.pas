@@ -109,6 +109,8 @@ end;
 
 procedure TDoom.SetState(NewState: TDoomState);
 begin
+  if (FState = DSPlaying) then
+    UI.WaitForAnimation;
   FState := NewState;
 end;
 
