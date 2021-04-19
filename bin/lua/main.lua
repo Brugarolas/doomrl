@@ -169,10 +169,16 @@ function DoomRL.get_result_description( result, highscore )
 	if player:has_won() then
 		local chal_idx  = "win_mortem"
 		if highscore then chal_idx = "win_highscore" end
-		if SCHALLENGE ~= '' and chal[ SCHALLENGE ][ chal_idx ] then
-			killed_by = chal[ SCHALLENGE ][ chal_idx ]
-		elseif CHALLENGE ~= '' and chal[ CHALLENGE ][ chal_idx ] then
-			killed_by = chal[ CHALLENGE ][ chal_idx ]
+		for _, challenge in ipairs { SCHALLENGE, CHALLENGE } do
+			if challenge ~= '' then
+				if ARCHANGEL and chal[ challenge ][ "arch_" .. chal_idx ] then
+					killed_by = chal[ challenge ][ "arch_" .. chal_idx ]
+					break
+				elseif chal[ challenge ][ chal_idx ] then
+					killed_by = chal[ challenge ][ chal_idx ]
+					break
+				end
+			end
 		end
 	end
 

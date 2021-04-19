@@ -1105,6 +1105,8 @@ function DoomRL.loadchallenges()
 		arch_description = "This one is *not* supposed to be fun. This is just a GRIND. You've been warned.",
 		arch_rating      = "BLADE",
 		arch_rank        = 7,
+		arch_win_mortem    = "completed 666 levels of torture",
+		arch_win_highscore = "completed 666 levels",
 
 		OnCreateEpisode = function ()
 			local LevCount = 100
