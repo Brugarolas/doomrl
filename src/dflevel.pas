@@ -881,15 +881,16 @@ begin
 end;
 
 procedure TLevel.Shotgun( source, target : TCoord2D; Damage : TDiceRoll; Shotgun : TShotgunData; aItem : TItem );
-var a,b,tc  : TCoord2D;
-    d       : Single;
-    dmg     : Integer;
-    Range   : Byte;
-    Spread  : Byte;
-    Reduce  : Single;
-    Dir     : TDirection;
-    iNode   : TNode;
-    iRecalc : Boolean;
+var a,b,tc   : TCoord2D;
+    d        : Single;
+    dmg      : Integer;
+    Range    : Byte;
+    Spread   : Byte;
+    Reduce   : Single;
+    Dir      : TDirection;
+    iNode    : TNode;
+    iItemUID : TUID;
+    iRecalc  : Boolean;
     procedure SendShotgunBeam( s : TCoord2D; tcc : TCoord2D );
     var shb : TVisionRay;
         cnt : byte;
@@ -909,7 +910,9 @@ begin
   Range  := Shotgun.MaxRange;
   Spread := Shotgun.Spread;
   Reduce := Shotgun.Reduce;
-  
+
+  iItemUID := aItem.UID;
+
   iRecalc := False;
 
   d   := Distance( source, target );
@@ -949,6 +952,7 @@ begin
             Knockback( dir, dmg div KnockBackValue );
           end;
           KnockBacked := True;
+          if (aItem <> nil) and (UIDs[iItemUID] = nil) then aItem := nil;
           ApplyDamage( dmg, Target_Torso, Shotgun.DamageType, aItem );
         end;
         
