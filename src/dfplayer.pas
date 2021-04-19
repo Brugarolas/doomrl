@@ -931,7 +931,8 @@ try
     COMMAND_MSCRDOWN  : if Inv.DoScrollSwap then Dec(FSpeedCount,1000);
 
     COMMAND_MRIGHT    : if (IO.MTarget = FPosition) or
-                           ((Inv.Slot[ efWeapon ] <> nil) and (Inv.Slot[ efWeapon ].isRanged) and (not (Inv.Slot[efWeapon].GetFlag(IF_NOAMMO))) and (Inv.Slot[ efWeapon ].Ammo = 0))  then
+                           ((Inv.Slot[ efWeapon ] <> nil) and (Inv.Slot[ efWeapon ].isRanged) and (not (Inv.Slot[efWeapon].GetFlag(IF_NOAMMO))) and
+                           ((Inv.Slot[ efWeapon ].Ammo = 0) or (Inv.Slot[ efWeapon ].GetFlag(IF_PUMPACTION) and Inv.Slot[ efWeapon].GetFlag(IF_CHAMBEREMPTY)))) then
                           if iAlt
                             then ActionAltReload
                             else ActionReload
