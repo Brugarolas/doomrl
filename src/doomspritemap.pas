@@ -319,16 +319,7 @@ end;
 procedure TDoomSpriteMap.Draw;
 var iPoint   : TPoint;
     iCoord   : TCoord2D;
-const TargetSprite : TSprite = (
-  Large    : False;
-  Overlay  : False;
-  CosColor : True;
-  Glow     : False;
-  Color    : (R:0;G:0;B:0;A:255);
-  GlowColor: (R:0;G:0;B:0;A:0);
-  SpriteID : HARDSPRITE_SELECT;
-);
-
+    iColor   : TColor;
 begin
   FSpriteEngine.FPos.X := FShift.X;
   FSpriteEngine.FPos.Y := FShift.Y;
@@ -345,12 +336,13 @@ begin
         FLastCoord := iCoord;
       end;
 
-      TargetSprite.Color := ColorBlack;
+      iColor := ColorBlack;
       if Doom.Level.isVisible( iCoord ) then
-        TargetSprite.Color.G := Floor(100*(Sin( FFluidTime*50 )+1)+50)
+        iColor.G := Floor(100*(Sin( FFluidTime*50 )+1)+50)
       else
-        TargetSprite.Color.R := Floor(100*(Sin( FFluidTime*50 )+1)+50);
-      SpriteMap.PushSprite( iPoint.X, iPoint.Y, TargetSprite );
+        iColor.R := Floor(100*(Sin( FFluidTime*50 )+1)+50);
+
+      FSpriteEngine.FLayers[ 3 ].Cosplay.Push( HARDSPRITE_SELECT, TGLVec2i.Create( iPoint.X, iPoint.Y ), ColorWhite, iColor );
     end;
   end;
 
