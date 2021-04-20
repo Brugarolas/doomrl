@@ -103,7 +103,7 @@ uses video, vlog, vdebug,
      vuiconsole, vcolor,
      vtextio, vtextconsole,
      vsdlio, vglconsole,
-     vgllibrary, vglulibrary,
+     vgl2library, vglulibrary,
      doomtextures,  doombase,
      dfdata, dfoutput, dfplayer;
 

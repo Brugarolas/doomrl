@@ -66,10 +66,6 @@ begin
   iColorKey := iBase.Color[0];
   iBase.SubstituteColor( iColorKey, ColorZero );
 
-  AddImage( 'spritesheet_inv',     SheetInv( iBase ), Option_Blending );
-  AddImage( 'spritesheet_berserk', SheetBerserk( iBase ), Option_Blending );
-  AddImage( 'spritesheet_enviro',  SheetEnviro( iBase ), Option_Blending );
-
   AddImage( 'spritesheet_glow',    GenerateGlow( Textures['spritesheet_shadow'].Image ), Option_Blending );
 
   Upload;
