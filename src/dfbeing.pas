@@ -1699,6 +1699,8 @@ begin
         if aTarget = Target_Torso then UI.Msg('Your '+iArmor.Name+' is completely destroyed!')
                                   else UI.Msg('Your '+iArmor.Name+' are completely destroyed!');
       FreeAndNil( iArmor );
+      if IsPlayer then
+        Player.UpdateVisual;
     end
     else if IsPlayer and ( iProtection <> iArmor.GetProtection ) then
       if aTarget = Target_Torso then UI.Msg('Your '+iArmor.Name+' is damaged!')
