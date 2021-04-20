@@ -547,8 +547,28 @@ var Key : byte;
     iTargetRange : Byte;
     iTargetLine  : TVisionRay;
     iLevel : TLevel;
-    iDist : Byte;
     iBlock : Boolean;
+    iPoint : TPoint;
+  function SnapTarget( aTarget : TCoord2D ) : TCoord2D;
+  var iDist : Byte;
+      iTargetLine : TVisionRay;
+  begin
+    iDist := Distance(aTarget.x, aTarget.y, Player.Position.x, Player.Position.y);
+    if iDist > aRange-1 then
+    begin
+      iDist := 0;
+      iTargetLine.Init(iLevel, Player.Position, aTarget);
+      while iDist < (aRange - 1) do
+      begin
+        iTargetLine.Next;
+        iDist := Distance(iTargetLine.GetSource.x, iTargetLine.GetSource.y,  iTargetLine.GetC.x, iTargetLine.GetC.y);
+      end;
+      if Distance(iTargetLine.GetSource.x, iTargetLine.GetSource.y, iTargetLine.GetC.x, iTargetLine.GetC.y) > aRange-1
+        then aTarget := iTargetLine.prev
+        else aTarget := iTargetLine.GetC;
+    end;
+    Exit( aTarget );
+  end;
 begin
   iLevel      := Doom.Level;
   Position    := Player.Position;
@@ -562,6 +582,13 @@ begin
 
   if aShowLast then
     FGameUI.SetLastTarget( Player.TargetPos );
+
+  if (IO.MCursor <> nil) and IO.MCursor.Active and IO.Driver.GetMousePos( iPoint ) then
+  begin
+    iPoint := SpriteMap.DevicePointToCoord( iPoint );
+    iTarget := NewCoord2D(iPoint.X,iPoint.Y);
+    iTarget := SnapTarget( iTarget );
+  end;
 
   LookDescription( iTarget );
   repeat
@@ -581,23 +608,7 @@ begin
     Key := IO.WaitForCommand(COMMANDS_MOVE+[COMMAND_GRIDTOGGLE, COMMAND_ESCAPE,COMMAND_MORE,COMMAND_FIRE,COMMAND_ALTFIRE,COMMAND_TACTIC, COMMAND_MMOVE,COMMAND_MRIGHT, COMMAND_MLEFT]);
     if (Key = COMMAND_GRIDTOGGLE) and GraphicsVersion then SpriteMap.ToggleGrid;
     if Key in [ COMMAND_MMOVE, COMMAND_MRIGHT, COMMAND_MLEFT ] then
-       begin
-         iTarget := IO.MTarget;
-         iDist := Distance(iTarget.x, iTarget.y, Position.x, Position.y);
-         if iDist > aRange-1 then
-           begin
-             iDist := 0;
-             iTargetLine.Init(iLevel, Position, iTarget);
-             while iDist < (aRange - 1) do
-               begin
-                    iTargetLine.Next;
-                    iDist := Distance(iTargetLine.GetSource.x, iTargetLine.GetSource.y,  iTargetLine.GetC.x, iTargetLine.GetC.y);
-               end;
-             if Distance(iTargetLine.GetSource.x, iTargetLine.GetSource.y, iTargetLine.GetC.x, iTargetLine.GetC.y) > aRange-1
-             then iTarget := iTargetLine.prev
-             else iTarget := iTargetLine.GetC;
-           end;
-       end;
+       iTarget := SnapTarget( IO.MTarget );
     if Key in [ COMMAND_ESCAPE, COMMAND_MRIGHT ] then begin iTarget.x := 0; Break; end;
     if Key = COMMAND_TACTIC then iTarget := aTargets.Next;
     if (Key in COMMANDS_MOVE) then
