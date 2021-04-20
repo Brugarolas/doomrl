@@ -738,7 +738,7 @@ begin
         else if Doom.Level.BeingExplored(c, iBeing) then
           PushSpriteXY( (X-1)*FTileSize, (Y-1)*FTileSize, iBeing.Sprite, 40, 3 )
         else if Doom.Level.BeingIntuited(c, iBeing) then
-          PushSpriteXY( (X-1)*FTileSize, (Y-1)*FTileSize, NewSprite( HARDSPRITE_MARK, NewColor( Magenta ) ), 25, 3 )
+          PushSpriteXY( (X-1)*FTileSize, (Y-1)*FTileSize, NewSprite( HARDSPRITE_MARK, NewColor( Magenta ) ), 255, 3 )
 
     end;
 
