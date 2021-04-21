@@ -52,7 +52,7 @@ TBeing = class(TThing,IPathQuery)
     procedure Call;
     procedure Action;
     function  TryMove( where : TCoord2D ) : TMoveResult;
-    function  MoveTowards( where : TCoord2D ) : TMoveResult;
+    function  MoveTowards( where : TCoord2D; out outMovePos : TCoord2D ) : TMoveResult;
     procedure Reload( AmmoItem : TItem; Single : Boolean );
     procedure Ressurect( RRange : Byte );
     procedure Kill( aBloodAmount : DWord; aOverkill : Boolean; aKiller : TBeing; aWeapon : TItem ); virtual;
@@ -1076,7 +1076,7 @@ begin
   Exit( MoveOk );
 end;
 
-function TBeing.MoveTowards( where : TCoord2D ): TMoveResult;
+function TBeing.MoveTowards( where : TCoord2D; out outMovePos : TCoord2D ): TMoveResult;
 var Dir        : TDirection;
     MoveResult : TMoveResult;
     iLevel     : TLevel;
@@ -1112,6 +1112,7 @@ begin
   Displace( FMovePos );
   BloodFloor;
   playSound( SoundHoof );
+  outMovePos := FMovePos;
   if iLevel.Item[ FPosition ] <> nil then
     iLevel.Item[ FPosition ].CallHook( Hook_OnEnter, [ Self ] );
 
@@ -2411,12 +2412,13 @@ end;
 function lua_being_direct_seek(L: Plua_State): Integer; cdecl;
 var State  : TDoomLuaState;
     Being  : TBeing;
+    MovePos : TCoord2D;
 begin
   State.Init(L);
   Being := State.ToObject(1) as TBeing;
   if State.IsNil(2) then begin State.Push( Byte(MoveBlock) ); Exit(1); end;
-  State.Push( Byte(Being.MoveTowards(State.ToPosition(2))) );
-  State.PushCoord( Being.LastMove );
+  State.Push( Byte(Being.MoveTowards(State.ToPosition(2), MovePos)) );
+  State.PushCoord( MovePos );
   Result := 2;
 end;
 
@@ -2494,6 +2496,8 @@ function lua_being_path_next(L: Plua_State): Integer; cdecl;
 var State  : TDoomLuaState;
     Being  : TBeing;
     MoveR  : TMoveResult;
+    StartPos : TCoord2D;
+    MovePos  : TCoord2D;
 begin
   State.Init(L);
   Being := State.ToObject(1) as TBeing;
@@ -2524,10 +2528,11 @@ begin
       Exit(2);
     end;
 
-    Being.MoveTowards(FPath.Start.Coord);
+    StartPos := FPath.Start.Coord;
     FPath.Start := FPath.Start.Child;
+    Being.MoveTowards(StartPos, MovePos);
     State.Push( Byte(MoveR) );
-    State.PushCoord( Being.LastMove );
+    State.PushCoord( MovePos );
   end;
   Result := 2;
 end;
