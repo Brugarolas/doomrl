@@ -167,7 +167,7 @@ register_level "hellgate"
 			player:play_sound("barrel.explode")
 			generator.transmute( "rwall", "floor", area.new( 53, 7, 60, 13 ) )
 			generator.transmute( "wall", "floor",  area.new( 60, 7, 74, 13 ) )
-			level:recalc_walls( area.new( 60, 6, 75, 14 ) )
+			level:recalc_walls( area.new( 60, 4, 75, 16 ), true )
 			level:recalc_fluids()
 			level.status = 3
 		end
