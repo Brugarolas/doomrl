@@ -471,7 +471,7 @@ begin
       if iSteps >= iMissileRange then begin aTarget := iRay.GetC; break; end; {**** Stop if further than maxrange.}
       if (MF_EXACT in (Missiles[aGun.Missile].Flags)) and (iRay.GetC = aTarget) then break; {**** Stop at target square for exact missiles.}
       if iRay.Done then
-         iRay.Init(TLevel(Parent), iRay.GetC, iRay.GetC + (aTarget - FPosition)); {**** Extend target out in same direction for non-exact missiles.}
+         iRay.Extend; {**** Extend target out in same direction for non-exact missiles.}
     until false;
     iScatter := Max(1,(iSteps div 4)); {**** SCATTER TIME!}
   end;
@@ -1926,13 +1926,10 @@ begin
     end;
     
     if iMisslePath.Done then
-      if (MF_EXACT in Missiles[iMissile].Flags) then Break else
-      begin
-        iOldCoord := iTarget;
-        iTarget += ( aTarget - FPosition );
-        iMisslePath.Init( iLevel, iOldCoord, iTarget );
-      end;
-      
+      if (MF_EXACT in Missiles[iMissile].Flags)
+        then Break
+        else iMisslePath.Extend;
+
     if ( iSteps >= iMaxRange ) or (MF_IMMIDATE in Missiles[iMissile].Flags) then
     begin
       if (iAimedBeing = Player) and (iDodged) then UI.Msg('You dodge!');
