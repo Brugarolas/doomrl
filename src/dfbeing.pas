@@ -1916,7 +1916,6 @@ begin
 
         if not ( MF_HARD in Missiles[iMissile].Flags ) then
         begin
-          aTarget := iCoord;
           iHit    := True;
           Break;
         end;
