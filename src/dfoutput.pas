@@ -28,7 +28,7 @@ type
 
     //procedure Save;
     procedure addMoveAnimation( aDuration : DWord; aDelay : DWord; aUID : TUID; aFrom, aTo : TCoord2D; aSprite : TSprite );
-    procedure addMissileAnimation( aDuration : DWord; aDelay : DWord; aSource, aTarget : TCoord2D; aColor : Byte; aPic : Char; aDrawDelay : Word; aSprite : TSprite; aRay : Boolean = False );
+    procedure addMissileAnimation( aDuration : DWord; aDelay : DWord; aSource, aTarget, aImpact : TCoord2D; aColor : Byte; aPic : Char; aDrawDelay : Word; aSprite : TSprite; aRay : Boolean = False );
     procedure addMarkAnimation( aDuration : DWord; aDelay : DWord; aCoord : TCoord2D; aColor : Byte; aPic : Char );
     procedure addSoundAnimation( aDelay : DWord; aPosition : TCoord2D; aSoundID : DWord );
     procedure addScreenMoveAnimation( aDuration : DWord; aDelay : DWord; aTo : TCoord2D );
@@ -202,7 +202,7 @@ begin
 end;
 
 procedure TDoomUI.addMissileAnimation(aDuration: DWord; aDelay: DWord; aSource,
-  aTarget: TCoord2D; aColor: Byte; aPic: Char; aDrawDelay: Word;
+  aTarget, aImpact: TCoord2D; aColor: Byte; aPic: Char; aDrawDelay: Word;
   aSprite: TSprite; aRay: Boolean);
 begin
   if Doom.State <> DSPlaying then Exit;
@@ -210,12 +210,12 @@ begin
   begin
     FAnimations.addAnimation(
       TDoomMissile.Create( aDuration, aDelay, aSource,
-        aTarget, aDrawDelay, aSprite, aRay ) );
+        aImpact, aDrawDelay, aSprite, aRay ) );
     Exit;
   end;
   if aRay
-    then FGameUI.Map.AddAnimation( TConUIRayAnimation.Create( Doom.Level, aSource, aTarget, IOGylph( aPic, aColor ), aDuration, aDelay, Player.Vision ) )
-    else FGameUI.Map.AddAnimation( TConUIBulletAnimation.Create( Doom.Level, aSource, aTarget, IOGylph( aPic, aColor ), aDuration, aDelay, Player.Vision ) );
+    then FGameUI.Map.AddAnimation( TConUIRayAnimation.Create( Doom.Level, aSource, aTarget, aImpact, IOGylph( aPic, aColor ), aDuration, aDelay, Player.Vision ) )
+    else FGameUI.Map.AddAnimation( TConUIBulletAnimation.Create( Doom.Level, aSource, aTarget, aImpact, IOGylph( aPic, aColor ), aDuration, aDelay, Player.Vision ) );
 end;
 
 procedure TDoomUI.addMarkAnimation(aDuration: DWord; aDelay: DWord;

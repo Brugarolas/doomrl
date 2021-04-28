@@ -1755,7 +1755,6 @@ function TBeing.SendMissile( aTarget : TCoord2D; aItem : TItem; aSequence : DWor
 var iDirection  : TDirection;
     iMisslePath : TVisionRay;
     iOldCoord   : TCoord2D;
-    iTarget     : TCoord2D;
     iSource     : TCoord2D;
     iCoord      : TCoord2D;
     iColor      : Byte;
@@ -1823,11 +1822,10 @@ begin
   
   iToHit := getToHitRanged( aItem ) + aToHitMod;
 
-  iTarget := aTarget;
   iSource := FPosition;
   
   if ( MF_IMMIDATE in Missiles[iMissile].Flags ) then
-      iSource := iTarget;
+      iSource := aTarget;
 
   iMisslePath.Init( iLevel, iSource, aTarget );
 
@@ -1947,7 +1945,7 @@ begin
   iDuration := (iSource - iMisslePath.GetC).LargerLength * iDelay;
   if not ( MF_IMMIDATE in Missiles[iMissile].Flags ) then
   begin
-    UI.addMissileAnimation( iDuration, aSequence,iSource,iMisslePath.GetC,iColor,Missiles[iMissile].Picture,iDelay,iSprite,MF_RAY in Missiles[iMissile].Flags);
+    UI.addMissileAnimation( iDuration, aSequence,iSource,aTarget,iMisslePath.GetC,iColor,Missiles[iMissile].Picture,iDelay,iSprite,MF_RAY in Missiles[iMissile].Flags);
     if iHit and iLevel.isVisible( iMisslePath.GetC ) then
       UI.addMarkAnimation(100, aSequence + iDuration, iMisslePath.GetC, Iif( iIsHit, LightRed, LightGray ), '*' );
   end;
