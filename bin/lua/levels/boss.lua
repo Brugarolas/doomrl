@@ -249,7 +249,6 @@ register_level "dis"
 			desc = "woah!",
 
 			OnUse = function(self,being)
-				player:play_sound("lever.use")
 				generator.transmute( "wall", "floor" )
 				level:recalc_walls()
 				return true

@@ -30,7 +30,6 @@ register_level "mt_erebus"
 				elseif level.status == 2 then 
 					raise = "cwall3"
 				end
-				player:play_sound("lever.use")
 				generator.transmute( raise, "floor" )
 				level:recalc_fluids()
 				level.status = level.status + 1

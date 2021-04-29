@@ -33,7 +33,6 @@ register_level "deimos_lab"
 
 			OnUse = function(self,being)
 				if level.status > 5 then return true end
-				player:play_sound("lever.use")
 				level.status = level.status + 1
 				if level.status == 2 then
 					ui.msg("The walls rise!")

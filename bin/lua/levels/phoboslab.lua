@@ -23,7 +23,6 @@ register_level "phobos_lab"
 			color_id = false,
 
 			OnUse = function(self,being)
-				player:play_sound("lever.use")
 				generator.transmute( "ldoor", "door", level.data.door1 )
 				ui.msg("Green access granted, west doors unlocked.")
 				return true
@@ -44,7 +43,6 @@ register_level "phobos_lab"
 			color_id = false,
 
 			OnUse = function(self,being)
-				player:play_sound("lever.use")
 				generator.transmute( "ldoor", "door", level.data.door1 )
 				generator.transmute( "ldoor", "door", level.data.door2 )
 				generator.transmute( "acid",  "bridge",level.data.bridge )

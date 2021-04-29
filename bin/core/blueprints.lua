@@ -445,7 +445,7 @@ core.register_blueprint "item"
 		},
 		[ITEMTYPE_LEVER] = {
 			ascii      = { false, core.TSTRING, "&" },
-			sound_id   = { false, core.TSTRING, core.TIDIN("items") },
+			sound_id   = { false, core.TIDIN("items"), "lever" },
 			color_id   = { true,  core.TANY },
 			good       = { true,  core.TSTRING },
 			desc       = { true,  core.TSTRING },
