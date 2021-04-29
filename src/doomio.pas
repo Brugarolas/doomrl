@@ -300,6 +300,7 @@ begin
   begin
     Option_SoundVol := aConfig.Configure('SoundVolume',Option_SoundVol);
     Option_MusicVol := aConfig.Configure('MusicVolume',Option_MusicVol);
+    Option_LimitSound := aConfig.Configure('LimitSoundVolume',Option_LimitSound);
 
     if Option_Music or Option_Sound then
     begin
@@ -315,6 +316,7 @@ begin
         Sound.Reset;
       Sound.SetSoundVolume(5*Option_SoundVol);
       Sound.SetMusicVolume(5*Option_MusicVol);
+      Sound.SetLimitSoundVolume(Option_LimitSound);
 
       if aReload then
       begin

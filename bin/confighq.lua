@@ -137,6 +137,9 @@ MusicVolume      = 12
 -- Sound volume in the range of 0..25
 SoundVolume      = 20
 
+-- Combined sounds will be limited to a certain volume. This only works with FMOD.
+LimitSoundVolume = true
+
 -- Handles what should be done in case of trying to unwield an item when inventory
 -- is full : if set to false will ask the player if he wants to drop it. If set
 -- to true will drop it without questions.
