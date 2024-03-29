@@ -5,7 +5,7 @@ function DoomRL.load_events()
 		min_dlevel = 16,
 		weight     = 2,
 		history    = "On level @1, hell froze over!",
-		message    = "Yes... Hell just froze over...",
+		message    = "The seemingly impossible has happened, and hell has been coverred in a sheet of ice.",
 		
 		setup      = function()
 			generator.wall_to_ice[ generator.styles[ level.style ].wall ] = "iwall"
@@ -21,8 +21,8 @@ function DoomRL.load_events()
 
 	register_event "perma_event"
 	{
-		history    = "Level @1 was a hard nut to crack!",
-		message    = "The walls here seem tough!",
+		history    = "Level @1 was nigh-indestructable!",
+		message    = "The walls here seem a lot sturdier than normal...",
 		min_dlevel = 8,
 		weight     = 4,
 		
@@ -33,8 +33,8 @@ function DoomRL.load_events()
 
 	register_event "alarm_event"
 	{
-		history    = "He sounded the alarm on level @1!",
-		message    = "As you enter, some weird alarm starts howling!",
+		history    = "An alarm was tripped on level @1!",
+		message    = "As you enter the area, you immediately hear a quiet beep as you trip something, followed by blaring klaxons and flashing lights.",
 		min_dlevel = 8,
 		weight     = 2,
 
@@ -45,8 +45,8 @@ function DoomRL.load_events()
 
 	register_event "deadly_air_event"
 	{
-		history    = "Level @1 blasted him with an unholy atmosphere!",
-		message    = "The air seems deadly here, you better leave quick!",
+		history    = "Level @1 was thick with a deadly atmosphere!",
+		message    = "As you enter, you immediately notice a disgusting, acrid taste to the air, and a sickly haze hangs from the ceiling.",
 		min_dlevel = 16,
 		min_diff   = 2,
 		weight     = 2,
@@ -58,23 +58,23 @@ function DoomRL.load_events()
 
 	register_event "nuke_event"
 	{
-		history    = "On level @1 he encountered an armed nuke!",
+		history    = "Level @1 contained an armed nuke!",
 		min_dlevel = 16,
 		min_diff   = 2,
 		weight     = 2,
 
 		setup      = function()
 			local minutes = 10 - DIFFICULTY
-			ui.msg_feel("Descending the staircase you spot a familiar object...")
-			ui.msg_feel("\"Thermonuclear bomb deployed. "..minutes.." minutes till explosion.\"")
+			ui.msg_feel("As you reach the bottom of the stairs, you immediately spot a familiar object, and your heart skips a beat.")
+			ui.msg_feel("\"Warhead armed. T-minus "..minutes.." until detonation.\"")
 			player:nuke( minutes*60*10 )
 		end,
 	}
 
 	register_event "flood_acid_event"
 	{
-		message    = "You feel the sudden need to run!!!",
-		history    = "On level @1 he ran for his life from acid!" ,
+		message    = "You hear the rumbling of a flash flood, and smell the putrid stench of acid, and both grow stronger by the second. RUN!",
+		history    = "Level @1 began flooding with acid!" ,
 		min_dlevel = 8,
 		weight     = 1,
 
@@ -99,8 +99,8 @@ function DoomRL.load_events()
 
 	register_event "flood_lava_event"
 	{
-		message    = "You feel the sudden need to run!!!",
-		history    = "On level @1 he ran for his life from lava!" ,
+		message    = "This floor is getting hotter by the second, and you can hear a loud rumbling grow closer. RUN!",
+		history    = "Level @1 began flooding with lava!" ,
 		weight     = 4,
 		min_dlevel = 17,
 		min_diff   = 3,
@@ -131,8 +131,8 @@ function DoomRL.load_events()
 
 	register_event "targeted_event"
 	{
-		message    = "You feel you're being targeted!",
-		history    = "On level @1 he was targeted for extermination!" ,
+		message    = "You feel an uncomfortably uncanny sense that you have a target painted on your back, and SOMETHING is tracking you.",
+		history    = "Level @1 was the lair of a hunter tasked with extermination!" ,
 		weight     = 2,
 		min_dlevel = 17,
 		min_diff   = 3,
@@ -144,8 +144,8 @@ function DoomRL.load_events()
 
 	register_event "explosion_event"
 	{
-		message    = "You hear sounds of hellish mortars!",
-		history    = "On level @1 he was bombarded!" ,
+		message    = "In the distance, you hear the thumping of mortar fire, and the screaming sounds of incoming shells!",
+		history    = "Level @1 was shelled!" ,
 		weight     = 1,
 		min_dlevel = 18,
 		min_diff   = 2,
@@ -158,8 +158,8 @@ function DoomRL.load_events()
 
 	register_event "explosion_lava_event"
 	{
-		message    = "You hear sounds of hellish mortars! They rolled out the BIG GUNS!",
-		history    = "On level @1 he was walking in fire!" ,
+		message    = "In the distance, you hear the loud banging of heavy artillery, and the screaming sounds of massive incoming shells!",
+		history    = "Level @1 was shelled with Hell's biggest guns!" ,
 		weight     = 1,
 		min_dlevel = 25,
 		min_diff   = 3,
@@ -172,8 +172,8 @@ function DoomRL.load_events()
 
   register_event "darkness_event"
   {
-    message    = "This floor is pitch-black!",
-    history    = "On level @1, he was stumbling in the dark!",
+    message    = "This floor seems to have no lights in sight, leaving you immersed in darkness.",
+    history    = "Level @1 was pitch-black!",
     weight     = 2,
     min_dlevel = 9,
     min_diff   = 2,
@@ -223,7 +223,7 @@ function generator.setup_targeted_event( step )
 			until c:distance( cp ) > 2 and level:eye_contact( c, cp )
 			local b = table.random_pick( list )
 			-- TODO We need a better way to deal with articles.  Removing this one for now.
-			ui.msg( "Suddenly, "..b.name.." appears near you!" )
+			ui.msg( "Suddenly, "..b.name.." reveals itself nearby!" )
 			b:relocate( c )
 			b:play_sound("soldier.phase")
 			b.scount = b.scount - math.max( 1000 - DIFFICULTY * 50, 500 )
@@ -258,7 +258,7 @@ function generator.setup_deadly_air_event( step )
 		local function chill( b )
 			if b.hp > b.hpmax / 4 and not b.flags[BF_INV] then
 				if not b:is_player() or not b:is_affect("enviro") then
-					b:msg( "You feel a deadly chill!" )
+					b:msg( "You feel a sharp chill as the air rapidly grows frigid!" )
 					b.hp = b.hp - 1
 				end
 			end

@@ -5,9 +5,9 @@ function DoomRL.loadaffects()
 		name           = "brk",
 		color          = LIGHTRED,
 		color_expire   = RED,
-		message_init   = "You feel like a killing machine!",
-		message_ending = "You feel your anger slowly wearing off...",
-		message_done   = "You feel more calm.",
+		message_init   = "A fire surges through your veins, overwhelming you with strength and rage!",
+		message_ending = "Your burning rage begins to fade...",
+		message_done   = "The abnormal rage has burned out, and your strength returns to normal.",
 		status_effect  = STATUSRED,
 		status_strength= 5,
 
@@ -22,7 +22,7 @@ function DoomRL.loadaffects()
 			being.resist.plasma = (being.resist.plasma or 0) + 60
 		end,
 		OnTick         = function(being)
-			ui.msg("You need to taste blood!")
+			ui.msg("Your bloody rage burns!")
 		end,
 		OnRemove       = function(being)
 			being.flags[ BF_BERSERK ] = false
@@ -41,9 +41,9 @@ function DoomRL.loadaffects()
 		name           = "inv",
 		color          = WHITE,
 		color_expire   = DARKGRAY,
-		message_init   = "You feel invincible!",
-		message_ending = "You feel your invincibility fading...",
-		message_done   = "You feel vulnerable again.",
+		message_init   = "An unnatural shine coats your body, shielding you from harm!",
+		message_ending = "The protective shimmer begins to fade...",
+		message_done   = "Your protection has vanished, leaving you vulnerbale again.",
 		status_effect  = STATUSINVERT,
 		status_strength= 10,
 
@@ -65,9 +65,9 @@ function DoomRL.loadaffects()
 		name           = "env",
 		color          = LIGHTGREEN,
 		color_expire   = GREEN,
-		message_init   = "You feel protected!",
-		message_ending = "You feel your protection fading...",
-		message_done   = "You feel less protected.",
+		message_init   = "The environmental protection shield flickers on!",
+		message_ending = "The enviro shield beeps and flickers, soon to die.",
+		message_done   = "The environmental protection shield beeps loudly before abruptly powering down.",
 		status_effect  = STATUSGREEN,
 		status_strength= 1,
 
@@ -87,9 +87,9 @@ function DoomRL.loadaffects()
 		name           = "lit",
 		color          = YELLOW,
 		color_expire   = BROWN,
-		message_init   = "You see further!",
-		message_ending = "You feel your enhanced vision fading...",
-		message_done   = "Your vision fades.",
+		message_init   = "The light-amplification visor snaps onto your helmet, and powers on.",
+		message_ending = "A warning light indicates your light-amp visor will soon die.",
+		message_done   = "The light-amp visor loses power, and you discard it.",
 
 		OnAdd          = function(being)
 			being.vision = being.vision + 4

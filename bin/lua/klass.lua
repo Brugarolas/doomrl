@@ -33,7 +33,7 @@ function DoomRL.load_klasses()
 			{ id = "survivalist",  requires = {{ "badass",       1 }, { "ironman",      3 }, {"nails", 2}, }, blocks = { "hellrunner", "berserker", "bitch",      },               master = true },
 		},
 
-		desc = "Marines are the backbone of the UAC, resilient and hardy. They start with 10 more health points and powerups they use have a +50% duration bonus (+25% on Nightmare).",
+		desc = "Marines are the UAC's military backbone, cracking skulls and dishing out lead to anything that their commanding officer's don't like. They start with 10 more health points, and any powerups they find have a +50% duration bonus (+25% on Nightmare).",
 
 		OnPick = function( being )
 			being.flags[ BF_POWERBONUS ] = true
@@ -79,7 +79,7 @@ function DoomRL.load_klasses()
 			{ id = "gunrunner",    requires = {{ "dodgemaster",  1 }, { "juggler",     1},                      }, blocks = { "bitch",    "nails", "whizkid",    },               master = true },
 		},
 
-		desc = "Scouts are agile and have the best intel. They are generally 10% faster and inherently know the location of stairs on any given level.",
+		desc = "Scouts are quick, agile, and have a keen awareness for their environment. They are 10% faster on their feet, and always start a level knowing where the stairs are.",
 
 		OnPick = function( being )
 			being.flags[ BF_STAIRSENSE ] = true
@@ -123,7 +123,7 @@ function DoomRL.load_klasses()
 			{ id = "entrenchment", requires = {{ "triggerhappy", 1 }, { "badass",    1 },                   }, blocks = { "finesse",      "reloader",  "gun",        },               master = true },
 			{ id = "scavenger",    requires = {{ "whizkid",      2 }, { "intuition", 1 },                   }, blocks = { "triggerhappy", "berserker", "dualgunner", }, reqlevel = 6, master = true },
 		},
-		desc = "Technicians are masters of equipment and tinkering. They use consumables almost instantly and can hack computer maps for tracking data.",
+		desc = "Technicians are handy with equipment and know their way around a lot of UAC tech. Any consumables are used almost instantly, and they can hack standard computer maps to give tracking data.",
 
 		OnPick = function( being )
 			being.flags[ BF_INSTAUSE ] = true
@@ -165,7 +165,7 @@ function DoomRL.load_klasses()
 			{ id = "badass",       requires = {{ "nails",      2 }}, max = 2 },
 		},
 
-		desc = "Soldiers are unnamed and unknown. You don't choose to be a soldier, you just are...",
+		desc = "The standard footsoldiers of the UAC's ranks. Cannonfodder doesn't come more generic than UAC infantry.",
 
 		OnPick = function( being )
 			being.eq.weapon = "pistol"

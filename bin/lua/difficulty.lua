@@ -3,7 +3,7 @@ function DoomRL.load_difficulty()
 	register_difficulty	"ITYTD" 
 	{
 		name        = "I'm Too Young To Die!",
-		description = "He was too young to die!",
+		description = "A basic, more stripped down difficulty for those unfamiliar with traditional roguelikes.",
 		code        = "@GE",
 		tohitbonus  = -1,
 		expfactor   = 1.4,
@@ -17,7 +17,7 @@ function DoomRL.load_difficulty()
 	{
 		name        = "Hey, Not Too Rough",
 		id          = "HNTR",
-		description = "He didn't like it too rough.",
+		description = "A moderate difficulty for those familiar with traditional roguelikes.",
 		code        = "@BM",
 		expfactor   = 1.2,
 	}
@@ -25,7 +25,7 @@ function DoomRL.load_difficulty()
 	register_difficulty	"HMP" 
 	{
 		name        = "Hurt Me Plenty",
-		description = "He wasn't afraid to be hurt plenty.",
+		description = "A harder difficulty for those closely familiar with DRL's mechanics.",
 		code        = "@RH",
 		scorefactor = 1.5,
 		ammofactor  = 1.25,
@@ -34,7 +34,7 @@ function DoomRL.load_difficulty()
 	register_difficulty	"UV" 
 	{
 		name        = "Ultra-Violence",
-		description = "He was a man of Ultra-Violence!",
+		description = "A very difficult setting for self-professed experts of DRL.",
 		code        = "@yU",
 		tohitbonus  = 2,
 		scorefactor = 2,
@@ -45,7 +45,7 @@ function DoomRL.load_difficulty()
 	register_difficulty	"N!" 
 	{
 		name        = "Nightmare!",
-		description = "He opposed the Nightmare!",
+		description = "Do not go gentle into that good night. Rage, rage against the dying of the light!",
 		code        = "@rN",
 		tohitbonus  = 2,
 		expfactor   = 1.2,
