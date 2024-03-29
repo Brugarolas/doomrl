@@ -27,6 +27,8 @@ TLevel = class(TLuaMapNode, IConUIASCIIMap)
     ToHitBonus  : ShortInt;
     FFloorCell  : Word;
     FFeeling    : AnsiString;
+    FInitKills  : DWord;
+    FInitMaxKills : DWord;
     constructor Create; reintroduce;
     procedure Init( nStyle : byte; nLNum : Word;nName : string; nSpecExit : string; nDepth : Word; nDangerLevel : Word);
     procedure AfterGeneration( aGenerated : Boolean );
@@ -67,7 +69,7 @@ TLevel = class(TLuaMapNode, IConUIASCIIMap)
 
     function CallHook( coord : TCoord2D;  Hook : TCellHook ) : Variant; overload;
     function CallHook( coord : TCoord2D; aCellID : Word; Hook : TCellHook ) : Variant; overload;
-    function CallHook( coord : TCoord2D; What : TThing; Hook : TCellHook ) : Variant; overload;
+    function CallHook( coord : TCoord2D; const aParams : array of Const; Hook : TCellHook ) : Variant; overload;
     procedure CallHook( Hook : Byte; const Params : array of Const );
     function CallHookCheck( Hook : Byte; const Params : array of Const ) : Boolean;
 
@@ -148,6 +150,8 @@ TLevel = class(TLuaMapNode, IConUIASCIIMap)
     property Special_Exit : AnsiString read SpecExit;
     property Feeling      : AnsiString read FFeeling    write FFeeling;
     property id : AnsiString           read FID;
+    property InitKills    : DWord      read FInitKills  write FInitKills;
+    property InitMaxKills : DWord      read FInitMaxKills write FInitMaxKills;
   end;
 
 implementation
@@ -317,7 +321,9 @@ begin
         iColor := LightGray
       else
         iColor := DarkGray;
-  end;
+  end
+  else if (aCoord.x = 1) or (aCoord.x = MAXX) or (aCoord.y = 1) or (aCoord.y = MAXY) then
+    iColor := LightGray;
 
   if iColor = Black then Exit( DefColor );
   Result := NewColor( iColor );
@@ -469,6 +475,8 @@ begin
   FFloorCell := LuaSystem.Defines[LuaSystem.Get(['generator','styles',FStyle,'floor'])];
   if LuaSystem.Get(['diff',Doom.Difficulty,'respawn']) then Include( FFlags, LF_RESPAWN );
   ToHitBonus := LuaSystem.Get(['diff',Doom.Difficulty,'tohitbonus']);
+  FInitKills := Player.FKills.Count;
+  FInitMaxKills := Player.FKills.MaxCount;
 end;
 
 procedure TLevel.AfterGeneration( aGenerated : Boolean );
@@ -665,10 +673,17 @@ begin
     else CallHook := False;
 end;
 
-function TLevel.CallHook(coord: TCoord2D; What: TThing; Hook: TCellHook) : Variant;
+function TLevel.CallHook(coord: TCoord2D; const aParams : array of const ; Hook: TCellHook) : Variant;
+var args : array of TVarRec;
+    i    : integer;
 begin
+  SetLength(args, Length(aParams) + 1);
+  args[0].vtype := vtObject;
+  args[0].vobject := LuaCoord(coord);
+  for i := 0 to High(aParams) do
+    args[i + 1] := aParams[i];
   if Hook in Cells[ GetCell(coord) ].Hooks
-    then CallHook := LuaSystem.ProtectedCall( [ 'cells', Cell[ coord ], CellHooks[ Hook ] ], [LuaCoord(coord),What] )
+    then CallHook := LuaSystem.ProtectedCall( [ 'cells', Cell[ coord ], CellHooks[ Hook ] ], args )
     else CallHook := False;
 end;
 

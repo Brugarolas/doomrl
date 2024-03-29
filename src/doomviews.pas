@@ -4,6 +4,10 @@ interface
 uses vuielement, vuielements, viotypes, vuitypes, vioevent, vconui, vconuiext, vconuirl, doommodule,
      dfdata, dfitem, doomtrait;
 
+type TConUICursorMenu = class( TConUIMenu )
+  procedure OnRedraw; override;
+end;
+
 type TUIChallengeList = array of Byte;
 
 type TUIDowloadBar = class( TUIElement )
@@ -231,11 +235,22 @@ const HelpHeader       = 'DoomRL Help System';
 
 function CreateMenu( const aMenuClass : AnsiString; aParent : TUIElement; aArea : TUIRect ) : TConUIMenu;
 begin
-  if aMenuClass = 'CHOICE' then Exit( TConUIMenu.Create( aParent, aArea ) );
+  if aMenuClass = 'CHOICE' then Exit( TConUICursorMenu.Create( aParent, aArea ) );
   if aMenuClass = 'LETTER' then Exit( TConUITextMenu.Create( aParent, aArea ) );
   {if aMenuClass = 'HYBRID' then }Exit( TConUIHybridMenu.Create( aParent, aArea ) );
 end;
 
+
+{ TConUICursorMenu }
+
+procedure TConUICursorMenu.OnRedraw;
+var iCon : TUIConsole;
+begin
+  inherited OnRedraw;
+  iCon.Init( TConUIRoot(FRoot).Renderer );
+  if FSelected > 0 then
+    iCon.DrawChar( FAbsolute.Pos + Point(-2, FSelected-1-FScroll), FSelectedColor, '>' );
+end;
 
 { TUILoadingScreen }
 
@@ -627,6 +642,8 @@ var iStatus  : AnsiString;
     iDamLevel   : DWord;
     iKills      : DWord;
     iMaxKills   : DWord;
+    iLevelKills : DWord;
+    iLevelMaxKills : DWord;
     iKillSpree  : DWord;
     iKillRecord : DWord;
     iDodgeBonus : Word;
@@ -652,17 +669,35 @@ begin
     iRealTime   := FStatistics.Map['real_time'];
     iDamTotal   := FStatistics.Map['damage_taken'];
     iDamLevel   := FStatistics.Map['damage_on_level'];
+
+    { Don't leak number of living enemies on the current level, }
+    { unless the player can already tell. }
     iKills      := FStatistics.Map['kills'];
-    iMaxKills   := FStatistics.Map['max_kills'];
-    iKillSpree  := FKills.BestNoDamageSequence;
+    iLevelKills := iKills - Doom.Level.InitKills;
+    if Doom.Level.Flags[ LF_BEINGSVISIBLE ] or Doom.Level.Empty then
+    begin
+      iMaxKills := FStatistics.Map['max_kills'];
+      iLevelMaxKills := iMaxKills - Doom.Level.InitMaxKills;
+    end
+    else
+    begin
+      iMaxKills := Doom.Level.InitMaxKills + iLevelKills + IIf( BeingsInVision > 10, BeingsInVision, 10 );
+      iLevelMaxKills := 0;
+    end;
+
+    iKillSpree  := FKills.NoDamageSequence;
     iKillRecord := FStatistics.Map['kills_non_damage'];
     if iKillSpree > iKillRecord then iKillRecord := iKillSpree;
 
     iContent.Push( Format( '@L%s@l, level @L%d@l @L%s,',[Name,ExpLevel,AnsiString(LuaSystem.Get(['klasses',Klass,'name']))] ) );
-    iContent.Push( Format( 'currently on level @L%d@l of the Phobos base. ', [iDepth] ) );
+    iContent.Push( Format( '  currently on level @L%d@l of the Phobos base. ', [iDepth] ) );
     iContent.Push( Format( 'He survived @L%d@l turns, which took him @L%d@l seconds. ', [ iGameTime, iRealTime ] ) );
     iContent.Push( Format( 'He took @L%d@l damage, @L%d@l on this floor alone. ', [ iDamTotal, iDamLevel ] ) );
-    iContent.Push( Format( 'He killed @L%d@l out of @L%d@l enemies total. ', [ iKills, iMaxKills ] ) );
+    iContent.Push( Format( 'He killed @L%d@l out of @L%d@l enemies total, ', [ iKills, iMaxKills ] ) );
+    if iLevelMaxKills > 0 then
+      iContent.Push( Format( '  with @L%d@l kill%s out of @L%d@l on this floor alone. ', [ iLevelKills, IIf(iLevelKills = 1, '', 's'), iLevelMaxKills ] ) )
+    else
+      iContent.Push( Format( '  with @L%d@l kill%s on this floor alone. ', [ iLevelKills, IIf(iLevelKills = 1, '', 's') ] ) );
     iContent.Push( Format( 'His current killing spree is @L%d@l, with a record of @L%d@l. ', [ iKillSpree, iKillRecord ] ) );
     iContent.Push( '' );
     iContent.Push( Format( 'Current movement speed is @L%.2f@l second/move.', [getMoveCost/(Speed*10.0)] ) );
@@ -1270,9 +1305,9 @@ end;
 
 function TUIBaseItemView.OnKeyDown ( const event : TIOKeyEvent ) : Boolean;
 begin
-  if (FMenu <> nil) and Assigned(FOnConfirm) and (event.ModState = []) and (FMenu.IsValid( FMenu.Selected ) ) and (FMenu.SelectedItem.Data <> nil) then
+  if (FMenu <> nil) and Assigned(FOnConfirm) and (event.ModState = []) and (FMenu.IsValid( FMenu.Selected ) ) then
   begin
-    if (ItemResultDrop in FActions) and  (event.Code = VKEY_BACK) then
+    if (ItemResultDrop in FActions) and  (event.Code = VKEY_BACK) and (FMenu.SelectedItem.Data <> nil) then
     begin
       FOnConfirm( FMenu, ItemResultDrop );
       Free;

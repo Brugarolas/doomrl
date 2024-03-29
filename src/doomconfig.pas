@@ -151,6 +151,10 @@ begin
   Option_PlayerBackups    := Configure('PlayerBackups',Option_PlayerBackups);
   Option_ScoreBackups     := Configure('ScoreBackups',Option_ScoreBackups);
 
+  Option_AnimationSpeed   := Configure('AnimationSpeed',Option_AnimationSpeed);
+  if Option_AnimationSpeed < 0 then Option_AnimationSpeed := 0;
+  if Option_AnimationSpeed > 100 then Option_AnimationSpeed := 100;
+
   Option_RunDelay         := Configure('RunDelay',Option_RunDelay);
   Option_MessageBuffer    := Configure('MessageBuffer',Option_MessageBuffer);
 
@@ -210,12 +214,19 @@ begin
   end
   else
   begin
-    if (Option_Graphics <> 'TILES') and (Option_Graphics <> 'CONSOLE') then
+    if (Option_Graphics <> 'TILES') and (Option_Graphics <> 'CONSOLE') {$IFDEF TCOD}and (Option_Graphics <> 'TCOD'){$ENDIF} then
       Option_Graphics := 'TILES';
     if Option_Graphics = 'TILES'
       then GraphicsVersion := True
       else GraphicsVersion := False;
   end;
+  {$IFDEF TCOD}
+  if ForceTCOD then
+  begin
+    Option_Graphics := 'TCOD';
+    GraphicsVersion := False;
+  end;
+  {$ENDIF}
 
   TDoomUI.RegisterLuaAPI( State );
 end;

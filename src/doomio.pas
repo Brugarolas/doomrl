@@ -228,7 +228,7 @@ begin
   end
   else
   begin
-    FIODriver := TTextIODriver.Create( 80, 25 );
+    FIODriver := TTextIODriver.Create( 80, 25{$IFDEF TCOD}, False, Option_Graphics = 'TCOD'{$ENDIF} );
     if (FIODriver.GetSizeX < 80) or (FIODriver.GetSizeY < 25) then
       raise EIOException.Create('Too small console available, resize your console to 80x25!');
     FConsole  := TTextConsoleRenderer.Create( 80, 25, [VIO_CON_BGCOLOR, VIO_CON_CURSOR] );
@@ -744,6 +744,7 @@ function TDoomIO.WaitForKeyEvent ( out aEvent : TIOEvent;
   aMouseClick : Boolean; aMouseMove : Boolean; aTimeOut : DWord ) : Boolean;
 var iEndLoop : TIOEventTypeSet;
     iStart   : DWord;
+    aPeekEvent : TIOEvent;
 begin
   iEndLoop := [VEVENT_KEYDOWN];
   iStart   := FLastUpdate;
@@ -756,6 +757,15 @@ begin
       FIODriver.Sleep(10);
     until FIODriver.EventPending;
     FIODriver.PollEvent( aEvent );
+    // Condense multiple consecutive mouse move events into a single event.
+    if (aEvent.EType = VEVENT_MOUSEMOVE) and FIODriver.EventPending then
+    begin
+      repeat
+        FIODriver.PeekEvent( aPeekEvent );
+        if aPeekEvent.EType = VEVENT_MOUSEMOVE then
+          FIODriver.PollEvent( aEvent );
+      until (not FIODriver.EventPending) or (aPeekEvent.EType <> VEVENT_MOUSEMOVE);
+    end;
     if FUIRoot.OnEvent( aEvent ) then aEvent.EType := VEVENT_KEYUP;
     if (aEvent.EType = VEVENT_SYSTEM) and (aEvent.System.Code = VIO_SYSEVENT_QUIT) then
       Exit( True );
@@ -778,13 +788,20 @@ begin
 end;
 
 procedure TDoomIO.PlayMusic(const MusicID : Ansistring);
+var
+  NewId : Ansistring;
 begin
   if (not SoundVersion) or (not Option_Music) then Exit;
   try
     if MusicID = '' then Sound.Silence;
     if MusicOff then Exit;
-    if Sound.MusicExists(MusicID) then Sound.PlayMusic(MusicID)
-                                  else PlayMusic('level'+IntToStr(Random(23)+2));
+    if Sound.MusicExists(MusicID) then 
+    begin
+      Sound.PlayMusic(MusicID)
+    end else begin
+      NewId := 'level'+IntToStr(Random(23)+2);
+      if Sound.MusicExists(NewId) then PlayMusic(NewId);
+    end;
   except
     on e : Exception do
     begin
