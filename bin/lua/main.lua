@@ -49,7 +49,7 @@ require( "doomrl:levels/containment" )
 -- main DoomRL lua script file --
 
 function DoomRL.OnLoaded()
-	ui.msg('Welcome to the @RDoom@> Roguelike...')
+	ui.msg('Welcome to @RDRL@>...')
 end
 
 function DoomRL.OnLoadBase()
@@ -169,10 +169,16 @@ function DoomRL.get_result_description( result, highscore )
 	if player:has_won() then
 		local chal_idx  = "win_mortem"
 		if highscore then chal_idx = "win_highscore" end
-		if SCHALLENGE ~= '' and chal[ SCHALLENGE ][ chal_idx ] then
-			killed_by = chal[ SCHALLENGE ][ chal_idx ]
-		elseif CHALLENGE ~= '' and chal[ CHALLENGE ][ chal_idx ] then
-			killed_by = chal[ CHALLENGE ][ chal_idx ]
+		for _, challenge in ipairs { SCHALLENGE, CHALLENGE } do
+			if challenge ~= '' then
+				if ARCHANGEL and chal[ challenge ][ "arch_" .. chal_idx ] then
+					killed_by = chal[ challenge ][ "arch_" .. chal_idx ]
+					break
+				elseif chal[ challenge ][ chal_idx ] then
+					killed_by = chal[ challenge ][ chal_idx ]
+					break
+				end
+			end
 		end
 	end
 
@@ -194,7 +200,7 @@ function DoomRL.print_mortem()
 
 
 	player:mortem_print( "--------------------------------------------------------------" )
-	player:mortem_print( " DoomRL ("..VERSION_STRING..") roguelike post-mortem character dump")
+	player:mortem_print( " DRL ("..VERSION_STRING..") roguelike post-mortem character dump")
 	if game_type ~= GAMESTANDARD then
 		player:mortem_print( " Module : "..module.name.." ("..version_string(module.version)..")")
 		game_module = _G[module.id]
@@ -775,9 +781,9 @@ end
 
 function DoomRL.first_text()
 	return
-[[@yWelcome to Doom the Roguelike!
+[[@yWelcome to DRL!
 
-You are running DoomRL for the first time. I hope you will find this roguelike game as enjoyable as it was for me to write it.
+You are running DRL for the first time. I hope you will find this roguelike game as enjoyable as it was for me to write it.
 
 This game is in active development, and as such please be always sure that you have the most recent version, for bugs are fixed, new features appear, and the game becomes better at every iteration. You can find the lastest version on DoomRL website:
 
@@ -789,7 +795,7 @@ Also, if you enjoy this game, join the forums:
 
 Also on Facebook (@BChaosForge@y), and on Twitter (@B@@chaosforge_org@y).
 
-But most importantly, if you find yourself enjoying the game, drop by ChaosForge and donate - it's these donations that keep DoomRL (and other CF roguelikes) in active development. You can make a difference.
+But most importantly, if you find yourself enjoying the game, drop by ChaosForge and donate - it's these donations that keep DRL (and other CF roguelikes) in active development. You can make a difference.
 
 Press @<Enter@y to continue...
 ]]

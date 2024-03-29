@@ -23,9 +23,7 @@ register_level "phobos_lab"
 			color_id = false,
 
 			OnUse = function(self,being)
-				player:play_sound("lever.use")
-				generator.transmute( "ldoor", "floor", level.data.door1 )
-				generator.transmute( "floor", "door",  level.data.door1 )
+				generator.transmute( "ldoor", "door", level.data.door1 )
 				ui.msg("Green access granted, west doors unlocked.")
 				return true
 			end,
@@ -45,11 +43,8 @@ register_level "phobos_lab"
 			color_id = false,
 
 			OnUse = function(self,being)
-				player:play_sound("lever.use")
-				generator.transmute( "ldoor", "floor", level.data.door1 )
-				generator.transmute( "floor", "door",  level.data.door1 )
-				generator.transmute( "ldoor", "floor", level.data.door2 )
-				generator.transmute( "floor", "door",  level.data.door2 )
+				generator.transmute( "ldoor", "door", level.data.door1 )
+				generator.transmute( "ldoor", "door", level.data.door2 )
 				generator.transmute( "acid",  "bridge",level.data.bridge )
 				ui.msg("Blue access granted, east doors unlocked.")
 				level.status = 1
@@ -130,7 +125,6 @@ register_level "phobos_lab"
 ]=]
 		generator.place_tile( translation, map, 1, 1 )
 
-		level.flags[ LF_SHARPFLUID ] = true
 		level:player(57,19)
 	end,
 

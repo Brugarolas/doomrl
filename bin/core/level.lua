@@ -313,11 +313,18 @@ function level:push_cell(c, target, quiet)
 	self:play_sound( cell_id .. ".move", c )
 	--TODO: trigger smooth move animation in G-version?
 	local hp_c = self.hp[c]
+	local top_target = self:get_cell_top( target )
 	local hp_target = self.hp[target]
-	self.map[c] = target_cell_id
+	if top_target then
+		self.map[c] = target_cell_id
+		self.hp[c] = hp_target
+	else
+		local bottom = self:get_cell_bottom( c )
+		self.map[c] = bottom
+		self.hp[c] = cells[bottom].hp
+	end
 	self.map[target] = cell_id
 	self.hp[target] = hp_c
-	self.hp[c] = hp_target
 	if not quiet then ui.msg( "You push the "..name.."." ) end
 	return true
 end

@@ -7,16 +7,16 @@ type TChallengeDesc = record Name : AnsiString; Desc : AnsiString; end;
 const ChallengeType : array[1..4] of TChallengeDesc =
 ((
    Name : 'Angel Game';
-   Desc : 'Play one of the DoomRL classic challenge games that place restrictions on play style or modify play behaviour.'#10#10'Reach @yPrivate FC@> rank to unlock!';
+   Desc : 'Play one of the DRL classic challenge games that place restrictions on play style or modify play behaviour.'#10#10'Reach @yPrivate FC@> rank to unlock!';
 ),(
    Name : 'Dual-angel Game';
-   Desc : 'Mix two DoomRL challenge game types. Only the first counts highscore-wise - the latter is your own challenge!'#10#10'Reach @ySergeant@> rank to unlock!';
+   Desc : 'Mix two DRL challenge game types. Only the first counts highscore-wise - the latter is your own challenge!'#10#10'Reach @ySergeant@> rank to unlock!';
 ),(
    Name : 'Archangel Game';
-   Desc : 'Play one of the DoomRL challenge in it''s ultra hard form. Do not expect fairness here!'#10#10'Reach @ySergeant@> rank to unlock!';
+   Desc : 'Play one of the DRL challenges in it''s ultra hard form. Do not expect fairness here!'#10#10'Reach @ySergeant@> rank to unlock!';
 ),(
    Name : 'Custom Challenge';
-   Desc : 'Play one of many custom DoomRL challenge levels and episodes. Download new ones from the @yCustom game/Download Mods@> option in the main menu.';
+   Desc : 'Play one of many custom DRL challenge levels and episodes. Download new ones from the @yCustom game/Download Mods@> option in the main menu.';
 ));
 
 
@@ -97,7 +97,7 @@ type TMainMenuViewer = class( TUIElement )
 implementation
 
 uses math, sysutils, vutil, vsound, vimage, vuiconsole, vluavalue, vluasystem, dfhof, dfoutput, vgltypes,
-     doombase, doomio, doomnet, doomviews, vgllibrary;
+     doombase, doomio, doomnet, doomviews, vgl2library;
 
 const
   TextContinueGame  = '@b--@> Continue game @b---@>';
@@ -173,7 +173,7 @@ begin
   CreateSubLogo;
   FMode   := MenuModeLogo;
   if GraphicsVersion then
-    TGLUILabel.Create( Self, IO.TextSheet, IO.FMsgFont, Point( 10, 10 ), 'DoomRL version 0.9.9.7G' );
+    TGLUILabel.Create( Self, IO.TextSheet, IO.FMsgFont, Point( 10, 10 ), 'DRL version 0.9.9.7G' );
 
   TConUIText.Create( Self, Rectangle(2,14,77,11), AnsiString( LuaSystem.ProtectedCall( ['DoomRL','logo_text'], [] ) ) );
 end;
@@ -211,10 +211,10 @@ end;
 
 procedure TMainMenuViewer.CreateSubLogo;
 begin
-  TConUIText.Create( Self, Rectangle(28,10,48,3),
-    '@rDoom Roguelike @R'+VERSION_STRING+#10+
-    '@rby @RKornel Kisielewicz'#10+
-    '@rgraphics by @RDerek Yu' ).BackColor:=Black;
+  TConUIText.Create( Self, Rectangle(28,10,22,3),
+    ' @rDRL @R'+VERSION_STRING+#10+
+    ' @rby @RKornel Kisielewicz'#10+
+    ' @rgraphics by @RDerek Yu' ).BackColor:=Black;
 end;
 
 procedure TMainMenuViewer.InitMain;
@@ -381,10 +381,10 @@ begin
       iImage := Textures.Texture[ FLogoTexture ].Image;
       iSizeX := IO.Driver.GetSizeX;
       iSizeY := IO.Driver.GetSizeY;
-      iMinY  := Floor(iSizeY / 25) * (-8);
+      iMinY  := Floor(iSizeY / 25) * (-11);
       if (FMode <> MenuModeLogo) and (FMode <> MenuModeDonator)
-        then begin iMaxY  := Floor(iSizeY / 25) * 24; iMinY := Floor(iSizeY / 25) * (-10); end
-        else iMaxY  := Floor(iSizeY / 25) * 20;
+        then begin iMaxY  := Floor(iSizeY / 25) * 31; iMinY := Floor(iSizeY / 25) * (-16); end
+        else iMaxY  := Floor(iSizeY / 25) * 21;
       iMinX  := (iSizeX - (iMaxY - iMinY)) / 2;
       iMaxX  := (iSizeX + (iMaxY - iMinY)) / 2;
 
@@ -473,7 +473,7 @@ end;
 
 function TMainMenuViewer.OnMouseDown ( const event : TIOMouseEvent ) : Boolean;
 begin
-  if (FMode = MenuModeLogo) and (event.Button in [ VMB_BUTTON_LEFT, VMB_BUTTON_RIGHT ]) then
+  if ((FMode = MenuModeLogo) or (FMode = MenuModeDonator)) and (event.Button in [ VMB_BUTTON_LEFT, VMB_BUTTON_RIGHT ]) then
   begin
     Free;
     Exit( True );

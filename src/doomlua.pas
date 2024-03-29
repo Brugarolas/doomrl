@@ -557,6 +557,7 @@ begin
 
   TLuaEntityNode.RegisterLuaAPI( 'thing' );
 
+  TThing.RegisterLuaAPI();
   TItem.RegisterLuaAPI();
   TBeing.RegisterLuaAPI();
   TLevel.RegisterLuaAPI();
@@ -581,7 +582,7 @@ begin
   LuaSystem.GetClassInfo( TPlayer ).RegisterHooks( BeingHooks, HookNames );
   LuaSystem.GetClassInfo( TItem ).RegisterHooks( ItemHooks, HookNames );
 
-  ReadWAD('doomrl.wad');
+  ReadWAD('drl.wad');
 
 end;
 

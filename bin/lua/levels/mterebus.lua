@@ -30,8 +30,8 @@ register_level "mt_erebus"
 				elseif level.status == 2 then 
 					raise = "cwall3"
 				end
-				player:play_sound("lever.use")
 				generator.transmute( raise, "floor" )
+				level:recalc_fluids()
 				level.status = level.status + 1
 				return true
 			end,
@@ -115,6 +115,7 @@ register_level "mt_erebus"
 			generator.transmute( "cwall1", "floor" )
 			generator.transmute( "cwall2", "floor" )
 			generator.transmute( "cwall3", "floor" )
+			level:recalc_fluids()
 			level.status = 4
 			local element = level:summon("lava_elemental")
 			element.inv:add( item.new("lava_element") )

@@ -74,7 +74,7 @@ try
     Logger.Log( LOGINFO, 'Root path set to - '+RootPath );
 
     {$IFDEF WINDOWS}
-    Title := 'DoomRL - Doom, the Roguelike';
+    Title := 'DRL';
     SetConsoleTitle(PChar(Title));
     Sleep(40);
     {$ENDIF}

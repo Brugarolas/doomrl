@@ -52,7 +52,7 @@ TBeing = class(TThing,IPathQuery)
     procedure Call;
     procedure Action;
     function  TryMove( where : TCoord2D ) : TMoveResult;
-    function  MoveTowards( where : TCoord2D ) : TMoveResult;
+    function  MoveTowards( where : TCoord2D; out outMovePos : TCoord2D ) : TMoveResult;
     procedure Reload( AmmoItem : TItem; Single : Boolean );
     procedure Ressurect( RRange : Byte );
     procedure Kill( aBloodAmount : DWord; aOverkill : Boolean; aKiller : TBeing; aWeapon : TItem ); virtual;
@@ -225,7 +225,6 @@ uses vlualibrary, vluaentitynode, vuid, vdebug, vvision, vmaparea, vluasystem,
 
 function TBeing.getStrayChance( defender : TBeing; missile : byte ) : byte;
 var miss     : Integer;
-var Modifier : Real;
 
 begin
   if IsPlayer       then Exit(0);
@@ -234,8 +233,6 @@ begin
   miss := Missiles[missile].MissBase +
           Missiles[missile].MissDist *
           Distance( FPosition, defender.FPosition );
-  Modifier := 100;
-		  
 
   if defender.IsPlayer then
   begin
@@ -246,8 +243,7 @@ begin
       Exit(100);
     end;
   end;
-  Modifier := defender.getDodgeMod;
-  miss += Round( 100-Modifier );
+  miss += defender.getDodgeMod;
   Exit( Clamp( miss, 0, 95 ) );
 end;
 
@@ -475,7 +471,7 @@ begin
       if iSteps >= iMissileRange then begin aTarget := iRay.GetC; break; end; {**** Stop if further than maxrange.}
       if (MF_EXACT in (Missiles[aGun.Missile].Flags)) and (iRay.GetC = aTarget) then break; {**** Stop at target square for exact missiles.}
       if iRay.Done then
-         iRay.Init(TLevel(Parent), iRay.GetC, iRay.GetC + (aTarget - FPosition)); {**** Extend target out in same direction for non-exact missiles.}
+         iRay.Extend; {**** Extend target out in same direction for non-exact missiles.}
     until false;
     iScatter := Max(1,(iSteps div 4)); {**** SCATTER TIME!}
   end;
@@ -1080,7 +1076,7 @@ begin
   Exit( MoveOk );
 end;
 
-function TBeing.MoveTowards( where : TCoord2D ): TMoveResult;
+function TBeing.MoveTowards( where : TCoord2D; out outMovePos : TCoord2D ): TMoveResult;
 var Dir        : TDirection;
     MoveResult : TMoveResult;
     iLevel     : TLevel;
@@ -1116,6 +1112,7 @@ begin
   Displace( FMovePos );
   BloodFloor;
   playSound( SoundHoof );
+  outMovePos := FMovePos;
   if iLevel.Item[ FPosition ] <> nil then
     iLevel.Item[ FPosition ].CallHook( Hook_OnEnter, [ Self ] );
 
@@ -1448,7 +1445,8 @@ begin
 	if iWeapon <> nil
       then playSound( iWeapon.Sounds.Fire )
       else playSound( FSounds.Melee );
-    TLevel(Parent).DamageTile( aWhere, rollMeleeDamage( iSlot ), Damage_Melee );
+    if TLevel(Parent).DamageTile( aWhere, rollMeleeDamage( iSlot ), Damage_Melee ) then
+      TLevel(Parent).RecalcFluids;
     if iWeapon <> nil then
       Dec( FSpeedCount, Inv.Slot[iSlot].UseTime * FTimes.Fire )
     else
@@ -1702,6 +1700,8 @@ begin
         if aTarget = Target_Torso then UI.Msg('Your '+iArmor.Name+' is completely destroyed!')
                                   else UI.Msg('Your '+iArmor.Name+' are completely destroyed!');
       FreeAndNil( iArmor );
+      if IsPlayer then
+        Player.UpdateVisual;
     end
     else if IsPlayer and ( iProtection <> iArmor.GetProtection ) then
       if aTarget = Target_Torso then UI.Msg('Your '+iArmor.Name+' is damaged!')
@@ -1755,12 +1755,12 @@ function TBeing.SendMissile( aTarget : TCoord2D; aItem : TItem; aSequence : DWor
 var iDirection  : TDirection;
     iMisslePath : TVisionRay;
     iOldCoord   : TCoord2D;
-    iTarget     : TCoord2D;
     iSource     : TCoord2D;
     iCoord      : TCoord2D;
     iColor      : Byte;
     iToHit      : Integer;
     iDamage     : Integer;
+    iTileDamage : Integer;
     iBeing      : TBeing;
     iAimedBeing : TBeing;
     iRange      : Byte;
@@ -1822,11 +1822,10 @@ begin
   
   iToHit := getToHitRanged( aItem ) + aToHitMod;
 
-  iTarget := aTarget;
   iSource := FPosition;
   
   if ( MF_IMMIDATE in Missiles[iMissile].Flags ) then
-      iSource := iTarget;
+      iSource := aTarget;
 
   iMisslePath.Init( iLevel, iSource, aTarget );
 
@@ -1856,8 +1855,11 @@ begin
       if (iAimedBeing = Player) and (iDodged) then UI.Msg('You dodge!');
 
       if aItem.Flags[ IF_DESTRUCTIVE ]
-        then iLevel.DamageTile( iCoord, iDamage * 2, aItem.DamageType )
-        else iLevel.DamageTile( iCoord, iDamage, aItem.DamageType );
+        then iTileDamage := 2 * iDamage
+        else iTileDamage := iDamage;
+
+      if iLevel.DamageTile( iCoord, iTileDamage, aItem.DamageType ) then
+        iLevel.RecalcFluids;
 
       if iLevel.isVisible( iCoord ) then
         UI.Msg('Boom!');
@@ -1914,7 +1916,6 @@ begin
 
         if not ( MF_HARD in Missiles[iMissile].Flags ) then
         begin
-          aTarget := iCoord;
           iHit    := True;
           Break;
         end;
@@ -1922,13 +1923,10 @@ begin
     end;
     
     if iMisslePath.Done then
-      if (MF_EXACT in Missiles[iMissile].Flags) then Break else
-      begin
-        iOldCoord := iTarget;
-        iTarget += ( aTarget - FPosition );
-        iMisslePath.Init( iLevel, iOldCoord, iTarget );
-      end;
-      
+      if (MF_EXACT in Missiles[iMissile].Flags)
+        then Break
+        else iMisslePath.Extend;
+
     if ( iSteps >= iMaxRange ) or (MF_IMMIDATE in Missiles[iMissile].Flags) then
     begin
       if (iAimedBeing = Player) and (iDodged) then UI.Msg('You dodge!');
@@ -1946,7 +1944,7 @@ begin
   iDuration := (iSource - iMisslePath.GetC).LargerLength * iDelay;
   if not ( MF_IMMIDATE in Missiles[iMissile].Flags ) then
   begin
-    UI.addMissileAnimation( iDuration, aSequence,iSource,iMisslePath.GetC,iColor,Missiles[iMissile].Picture,iDelay,iSprite,MF_RAY in Missiles[iMissile].Flags);
+    UI.addMissileAnimation( iDuration, aSequence,iSource,aTarget,iMisslePath.GetC,iColor,Missiles[iMissile].Picture,iDelay,iSprite,MF_RAY in Missiles[iMissile].Flags);
     if iHit and iLevel.isVisible( iMisslePath.GetC ) then
       UI.addMarkAnimation(100, aSequence + iDuration, iMisslePath.GetC, Iif( iIsHit, LightRed, LightGray ), '*' );
   end;
@@ -2253,7 +2251,7 @@ var State       : TDoomLuaState;
 begin
   State.Init(L);
   Being := State.ToObject(1) as TBeing;
-  Being.ApplyDamage(State.ToInteger(2),TBodyTarget( State.ToInteger(3) ), TDamageType( State.ToInteger(4,Byte(Damage_Bullet)) ), State.ToObjectOrNil(2) as TItem );
+  Being.ApplyDamage(State.ToInteger(2),TBodyTarget( State.ToInteger(3) ), TDamageType( State.ToInteger(4,Byte(Damage_Bullet)) ), State.ToObjectOrNil(5) as TItem );
   Result := 0;
 end;
 
@@ -2408,12 +2406,13 @@ end;
 function lua_being_direct_seek(L: Plua_State): Integer; cdecl;
 var State  : TDoomLuaState;
     Being  : TBeing;
+    MovePos : TCoord2D;
 begin
   State.Init(L);
   Being := State.ToObject(1) as TBeing;
   if State.IsNil(2) then begin State.Push( Byte(MoveBlock) ); Exit(1); end;
-  State.Push( Byte(Being.MoveTowards(State.ToPosition(2))) );
-  State.PushCoord( Being.LastMove );
+  State.Push( Byte(Being.MoveTowards(State.ToPosition(2), MovePos)) );
+  State.PushCoord( MovePos );
   Result := 2;
 end;
 
@@ -2491,6 +2490,8 @@ function lua_being_path_next(L: Plua_State): Integer; cdecl;
 var State  : TDoomLuaState;
     Being  : TBeing;
     MoveR  : TMoveResult;
+    StartPos : TCoord2D;
+    MovePos  : TCoord2D;
 begin
   State.Init(L);
   Being := State.ToObject(1) as TBeing;
@@ -2521,10 +2522,11 @@ begin
       Exit(2);
     end;
 
-    Being.MoveTowards(FPath.Start.Coord);
+    StartPos := FPath.Start.Coord;
     FPath.Start := FPath.Start.Child;
+    Being.MoveTowards(StartPos, MovePos);
     State.Push( Byte(MoveR) );
-    State.PushCoord( Being.LastMove );
+    State.PushCoord( MovePos );
   end;
   Result := 2;
 end;

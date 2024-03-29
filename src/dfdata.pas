@@ -145,6 +145,7 @@ const
   Option_TimeStamp        : string = 'yyyy/mm/dd hh:nn:ss';
   Option_MusicVol         : Byte = 25;
   Option_SoundVol         : Byte = 25;
+  Option_LimitSound       : Boolean = True;
   Option_SDLMixerFreq     : Integer = 22050;
   Option_SDLMixerFormat   : Word = $8010;
   Option_SDLMixerChunkSize: Integer = 1024;

@@ -10,7 +10,7 @@ register_level "abyssal_plains"
 
 	Create = function ()
 		level.style = 1
-		generator.fill( "wall", area.FULL )
+		generator.fill( "cwall1", area.FULL )
 
 		local roll_mod = function ()
 			return table.random_pick{"mod_power","mod_agility","mod_bulk","mod_tech"}
@@ -19,10 +19,10 @@ register_level "abyssal_plains"
 		local translation = {
 			['.'] = "floor",
 			[','] = { "floor", flags = { LFBLOOD } },
-			['#'] = { "wall",  flags = { LFPERMANENT } },
+			['#'] = { "cwall1",  flags = { LFPERMANENT } },
 			['$'] = { "rwall", flags = { LFPERMANENT } },
 			['Z'] = { "gwall", flags = { LFPERMANENT } },
-			['+'] = { "door",  flags = { LFPERMANENT } },
+			['+'] = { "doorb",  flags = { LFPERMANENT } },
 			['X'] = { "stairs",being = "pain" },
 			['K'] = { "floor", being = core.ifdiff( 4, "baron") or core.ifdiff( 2, "knight", "demon" ) },
 			['i'] = { "floor", being = core.ifdiff( 5, "nimp")  or core.ifdiff( 3, "knight", "imp" ) },
@@ -98,8 +98,10 @@ register_level "abyssal_plains"
 			ui.msg("Suddenly you're trapped in!")
 			player:play_sound("door.close")
 			generator.transmute( "gwall", "floor" )
-			generator.transmute( "floor", "rwall", area.new( 28, 9, 28, 12 ) )
-			generator.transmute( "floor", "rwall", area.new( 50, 9, 50, 12 ) )
+			for _, a in ipairs { area.new( 28, 9, 28, 12 ), area.new( 50, 9, 50, 12 ) } do
+				generator.transmute( "floor", "rwall", a )
+				level:recalc_walls( a )
+			end
 			generator.set_permanence( area.FULL )
 
 			ui.msg("You hear a howl of agony!")

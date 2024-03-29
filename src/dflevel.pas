@@ -32,6 +32,7 @@ TLevel = class(TLuaMapNode, IConUIASCIIMap)
     procedure AfterGeneration( aGenerated : Boolean );
     procedure PreEnter;
     procedure RecalcFluids;
+    procedure RecalcWalls( aArea : TArea; aMerge : Boolean );
     procedure Leave;
     procedure Clear;
     procedure FullClear;
@@ -72,7 +73,7 @@ TLevel = class(TLuaMapNode, IConUIASCIIMap)
     function CallHookCheck( Hook : Byte; const Params : array of Const ) : Boolean;
 
     procedure DropCorpse( aCoord : TCoord2D; CellID : Byte );
-    procedure DamageTile( coord : TCoord2D; dmg : Integer; DamageType : TDamageType );
+    function DamageTile( coord : TCoord2D; dmg : Integer; DamageType : TDamageType ) : Boolean;
     procedure Explosion( Sequence : Integer; coord : TCoord2D; Range, Delay : Integer; Damage : TDiceRoll; color : byte; ExplSound : Word; DamageType : TDamageType; aItem : TItem; aFlags : TExplosionFlags = []; aContent : Byte = 0; aDirectHit : Boolean = False );
     procedure Shotgun( source, target : TCoord2D; Damage : TDiceRoll; Shotgun : TShotgunData; aItem : TItem );
     procedure Respawn( Chance : byte );
@@ -153,7 +154,7 @@ TLevel = class(TLuaMapNode, IConUIASCIIMap)
 implementation
 
 uses typinfo, vluadungen, vluatools, vluasystem,
-     vdebug, dfplayer, doomlua, doombase, doomio, doomspritemap;
+     vuid, vdebug, dfplayer, doomlua, doombase, doomio, doomspritemap;
 
 procedure TLevel.ScriptLevel(script : string);
 begin
@@ -469,6 +470,7 @@ begin
   FFloorCell := LuaSystem.Defines[LuaSystem.Get(['generator','styles',FStyle,'floor'])];
   if LuaSystem.Get(['diff',Doom.Difficulty,'respawn']) then Include( FFlags, LF_RESPAWN );
   ToHitBonus := LuaSystem.Get(['diff',Doom.Difficulty,'tohitbonus']);
+  FFeeling := '';
 end;
 
 procedure TLevel.AfterGeneration( aGenerated : Boolean );
@@ -485,7 +487,7 @@ begin
     iFlags  := Cells[iCell].Flags;
     if CF_OVERLAY in iFlags then
     begin
-      if (CF_STICKWALL in iFlags) and (not (CF_OPENABLE in iFlags )) then
+      if CF_OVERWALL in iFlags then
         PutCell(iCoord,iWall)
       else
         PutCell(iCoord,FFloorCell);
@@ -503,11 +505,7 @@ var c : TCoord2D;
 begin
   if GraphicsVersion then
   begin
-    for c in FArea do
-    begin
-      if CF_MULTISPRITE in Cells[CellBottom[c]].Flags then
-        Map.r[c.x,c.y] := SpriteMap.GetCellShift(c);
-    end;
+    RecalcWalls( FArea, True );
 
     UI.GameUI.UpdateMinimap;
     RecalcFluids;
@@ -539,8 +537,9 @@ procedure TLevel.RecalcFluids;
 var cc : TCoord2D;
   function FluidFlag( c : TCoord2D; Value : Byte ) : Byte;
   begin
-    if not isProperCoord( c ) then Exit(0);
-    if not (F_GFLUID in Cells[CellBottom[ c ]].Flags)
+    if not isProperCoord( c ) then Exit( 0 );
+    if (not (F_GFLUID in Cells[CellBottom[ c ]].Flags)) and
+      (not (CF_STICKWALL in Cells[CellBottom[ c ]].Flags))
       then Exit( Value )
       else Exit( 0 );
   end;
@@ -553,6 +552,19 @@ begin
        FluidFlag( cc.ifInc( 0,+1), 2 ) +
        FluidFlag( cc.ifInc(-1, 0), 4 ) +
        FluidFlag( cc.ifInc(+1, 0), 8 );
+end;
+
+procedure TLevel.RecalcWalls( aArea : TArea; aMerge : Boolean );
+var c : TCoord2D;
+    shiftArea : TArea;
+begin
+  shiftArea := aArea;
+  if aMerge then shiftArea := FArea;
+  for c in aArea do
+  begin
+    if CF_MULTISPRITE in Cells[CellBottom[c]].Flags then
+      Map.r[c.x,c.y] := SpriteMap.GetCellShift(c, shiftArea);
+  end;
 end;
 
 procedure TLevel.Leave;
@@ -704,19 +716,19 @@ begin
 end;
 
 
-procedure TLevel.DamageTile( coord : TCoord2D; Dmg : Integer; DamageType : TDamageType );
+function TLevel.DamageTile( coord : TCoord2D; Dmg : Integer; DamageType : TDamageType ) : Boolean;
 var cellID : byte;
     Heavy  : Boolean;
 begin
   Heavy := DamageType in [Damage_Acid, Damage_Fire, Damage_Plasma, Damage_SPlasma];
-  if not isProperCoord(coord) then Exit;
+  if not isProperCoord(coord) then Exit( False );
   cellID := Cell[Coord];
   
-  if LightFlag[ coord, lfPermanent ] then Exit;
-  if LightFlag[ coord, lfFresh ]     then Exit;
+  if LightFlag[ coord, lfPermanent ] then Exit( False );
+  if LightFlag[ coord, lfFresh ]     then Exit( False );
 
-  if (not Heavy) and (not (CF_FRAGILE in Cells[cellID].Flags)) then Exit;
-  if Cells[cellID].DR = 0 then Exit;
+  if (not Heavy) and (not (CF_FRAGILE in Cells[cellID].Flags)) then Exit( False );
+  if Cells[cellID].DR = 0 then Exit( False );
 
   dmg -= Cells[cellID].DR;
 
@@ -727,10 +739,10 @@ begin
     Damage_Plasma  : Dmg := Round( Dmg * 1.5 );
   end;
 
-  if dmg <= 0 then Exit;
+  if dmg <= 0 then Exit( False );
 
   HitPoints[coord] := Max(0,HitPoints[coord]-dmg);
-  if HitPoints[coord] > 0 then Exit;
+  if HitPoints[coord] > 0 then Exit( False );
   
   if CF_CORPSE in Cells[cellID].Flags then
     playSound( 'gib', coord );
@@ -740,6 +752,7 @@ begin
     else Cell[coord] := LuaSystem.Defines[ Cells[cellID].destroyto ];
 
   CallHook( coord, CellID, CellHook_OnDestroy );
+  Exit( True );
 end;
 
 
@@ -802,8 +815,15 @@ var a     : TCoord2D;
     dir   : TDirection;
     iKnockbackValue : Byte;
     iNode : TNode;
+    iItemUID : TUID;
+    iRecalc : Boolean;
 begin
   if not isProperCoord( coord ) then Exit;
+
+  iItemUID := 0;
+  if aItem <> nil then iItemUID := aItem.UID;
+
+  iRecalc := False;
 
   UI.Explosion( Sequence, coord, Range, Delay, Color, ExplSound, aFlags );
 
@@ -821,7 +841,7 @@ begin
         iDamage := Damage.Roll;
         if not (efNoDistanceDrop in aFlags) then
           iDamage := iDamage div Max(1,(Distance(a,coord)+1) div 2);
-        DamageTile( a, iDamage, DamageType );
+        if DamageTile( a, iDamage, DamageType ) then iRecalc := True;
         if Being[a] <> nil then
         with Being[a] do
         begin
@@ -839,6 +859,7 @@ begin
           KnockBacked := True;
           if (Flags[BF_FIREANGEL]) and (not aDirectHit) then Continue;
           if (efSelfHalf in aFlags) and isActive then iDamage := iDamage div 2;
+          if (aItem <> nil) and (UIDs[iItemUID] = nil) then aItem := nil;
           ApplyDamage( iDamage, Target_Torso, DamageType, aItem );
         end;
         if Item[a] <> nil then
@@ -850,21 +871,26 @@ begin
         if (aContent <> 0) and isEmpty( a, [ EF_NOITEMS, EF_NOSTAIRS, EF_NOBLOCK, EF_NOHARM ] ) then
         begin
           if (iDamage > 20) or ((efRandomContent in aFlags) and (Random(2) = 1)) then
+          begin
             Cell[a] := aContent;
+            iRecalc := True;
+          end;
         end;
       end;
-  if aContent <> 0 then RecalcFluids;
+  if iRecalc then RecalcFluids;
 end;
 
 procedure TLevel.Shotgun( source, target : TCoord2D; Damage : TDiceRoll; Shotgun : TShotgunData; aItem : TItem );
-var a,b,tc  : TCoord2D;
-    d       : Single;
-    dmg     : Integer;
-    Range   : Byte;
-    Spread  : Byte;
-    Reduce  : Single;
-    Dir     : TDirection;
-    iNode   : TNode;
+var a,b,tc   : TCoord2D;
+    d        : Single;
+    dmg      : Integer;
+    Range    : Byte;
+    Spread   : Byte;
+    Reduce   : Single;
+    Dir      : TDirection;
+    iNode    : TNode;
+    iItemUID : TUID;
+    iRecalc  : Boolean;
     procedure SendShotgunBeam( s : TCoord2D; tcc : TCoord2D );
     var shb : TVisionRay;
         cnt : byte;
@@ -884,6 +910,10 @@ begin
   Range  := Shotgun.MaxRange;
   Spread := Shotgun.Spread;
   Reduce := Shotgun.Reduce;
+
+  iItemUID := aItem.UID;
+
+  iRecalc := False;
 
   d   := Distance( source, target );
   if d = 0 then Exit;
@@ -922,14 +952,17 @@ begin
             Knockback( dir, dmg div KnockBackValue );
           end;
           KnockBacked := True;
+          if (aItem <> nil) and (UIDs[iItemUID] = nil) then aItem := nil;
           ApplyDamage( dmg, Target_Torso, Shotgun.DamageType, aItem );
         end;
         
-        DamageTile( tc, dmg, Shotgun.DamageType );
+        if DamageTile( tc, dmg, Shotgun.DamageType ) then iRecalc := True;
         if cellFlagSet(tc,CF_BLOCKMOVE) then
           if isVisible(tc) then UI.Mark(tc,LightGray,'*',100);
       end;
   ClearLightMapBits([lfDamage]);
+  
+  if iRecalc then RecalcFluids;
 end;
 
 
@@ -1132,7 +1165,7 @@ begin
   Exit(isProperCoord(coord) and (cellFlagSet(coord,CF_BLOCKLOS)));
 end;
 
-function TLevel.getCell( const aWhere : TCoord2D ) : byte; inline;
+function TLevel.getCell( const aWhere : TCoord2D ) : byte;
 var iOverlay : Word;
 begin
   iOverlay := Map.d[aWhere.x, aWhere.y];
@@ -1140,7 +1173,7 @@ begin
   Result := inherited GetCell( aWhere );
 end;
 
-procedure TLevel.putCell( const aWhere : TCoord2D; const aWhat : byte ); inline;
+procedure TLevel.putCell( const aWhere : TCoord2D; const aWhat : byte );
 begin
   if CF_OVERLAY in Cells[ aWhat ].Flags
   then
@@ -1260,6 +1293,8 @@ begin
   end;
   UI.Blink(White,1000);
   Level.FArea.ForAllCells( @Level.NukeCell );
+  Level.RecalcWalls( Level.FArea, True );
+  Level.RecalcFluids;
   Result := 0;
 end;
 
@@ -1315,15 +1350,62 @@ begin
   Exit( 0 );
 end;
 
-const lua_level_lib : array[0..8] of luaL_Reg = (
-      ( name : 'drop_item';  func : @lua_level_drop_item),
-      ( name : 'drop_being'; func : @lua_level_drop_being),
-      ( name : 'player';     func : @lua_level_player),
-      ( name : 'play_sound'; func : @lua_level_play_sound),
-      ( name : 'nuke';       func : @lua_level_nuke),
-      ( name : 'explosion';  func : @lua_level_explosion),
-      ( name : 'clear_being';func : @lua_level_clear_being),
-      ( name : 'recalc_fluids';func : @lua_level_recalc_fluids),
+function lua_level_recalc_walls(L: Plua_State): Integer; cdecl;
+var State : TDoomLuaState;
+    Level : TLevel;
+    Area : TArea;
+    Merge : Boolean;
+begin
+  State.Init(L);
+  Level := State.ToObject(1) as TLevel;
+  Area := Level.FArea;
+  Merge := False;
+  if State.StackSize >= 2 then
+    Area := State.ToArea(2);
+  if State.StackSize >= 3 then
+    Merge := State.ToBoolean(3);
+  if GraphicsVersion then
+    Level.RecalcWalls( Area, Merge );
+  Exit( 0 );
+end;
+
+function lua_level_get_cell_bottom(L: Plua_State): Integer; cdecl;
+var State : TDoomLuaState;
+    Level : TLevel;
+begin
+  State.Init(L);
+  Level := State.ToObject(1) as TLevel;
+  State.Push( Level.CellToID( Level.getCellBottom( State.ToPosition( 2 ) ) ) );
+  Result := 1;
+end;
+
+function lua_level_get_cell_top(L: Plua_State): Integer; cdecl;
+var State : TDoomLuaState;
+    Level : TLevel;
+    CellID : Byte;
+begin
+  State.Init(L);
+  Level := State.ToObject(1) as TLevel;
+  CellID := Level.getCellTop( State.ToPosition( 2 ) );
+  if CellID = 0 then
+    State.PushNil()
+  else
+    State.Push( Level.CellToID( CellID ) );
+  Result := 1;
+end;
+
+const lua_level_lib : array[0..11] of luaL_Reg = (
+      ( name : 'drop_item';       func : @lua_level_drop_item),
+      ( name : 'drop_being';      func : @lua_level_drop_being),
+      ( name : 'player';          func : @lua_level_player),
+      ( name : 'play_sound';      func : @lua_level_play_sound),
+      ( name : 'nuke';            func : @lua_level_nuke),
+      ( name : 'explosion';       func : @lua_level_explosion),
+      ( name : 'clear_being';     func : @lua_level_clear_being),
+      ( name : 'recalc_fluids';   func : @lua_level_recalc_fluids),
+      ( name : 'recalc_walls';    func : @lua_level_recalc_walls),
+      ( name : 'get_cell_bottom'; func : @lua_level_get_cell_bottom),
+      ( name : 'get_cell_top';    func : @lua_level_get_cell_top),
       ( name : nil;          func : nil; )
 );
 

@@ -108,6 +108,9 @@ function item:check_mod_array( nextmod, techbonus )
 	ui.msg("You assemble the "..found_mod_array.name..".")
 	found_mod_array.OnApply(self)
 	self.color = LIGHTCYAN
+	if self:get_glow() == nil then
+		self:set_glow( { 0.0, 1.0, 1.0, 0.8 } )
+	end
 	if techbonus == 2 then
 		self.flags[ IF_SINGLEMOD ] = true
 	else

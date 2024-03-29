@@ -33,6 +33,8 @@ function register_corpse( being_proto )
 		name = being_proto.name.." corpse";
 		ascii = "%";
 		color = RED;
+		coscolor = being_proto.coscolor,
+		overlay = being_proto.overlay,
 		armor = math.max(being_proto.armor, 1);
 		hp = being_proto.hp;
 		flags = {CF_CORPSE, CF_NOCHANGE, CF_OVERLAY, CF_VBLOODY, CF_RAISABLE};

@@ -649,6 +649,7 @@ var iLevel      : TLevel;
     iAlt        : Boolean;
     iMoveResult : TMoveResult;
     iTempSC     : LongInt;
+    iStartNode  : TAStarNode;
     function RunStopNear : boolean;
     begin
       if iLevel.isProperCoord( FPosition.ifIncX(+1) ) and iLevel.cellFlagSet( FPosition.ifIncX(+1), CF_RUNSTOP ) then Exit( True );
@@ -782,7 +783,8 @@ try
       continue;
     end;
 
-    
+    iStartNode := nil;
+
     if FRun.Active
       then
         if FPathRun then
@@ -794,7 +796,10 @@ try
             Continue;
           end;
           iDir := NewDirection( FPosition, FPath.Start.Coord );
+          iStartNode := FPath.Start;
           FPath.Start := FPath.Start.Child;
+          if FPath.Start = nil then
+            iStartNode := nil;
         end
         else iDir := FRun.Dir
       else iDir := CommandDirection( iCommand );
@@ -879,7 +884,14 @@ try
            FSpeedCount := iTempSC;
          end;
        MoveBeing : Attack( iLevel.Being[ iMove ] );
-       MoveDoor  : iLevel.CallHook( iMove, Self, CellHook_OnAct );
+       MoveDoor  :
+         if iLevel.CallHook( iMove, Self, CellHook_OnAct ) and (iStartNode <> nil) then
+           FPath.Start := iStartNode
+         else
+         begin
+           FPathRun := False;
+           FRun.Stop;
+         end;
     end;
     if FRun.Active and (not FPathRun) then
       if RunStopNear or
@@ -919,7 +931,8 @@ try
     COMMAND_MSCRDOWN  : if Inv.DoScrollSwap then Dec(FSpeedCount,1000);
 
     COMMAND_MRIGHT    : if (IO.MTarget = FPosition) or
-                           ((Inv.Slot[ efWeapon ] <> nil) and (Inv.Slot[ efWeapon ].isRanged) and (not (Inv.Slot[efWeapon].GetFlag(IF_NOAMMO))) and (Inv.Slot[ efWeapon ].Ammo = 0))  then
+                           ((Inv.Slot[ efWeapon ] <> nil) and (Inv.Slot[ efWeapon ].isRanged) and (not (Inv.Slot[efWeapon].GetFlag(IF_NOAMMO))) and
+                           ((Inv.Slot[ efWeapon ].Ammo = 0) or (Inv.Slot[ efWeapon ].GetFlag(IF_PUMPACTION) and Inv.Slot[ efWeapon].GetFlag(IF_CHAMBEREMPTY)))) then
                           if iAlt
                             then ActionAltReload
                             else ActionReload

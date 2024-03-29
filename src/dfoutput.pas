@@ -28,7 +28,7 @@ type
 
     //procedure Save;
     procedure addMoveAnimation( aDuration : DWord; aDelay : DWord; aUID : TUID; aFrom, aTo : TCoord2D; aSprite : TSprite );
-    procedure addMissileAnimation( aDuration : DWord; aDelay : DWord; aSource, aTarget : TCoord2D; aColor : Byte; aPic : Char; aDrawDelay : Word; aSprite : TSprite; aRay : Boolean = False );
+    procedure addMissileAnimation( aDuration : DWord; aDelay : DWord; aSource, aTarget, aImpact : TCoord2D; aColor : Byte; aPic : Char; aDrawDelay : Word; aSprite : TSprite; aRay : Boolean = False );
     procedure addMarkAnimation( aDuration : DWord; aDelay : DWord; aCoord : TCoord2D; aColor : Byte; aPic : Char );
     procedure addSoundAnimation( aDelay : DWord; aPosition : TCoord2D; aSoundID : DWord );
     procedure addScreenMoveAnimation( aDuration : DWord; aDelay : DWord; aTo : TCoord2D );
@@ -37,6 +37,7 @@ type
     procedure GFXAnimationDraw;
     procedure GFXAnimationUpdate( aTime : DWord );
 
+    procedure SetUIHint( const aText : AnsiString );
     procedure SetTempHint( const aText : AnsiString );
     procedure SetHint( const aText : AnsiString );
     procedure Msg( const aText : AnsiString );
@@ -73,6 +74,7 @@ type
     procedure ASCIILoader( aStream : TStream; aName : Ansistring; aSize : DWord );
   private
     FHint       : AnsiString;
+    FUIHint     : AnsiString;
     FGameUI     : TDoomGameUI;
     FLastTick   : TDateTime;
     FASCII      : TASCIIImageMap;
@@ -168,6 +170,7 @@ begin
   Waiting := False;
   FGameUI := nil;
   FHint := '';
+  FUIHint := '';
   FAnimations := nil;
   if GraphicsVersion then FAnimations := TAnimationManager.Create;
   FASCII := TASCIIImageMap.Create( True );
@@ -199,7 +202,7 @@ begin
 end;
 
 procedure TDoomUI.addMissileAnimation(aDuration: DWord; aDelay: DWord; aSource,
-  aTarget: TCoord2D; aColor: Byte; aPic: Char; aDrawDelay: Word;
+  aTarget, aImpact: TCoord2D; aColor: Byte; aPic: Char; aDrawDelay: Word;
   aSprite: TSprite; aRay: Boolean);
 begin
   if Doom.State <> DSPlaying then Exit;
@@ -207,12 +210,12 @@ begin
   begin
     FAnimations.addAnimation(
       TDoomMissile.Create( aDuration, aDelay, aSource,
-        aTarget, aDrawDelay, aSprite, aRay ) );
+        aImpact, aDrawDelay, aSprite, aRay ) );
     Exit;
   end;
   if aRay
-    then FGameUI.Map.AddAnimation( TConUIRayAnimation.Create( Doom.Level, aSource, aTarget, IOGylph( aPic, aColor ), aDuration, aDelay, Player.Vision ) )
-    else FGameUI.Map.AddAnimation( TConUIBulletAnimation.Create( Doom.Level, aSource, aTarget, IOGylph( aPic, aColor ), aDuration, aDelay, Player.Vision ) );
+    then FGameUI.Map.AddAnimation( TConUIRayAnimation.Create( Doom.Level, aSource, aTarget, aImpact, IOGylph( aPic, aColor ), aDuration, aDelay, Player.Vision ) )
+    else FGameUI.Map.AddAnimation( TConUIBulletAnimation.Create( Doom.Level, aSource, aTarget, aImpact, IOGylph( aPic, aColor ), aDuration, aDelay, Player.Vision ) );
 end;
 
 procedure TDoomUI.addMarkAnimation(aDuration: DWord; aDelay: DWord;
@@ -270,17 +273,29 @@ begin
   Doom.Level.RevealBeings;
 end;
 
-procedure TDoomUI.SetHint ( const aText : AnsiString ) ;
+procedure TDoomUI.SetUIHint ( const aText : AnsiString ) ;
 begin
-  FHint := aText;
-  FGameUI.Hint.SetText( aText );
+  FUIHint := aText;
+  if aText = ''
+    then FGameUI.Hint.SetText( FHint )
+    else FGameUI.Hint.SetText( aText );
 end;
 
 procedure TDoomUI.SetTempHint ( const aText : AnsiString ) ;
 begin
-  if aText = ''
-    then FGameUI.Hint.SetText( FHint )
-    else FGameUI.Hint.SetText( aText );
+  if FUIHint = '' then
+  begin
+    if aText = ''
+      then FGameUI.Hint.SetText( FHint )
+      else FGameUI.Hint.SetText( aText );
+  end;
+end;
+
+procedure TDoomUI.SetHint ( const aText : AnsiString ) ;
+begin
+  FHint := aText;
+  if FUIHint = '' then
+    FGameUI.Hint.SetText( aText );
 end;
 
 procedure TDoomUI.Msg( const aText : AnsiString );
@@ -519,6 +534,7 @@ begin
       iDone := True;
     end;
   until iDone;
+  MsgUpDate;
 end;
 
 function TDoomUI.ChooseTarget(aActionName : string; aRange: byte;
@@ -531,8 +547,28 @@ var Key : byte;
     iTargetRange : Byte;
     iTargetLine  : TVisionRay;
     iLevel : TLevel;
-    iDist : Byte;
     iBlock : Boolean;
+    iPoint : TPoint;
+  function SnapTarget( aTarget : TCoord2D ) : TCoord2D;
+  var iDist : Byte;
+      iTargetLine : TVisionRay;
+  begin
+    iDist := Distance(aTarget.x, aTarget.y, Player.Position.x, Player.Position.y);
+    if iDist > aRange-1 then
+    begin
+      iDist := 0;
+      iTargetLine.Init(iLevel, Player.Position, aTarget);
+      while iDist < (aRange - 1) do
+      begin
+        iTargetLine.Next;
+        iDist := Distance(iTargetLine.GetSource.x, iTargetLine.GetSource.y,  iTargetLine.GetC.x, iTargetLine.GetC.y);
+      end;
+      if Distance(iTargetLine.GetSource.x, iTargetLine.GetSource.y, iTargetLine.GetC.x, iTargetLine.GetC.y) > aRange-1
+        then aTarget := iTargetLine.prev
+        else aTarget := iTargetLine.GetC;
+    end;
+    Exit( aTarget );
+  end;
 begin
   iLevel      := Doom.Level;
   Position    := Player.Position;
@@ -546,6 +582,13 @@ begin
 
   if aShowLast then
     FGameUI.SetLastTarget( Player.TargetPos );
+
+  if (IO.MCursor <> nil) and IO.MCursor.Active and IO.Driver.GetMousePos( iPoint ) then
+  begin
+    iPoint := SpriteMap.DevicePointToCoord( iPoint );
+    iTarget := NewCoord2D(iPoint.X,iPoint.Y);
+    iTarget := SnapTarget( iTarget );
+  end;
 
   LookDescription( iTarget );
   repeat
@@ -565,23 +608,7 @@ begin
     Key := IO.WaitForCommand(COMMANDS_MOVE+[COMMAND_GRIDTOGGLE, COMMAND_ESCAPE,COMMAND_MORE,COMMAND_FIRE,COMMAND_ALTFIRE,COMMAND_TACTIC, COMMAND_MMOVE,COMMAND_MRIGHT, COMMAND_MLEFT]);
     if (Key = COMMAND_GRIDTOGGLE) and GraphicsVersion then SpriteMap.ToggleGrid;
     if Key in [ COMMAND_MMOVE, COMMAND_MRIGHT, COMMAND_MLEFT ] then
-       begin
-         iTarget := IO.MTarget;
-         iDist := Distance(iTarget.x, iTarget.y, Position.x, Position.y);
-         if iDist > aRange-1 then
-           begin
-             iDist := 0;
-             iTargetLine.Init(iLevel, Position, iTarget);
-             while iDist < (aRange - 1) do
-               begin
-                    iTargetLine.Next;
-                    iDist := Distance(iTargetLine.GetSource.x, iTargetLine.GetSource.y,  iTargetLine.GetC.x, iTargetLine.GetC.y);
-               end;
-             if Distance(iTargetLine.GetSource.x, iTargetLine.GetSource.y, iTargetLine.GetC.x, iTargetLine.GetC.y) > aRange-1
-             then iTarget := iTargetLine.prev
-             else iTarget := iTargetLine.GetC;
-           end;
-       end;
+       iTarget := SnapTarget( IO.MTarget );
     if Key in [ COMMAND_ESCAPE, COMMAND_MRIGHT ] then begin iTarget.x := 0; Break; end;
     if Key = COMMAND_TACTIC then iTarget := aTargets.Next;
     if (Key in COMMANDS_MOVE) then

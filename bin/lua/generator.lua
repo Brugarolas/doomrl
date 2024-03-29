@@ -134,8 +134,6 @@ function generator.horiz_river( cell, width, bridge )
 end
 
 function generator.vert_river( cell, width, bridge, pos )
-	-- guarantee bridges - needs to be tested
-	bridge = true
 	local floor = generator.styles[ level.style ].floor
 	if bridge then bridge = 3 + math.random(14) else bridge = 100 end
 	local x_start, y_start

@@ -12,19 +12,19 @@ register_level "the_mortuary"
 	end,
 
 	Create = function ()
-		level.style = 1
+		level.style = 3
 		generator.fill( "rwall", area.FULL )
-		generator.fill( "floor", area.FULL_SHRINKED )
+		generator.fill( "floorb", area.FULL_SHRINKED )
 		generator.set_blood( area.FULL_SHRINKED, true )
 
 		local translation = {
-			['.'] = { "floor", flags = { LFBLOOD } },
+			['.'] = { "floorb", flags = { LFBLOOD } },
 			['>'] = "stairs",
 			['X'] = "rwall",
-			['1'] = { "floor", flags = { LFBLOOD }, item = "lmed" },
-			['2'] = { "floor", flags = { LFBLOOD }, item = "scglobe" },
-			['3'] = { "floor", flags = { LFBLOOD }, item = "rarmor" },
-			['4'] = { "floor", flags = { LFBLOOD }, item = "ashard" },
+			['1'] = { "floorb", flags = { LFBLOOD }, item = "lmed" },
+			['2'] = { "floorb", flags = { LFBLOOD }, item = "scglobe" },
+			['3'] = { "floorb", flags = { LFBLOOD }, item = "rarmor" },
+			['4'] = { "floorb", flags = { LFBLOOD }, item = "ashard" },
 		}
 
 		local tile = [[
@@ -61,7 +61,7 @@ XX.XX
 
 		for cnt = 1,DIFFICULTY+25 do
 			local corpse = corpses[math.random(7+DIFFICULTY)].."corpse";
-			generator.scatter(area.FULL_SHRINKED,"floor",corpse,math.random(10)+4)
+			generator.scatter(area.FULL_SHRINKED,"floorb",corpse,math.random(10)+4)
 		end
 
 		level:player(38,10)

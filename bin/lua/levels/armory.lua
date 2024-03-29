@@ -40,6 +40,7 @@ register_level "hells_armory"
 						level.light[ coord.new(x,y) ][ LFBLOOD ] = true
 					end
 				end
+				level:recalc_walls( area.new( 5, 8, 7, 12 ), true )
 				level:drop_being("shambler",coord.new(6,10))
 				level.status = 1
 				player:play_sound{"shambler.act", "baron.act"}
@@ -138,11 +139,8 @@ register_level "hells_armory"
 			end
 
 			ui.msg("The lab cache opens.")
-			for x = 4,5 do
-				for y = 9,11 do
-					level.map[ coord.new(x,y) ] = "floor"
-				end
-			end
+			generator.transmute( "wall", "floor", area.new( 4, 9, 5, 11 ) )
+			level:recalc_walls( area.new( 3, 8, 5, 12 ), true )
 			player:play_sound("lever.use")
 
 			local unknown = { {}, {}, {} }

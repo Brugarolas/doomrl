@@ -95,13 +95,13 @@ begin
   {$IFDEF WINDOWS}
   if (not FConnected) or (not Option_NetworkConnection) then Exit( False );
   if Option_VersionCheck and IsNewer(FStable) then
-    if ( MessageBox( 0, 'You''re running an old version of DoomRL, missing out on some awesome features! It is highly recommended for you to upgrade!'#10#10'Do you want to download the newest version now?','DoomRL - new version available!', MB_YESNO or MB_ICONQUESTION ) = IDYES ) then
+    if ( MessageBox( 0, 'You''re running an old version of DRL, missing out on some awesome features! It is highly recommended for you to upgrade!'#10#10'Do you want to download the newest version now?','DRL - new version available!', MB_YESNO or MB_ICONQUESTION ) = IDYES ) then
     begin
       OpenWebPage('https://drl.chaosforge.org');
       Exit( True );
     end;
   if Option_BetaCheck and IsNewer(FBeta) then
-    if ( MessageBox( 0, 'New BETA version available! Upgrade is highly recommended!'#10#10'Do you want to download the newest version now?','DoomRL - new version available!', MB_YESNO or MB_ICONQUESTION ) = IDYES ) then
+    if ( MessageBox( 0, 'New BETA version available! Upgrade is highly recommended!'#10#10'Do you want to download the newest version now?','DRL - new version available!', MB_YESNO or MB_ICONQUESTION ) = IDYES ) then
     begin
       OpenWebPage('http://forum.chaosforge.org');
       Exit( True );

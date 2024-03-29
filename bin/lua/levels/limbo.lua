@@ -27,7 +27,6 @@ register_level "limbo"
 			color_id = false,
 
 			OnUse = function(self,being)
-				player:play_sound("lever.use")
 				generator.transmute_marker( LFMARKER1, "bridge" )
 				ui.msg("The west bridges rise!")
 				level:recalc_fluids()
@@ -49,7 +48,6 @@ register_level "limbo"
 			color_id = false,
 
 			OnUse = function(self,being)
-				player:play_sound("lever.use")
 				generator.transmute_marker( LFMARKER2, "bridge" )
 				ui.msg("The east bridges rise!")
 				level:recalc_fluids()

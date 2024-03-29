@@ -149,7 +149,7 @@ function generator.scatter_put(scatter_area,code,tile,good,count)
 end
 
 function generator.safe_empty_coord( a )
-	local result = generator.random_empty_coord({ EF_NOBEINGS, EF_NOITEMS, EF_NOSTAIRS, EF_NOBLOCK, EF_NOHARM, EF_NOSPAWN, EF_NOSAFE }, area )
+	local result = generator.random_empty_coord({ EF_NOBEINGS, EF_NOITEMS, EF_NOSTAIRS, EF_NOBLOCK, EF_NOHARM, EF_NOSPAWN, EF_NOSAFE }, a )
 	if not result then
 		result = generator.random_empty_coord({ EF_NOBEINGS, EF_NOITEMS, EF_NOSTAIRS, EF_NOBLOCK, EF_NOHARM, EF_NOSPAWN }, a )
 	end
@@ -370,7 +370,6 @@ end
 
 function generator.reset()
 	core.log("generator.reset()")
-	ui.clear_feel()
 	generator.OnKill    = nil
 	generator.OnKillAll = nil
 	generator.OnEnter   = nil

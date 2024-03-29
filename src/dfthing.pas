@@ -21,6 +21,7 @@ TThing = class( TLuaEntityNode )
   function CallHookCheck( Hook : Byte; const Params : array of Const ) : Boolean;
   function GetSprite : TSprite; virtual;
   procedure WriteToStream( Stream : TStream ); override;
+  class procedure RegisterLuaAPI();
 protected
   procedure LuaLoad( Table : TLuaTable ); virtual;
 protected
@@ -33,7 +34,7 @@ end;
 implementation
 
 uses typinfo, variants,
-     vluasystem, vcolor, vdebug,
+     vlualibrary, vluasystem, vcolor, vdebug,
      doomlua, doombase, doomio;
 
 constructor TThing.Create( const aID : AnsiString );
@@ -101,6 +102,58 @@ constructor TThing.CreateFromStream( Stream: TStream );
 begin
   inherited CreateFromStream( Stream );
   Stream.Read( FSprite,     SizeOf( FSprite ) );
+end;
+
+function lua_thing_get_glow(L: Plua_State): Integer; cdecl;
+var State : TDoomLuaState;
+    Thing : TThing;
+begin
+  State.Init(L);
+  Thing := State.ToObject(1) as TThing;
+
+  if Thing.FSprite.Glow then
+  begin
+    lua_newtable(L);
+    lua_pushnumber(L, Thing.FSprite.GlowColor.R / 255.0);
+    lua_rawseti(L, -2, 1);
+    lua_pushnumber(L, Thing.FSprite.GlowColor.G / 255.0);
+    lua_rawseti(L, -2, 2);
+    lua_pushnumber(L, Thing.FSprite.GlowColor.B / 255.0);
+    lua_rawseti(L, -2, 3);
+    lua_pushnumber(L, Thing.FSprite.GlowColor.A / 255.0);
+    lua_rawseti(L, -2, 4);
+  end
+  else
+    lua_pushnil(L);
+  Result := 1;
+end;
+
+function lua_thing_set_glow(L: Plua_State): Integer; cdecl;
+var State : TDoomLuaState;
+    Thing : TThing;
+begin
+  State.Init(L);
+  Thing := State.ToObject(1) as TThing;
+
+  if State.IsNil(2) then
+    Thing.FSprite.Glow := False
+  else
+  begin
+    Thing.FSprite.Glow := True;
+    Thing.FSprite.GlowColor := NewColor( State.ToVec4f(2) );
+  end;
+  Result := 0;
+end;
+
+const lua_thing_lib : array[0..2] of luaL_Reg = (
+      ( name : 'get_glow';   func : @lua_thing_get_glow),
+      ( name : 'set_glow';   func : @lua_thing_set_glow),
+      ( name : nil;          func : nil; )
+);
+
+class procedure TThing.RegisterLuaAPI();
+begin
+  LuaSystem.Register( 'thing', lua_thing_lib );
 end;
 
 end.

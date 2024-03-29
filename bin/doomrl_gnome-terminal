@@ -1,4 +1,0 @@
-#!/bin/sh
-set -eu
-
-gnome-terminal --geometry=80x25  -e "./doomrl -console"

@@ -199,7 +199,7 @@ function DoomRL.loadcells()
 		armor      = 5,
 		hp         = 5,
 		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_STICKWALL},
+		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE},
 		sprite     = SPRITE_YBOX,
 		blsprite   = SPRITE_WALLBLOOD,
 	}
@@ -214,7 +214,7 @@ function DoomRL.loadcells()
 		armor      = 5,
 		hp         = 5,
 		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_STICKWALL},
+		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE},
 		sprite     = SPRITE_WBOX,
 		blsprite   = SPRITE_WALLBLOOD,
 	}
@@ -319,6 +319,22 @@ function DoomRL.loadcells()
 				being:msg("There's something blocking the door.")
 				return false
 			end
+		end,
+	}
+
+	register_cell "ldoorb"
+	{
+		name       = "locked door",
+		ascii      = "+",
+		color      = BROWN,
+		armor      = 6,
+		hp         = 6,
+		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_FRAGILE, CF_OVERLAY, CF_STICKWALL, CF_RUNSTOP},
+		sprite     = SPRITE_HELLDOOR,
+
+		OnAct = function(c,being)
+			being:msg("The door is locked.")
+			return false
 		end,
 	}
 
@@ -612,7 +628,7 @@ function DoomRL.loadcells()
 		armor      = 5,
 		hp         = 5,
 		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_STICKWALL, CF_FRAGILE},
+		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_FRAGILE},
 		sprite     = SPRITE_WBOXC,
 		blsprite   = SPRITE_WALLBLOOD,
 		coscolor   = {1.0,0.0,0.0,1.0},
@@ -638,7 +654,7 @@ function DoomRL.loadcells()
 		armor      = 5,
 		hp         = 5,
 		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_STICKWALL, CF_FRAGILE},
+		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_FRAGILE},
 		sprite     = SPRITE_YBOXC,
 		blsprite   = SPRITE_WALLBLOOD,
 		coscolor   = {1.0,1.0,0.0,1.0},

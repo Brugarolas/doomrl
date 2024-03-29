@@ -125,7 +125,7 @@ function DoomRL.loadmissiles()
 	register_missile "mknife"
 	{
 		sound_id   = "knife",
-		color      = LIGHTGRAY,
+		color      = WHITE,
 		sprite     = SPRITE_KNIFE,
 		delay      = 50,
 		miss_base  = 10,
