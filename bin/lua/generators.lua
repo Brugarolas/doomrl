@@ -60,14 +60,14 @@ function DoomRL.load_generators()
 			for x=1,MAXX do generator.set_cell( coord.new(x,MAXY-1), wall_cell ) end
 			generator.maze_dungeon( floor_cell, wall_cell, style.granularity, style.tries, style.minl, style.maxl )
 
-			ui.msg_feel( "Where the hell is the way out of here!?!" )
+			ui.msg_feel( "This floor's layout feels even more tangled and messy than usual..." )
 		end,
 
 		post_run   = function()
 			local s = generator.find_coord("stairs")
 			local p = player.position
 			if s and p:distance( s ) <= player.vision and level:eye_contact( p, s ) then
-				ui.msg_feel( "...Oh, there it is. D'oh.")
+				ui.msg_feel( "Finally, the exit to this maze!")
 			end
 		end,
 	}
@@ -139,7 +139,7 @@ function DoomRL.load_generators()
 
 		post_run   = function()
 			level:drop_being( player, coord.new( 38,10 ) )
-		  	ui.msg_feel( "Suddenly monsters come from everywhere!" )
+		  	ui.msg_feel( "Suddenly, enemies pour out of hiding from all sides!" )
 			for b in level:beings() do
 				if math.random(2) == 1 then
 					b.flags[ BF_HUNTING ] = true
@@ -274,10 +274,10 @@ function DoomRL.load_generators()
 
 		monsters   = function( bweight )
 			local intro = {
-				imp        = "The walls are scratched and flame-scorched!",
-				mancubus   = "You hear deep, guttural noises!",
-				revenant   = "Bones clatter all around you!",
-				arch       = "You hear crackling flames!",
+				imp        = "The walls around you are covered in slashes and scorch marks...",
+				mancubus   = "Deep, gutteral growls and bellows can be heard through the halls...",
+				revenant   = "The sound of creaking bones and clattering metal echo around you...",
+				arch       = "You can feel a powerful energy from some hellish creature on this floor...",
 			}
 
 			local roll    = math.min( level.danger_level + (DIFFICULTY - 2)*3-4, 20) + math.random(10)
@@ -287,14 +287,14 @@ function DoomRL.load_generators()
 				}, roll )
 
 			if monster == "arch" and math.random(3) == 1 then
-				ui.msg_feel( "Hellish magic haunts the air!" )
+				ui.msg_feel( "A powerful demonic energy fills the air!" )
 				level:flood_monster{ danger = bweight / 2, id = "arch" }
 				level:flood_monsters{ danger = bweight / 2, list = { "captain", "sergeant", "former", "commando" } }
 			elseif monster == "knight" then
-				ui.msg_feel( "A battle cry chants in the distance!" )
+				ui.msg_feel( "A battlecry in an unknowable demonic language echoes through the halls!" )
 				level:flood_monsters{ danger = bweight, list = { "baron", "knight", "bruiser" } }
 			elseif monster == "former" then
-				ui.msg_feel( "You hear many marching feet." )
+				ui.msg_feel( "You can hear the familiar rhythm of many marching boots." )
 				level:flood_monsters{ danger = bweight, list = { "former", "sergeant", "captain", "commando" } }
 				if DIFFICULTY > 3 then
 					level:flood_monsters{ danger = bweight / 8, list = { "esergeant", "eformer" } }
@@ -312,7 +312,7 @@ function DoomRL.load_generators()
 				level:flood_monster{ id = monster, danger = generator.being_weight() }
 			end
 
-			player:add_history("On level @1 he stumbled into a complex full of "..beings[monster].name_plural.."!")
+			player:add_history("Level @1 was infested with "..beings[monster].name_plural.."!")
 		end,
 		run        = function() 
 			generator.generate_tiled()
@@ -331,15 +331,15 @@ function DoomRL.load_generators()
 
 		monsters   = function( bweight )
 			local intro = {
-				shambler   = "The air is crackling with electricity!",
-				bruiser    = "You hear loud wails that cannot mean anything good!",
-				cyberdemon = "Suddenly you have a great urge to turn back! You scream in TERROR!",
+				shambler   = "The air is crackling with electricity, and every hair on your body stands on end!",
+				bruiser    = "You hear loud, unholy wailing echo through the halls!",
+				cyberdemon = "The ground shakes with the footsteps of something enormous. Or rather, several somethings...",
 			}
 
 			local monster = table.random_pick{"cyberdemon","shambler","bruiser"}
 			ui.msg_feel( intro[monster] )
 			level:flood_monster{ id = monster, danger = generator.being_weight() }
-			player:add_history("On level @1 he stumbled into a complex full of "..beings[monster].name_plural.."!")
+			player:add_history("Level @1 was infested with "..beings[monster].name_plural.."!")
 		end,
 		run        = function() 
 			generator.generate_tiled()

@@ -3,9 +3,9 @@
 register_level "hells_armory"
 {
 	name  = "Hell's Armory",
-	entry = "On level @1 he entered Hell's Armory.",
+	entry = "On level @1 they entered Hell's Armory.",
 	level = 9,
-	welcome = "You enter Hell's Armory.",
+	welcome = "You enter Hell's Armory. Hell's trademark stench of sulfur is especially potent here...",
 
 	canGenerate = function ()
 		return DIFFICULTY > 1
@@ -44,7 +44,7 @@ register_level "hells_armory"
 				level:drop_being("shambler",coord.new(6,10))
 				level.status = 1
 				player:play_sound{"shambler.act", "baron.act"}
-				ui.msg("You hear a loud wail!")
+				ui.msg("A loud wailing cuts through the air!")
 				return true
 			end,
 		}
@@ -190,16 +190,16 @@ register_level "hells_armory"
 		local result = level.status
 			if player.nuketime > 1 then
 			ui.msg("Cleansed with fire.")
-			player:add_history( "He decided to nuke Hell's production center." )
+			player:add_history( "They glassed Hell's production industry." )
 		elseif result == 0 then
-			ui.msg("Let it lie, that which is eternally dead...")
-			player:add_history("He left the Armory without drawing too much attention.")
+			ui.msg("The rotting and corruption of Hell will probably destroy this for you.")
+			player:add_history("They slipped past the armory, leaving it relatively untouched.")
 		elseif result == 1 then
 			ui.msg("This is madness!")
-			player:add_history("He fled being chased by a nightmare!")
+			player:add_history("They fled the armory, pursued by a nightmare!")
 		else
-			ui.msg("Gotta love the craft...")
-			player:add_history("He destroyed the evil within and reaped the rewards!")
+			ui.msg("Your souvenier was well worth the effort!")
+			player:add_history("They eradicated Hell's armory, but not without a prize!")
 		end
 	end,
 

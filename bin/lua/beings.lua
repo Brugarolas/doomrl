@@ -18,7 +18,7 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS },
 		ai_type      = "former_ai",
 
-		desc            = "Your fellow soldiers who went crazy because of the demonic influence. There's no hope for them anymore... only lead can heal their corrupted souls...",
+		desc            = "Former soldiers that have been corrupted and overtaken by demonic influence, leaving an empty, merciless, violent husk. Don't let their familiar faces decieve you, hesitation will only give them a better chance to kill you. Putting them down is their only way out.",
 
 		OnCreate = function (self)
 			self.eq.weapon = "pistol"
@@ -44,9 +44,9 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS },
 		ai_type      = "former_ai",
 
-		desc            = "Same as former human soldiers, but meaner and tougher. They'll provide you with an extra hole if you're not careful. They always carry a shotgun, so be on your guard!",
+		desc            = "Former humans like the rest, these posessed soldiers are shotgun-toting sergeants. The nastiness and propensity for violence required to climb the UAC's ranks have made these bastards noticeably tougher and nastier.",
 		kill_desc       = "was shot by a former sergeant",
-		kill_desc_melee = "was maimed by a former sergeant",
+		kill_desc_melee = "was beaten by a former sergeant",
 
 		OnCreate = function (self)
 			self.eq.weapon = "shotgun"
@@ -70,9 +70,9 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS },
 		ai_type      = "former_ai",
 
-		desc            = "Those were once really hardened marines, the tough fighting force of Earth. Now they're on the demonic side. They're really eager to make Swiss cheese out of you with their rapid fire chainguns...",
-		kill_desc       = "was perforated by a former captain",
-		kill_desc_melee = "was maimed by a former captain",
+		desc            = "Posessed commanding officers of the UAC ranks, these former marines were among the deadliest of the human troops, ready to give orders and dish out indiscriminate violence at a moment's notice. Little has changed with their demonic corruption, and they remain eager to shred anything in range.",
+		kill_desc       = "was shredded by a former captain",
+		kill_desc_melee = "was beaten by a former captain",
 
 		OnCreate = function (self)
 			self.eq.weapon = "chaingun"
@@ -102,9 +102,9 @@ function DoomRL.loadnpcs()
 
 		resist = { fire = 25 },
 
-		desc            = "Brown demonic servants from Hell, imps can throw fireballs at you. They're tough, mean and strong, and think only about sending you into oblivion...",
-		kill_desc       = "was burned by an imp",
-		kill_desc_melee = "was slashed by an imp",
+		desc            = "Common humanoid monsters from Hell itself. These leather-skinned beasts can conjure balls of fire, and pitch them like fastballs. Up close, they easily slash their prey to ribbons with razor-sharp claws. Sturdy, fast, and dangerous, but easy to outwit.",
+		kill_desc       = "was scorched by an imp",
+		kill_desc_melee = "was clawed by an imp",
 
 		weapon = {
 			damage     = "2d5",
@@ -145,8 +145,8 @@ function DoomRL.loadnpcs()
 		flags        = { BF_CHARGE },
 		ai_type      = "demon_ai",
 
-		desc            = "You thought pink is cute? You won't anymore after meeting one of these bastards -- they are strong, tough and eager to rip your head off...",
-		kill_desc_melee = "was bitten by a demon",
+		desc            = "Massive, deadly creatures native to Hell. These monsters are as fast as they are vicious, and if you're close enough to see their eyes, it's already bitten your torso off.",
+		kill_desc_melee = "was devoured by a demon",
 	}
 
 	register_being "lostsoul"
@@ -170,8 +170,8 @@ function DoomRL.loadnpcs()
 
 		resist = { fire = 75, bullet = 50 },
 
-		desc            = "Quick flying fiery skull. These are the souls lost in Hell. Let them rest in peace, or rather, in pieces...",
-		kill_desc_melee = "was spooked by a lost soul",
+		desc            = "Lost Souls are the miserable, wandering spirits of those condemned to Hell without a body of their own. They eagerly fling themselves towards threats, seeking to either find a body to posess, or death. Shattering them like clay pidgeons is equal parts self-defense and mercy.",
+		kill_desc_melee = "was overwhelmed by a lost soul",
 	}
 
 	register_being "cacodemon"
@@ -194,9 +194,9 @@ function DoomRL.loadnpcs()
 		bulk         = 100,
 		ai_type      = "melee_ranged_ai",
 
-		desc            = "Big flying red horned heads. They spit huge explosive plasma balls. If you don't have the weapon to handle them, better run...",
-		kill_desc       = "was smitten by a cacodemon",
-		kill_desc_melee = "got too close to a cacodemon",
+		desc            = "Massive, fleshy, one-eyed flying monstrosities. They can hurl balls of plasma at their targets, or take massive bites out of anything unlucky enough to get close. One of Hell's nastiest creatures, their bizarre appearance is not to be underestimated.",
+		kill_desc       = "was immolated by a cacodemon",
+		kill_desc_melee = "was devoured by a cacodemon",
 
 		weapon = {
 			damage     = "2d6",
@@ -239,9 +239,9 @@ function DoomRL.loadnpcs()
 
 		resist = { acid = 50 },
 
-		desc            = "These are Hell's warlords. They command hellish armies to battle. Not as tough as Barons but are still a pain in the ass...",
-		kill_desc       = "was splayed by a hell knight",
-		kill_desc_melee = "was gutted by a hell knight",
+		desc            = "Towering humanoid monstrosities, these intimidating beasts command the frontlines of the forces of Hell. They can conjure and pitch balls of plasma, and are more than capable of beating anything in reach to a pulp.",
+		kill_desc       = "was immolated by a hell knight",
+		kill_desc_melee = "was crushed by a hell knight",
 
 		weapon = {
 			damage     = "2d6",
@@ -284,9 +284,9 @@ function DoomRL.loadnpcs()
 
 		resist = { acid = 50 },
 
-		desc            = "Huge, almost humanoid, acid ball hurling monsters from your worst nightmares. They are the nobility of Hell.",
-		kill_desc       = "was bruised by a baron of hell",
-		kill_desc_melee = "was ripped open by a baron of hell",
+		desc            = "Among the highest ranks of Hell's armies, the Barons are a force to be reckoned with. Despite their positions as commanders of the cannon fodder, they are as deadly a foe as you're likely to find. Their highly acidic projectiles could melt plasteel, and their strength is more than enough to tear you in half.",
+		kill_desc       = "was melted by a baron of hell",
+		kill_desc_melee = "was eviscerated by a baron of hell",
 
 		weapon = {
 			damage     = "4d5",
@@ -329,8 +329,8 @@ function DoomRL.loadnpcs()
 
 		resist = { melee = -100 },
 
-		desc            = "Evil can't get any purer. Spiderdemons equipped with a rapid-fire plasma cannon. Machine and flesh combined, kill on sight...",
-		kill_desc       = "let an arachnotron get him",
+		desc            = "A fleshy, brain-like monstrosity made mobile and dangerous by a four-legged frame. The plasma repeater mounted to its metal chassis is as fast as it is powerful, ready to fill a room with superheated projectiles. Thankfully, that brain is mighty vulernable to an up-close beating.",
+		kill_desc       = "was blasted by an arachnotron",
 
 		weapon = {
 			damage     = "1d5",
@@ -371,9 +371,9 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS },
 		ai_type      = "former_ai",
 
-		desc            = "These guys were evil to begin with. Being warped by Hell's power has only made them worse. Wielding a deadly plasma weapon, they should be treated with care... and lead.",
-		kill_desc       = "was melted by former commando's plasma gun",
-		kill_desc_melee = "was killed by a former commando",
+		desc            = "The UAC's most dangerous, bloodthirsty, unfeeling soldiers have barely changed in their demonic posession. Their plasma weaponry, advanced armor, and ruthless lust for killing makes them one of Hell's most brutal fighters.",
+		kill_desc       = "was immolated by a former commando",
+		kill_desc_melee = "was beaten by a former commando",
 
 		OnCreate = function (self)
 			self.eq.weapon = "plasma"
@@ -398,7 +398,7 @@ function DoomRL.loadnpcs()
 		flags        = { BF_ENVIROSAFE },
 		ai_type      = "spawnonly_ai",
 
-		desc            = "Pain, pain, pain - this is the only thing these monsters live by, and the only thing they deliver. Wait, look again - they also deliver lost souls!",
+		desc            = "One of Hell's cruelest monsters, these creatures trap Lost Souls within them to feed off their torment. But, the pain of the living is far more enticing, and they will weaponize the Souls trapped within to get it.",
 
 		OnDie = function (self,overkill)
 			if not overkill then
@@ -429,9 +429,9 @@ function DoomRL.loadnpcs()
 
 		resist = { fire = 25, bullet = 50 },
 
-		desc            = "Apparently when a demon dies, they pick him up, dust him off, wire him some combat gear, and send him back into battle. No rest for the wicked, eh? You wish your missiles did what his can do.",
-		kill_desc       = "couldn't evade a revenant's fireball",
-		kill_desc_melee = "was punched by a revenant",
+		desc            = "A horrifyingly disfigured human body, augmented and weaponized by God knows what. The rocket launchers on their shoulders can blast anything unlucky enough to get in the way. And, in spite of their frail appearence, they pack a significant punch up close. Put these bastards down, and hope you don't see them again.",
+		kill_desc       = "was blown to bits by a revenant",
+		kill_desc_melee = "was beaten by a revenant",
 
 		weapon = {
 			damage     = "5d5",
@@ -476,9 +476,9 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS },
 		ai_type      = "sequential_ai",
 
-		desc            = "It's big, it's mean, and it has two rocket launchers. What can be worse?",
-		kill_desc       = "rode a mancubus rocket",
-		kill_desc_melee = "was squashed by a mancubus",
+		desc            = "An enourmous mass of flesh, these hulking monstrosities have had a pair of massive rocket launchers mounted where you're pretty sure arms should go. While they're an obvious threat at a distance, those hunks of steel can smash whatever gets too close.",
+		kill_desc       = "was blasted to bits by a mancubus",
+		kill_desc_melee = "was smashed by a mancubus",
 
 		weapon = {
 			damage     = "4d6",
@@ -523,8 +523,8 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS, BF_SELFIMMUNE },
 		ai_type      = "archvile_ai",
 
-		desc            = "The worst thing you can encounter. With some unholy power far beyond your grasp they attack you with hellish flame, and can summon back the enemies you've worked so hard to banish!",
-		kill_desc       = "was incinerated by an arch-vile",
+		desc            = "A being from Hell far more powerful than anything you have seen before. Using unknowable forces, it can set you ablaze from afar, and even bring your foes back from the dead. They're the biggest problems you can run into, and considering the stiff competition, that's saying a lot.",
+		kill_desc       = "was cremated by an arch-vile",
 
 		weapon = {
 			damage     = "20d1",
@@ -572,9 +572,9 @@ function DoomRL.loadnpcs()
 
 		resist = { fire = 50 },
 
-		desc            = "Are you seeing things? What's with the color change? And why is it taking so much longer to kill these things!?",
-		kill_desc       = "was burned by a nightmare imp",
-		kill_desc_melee = "was eviscerated by a nightmare imp",
+		desc            = "Imps like you've never seen, they can hurl more powerful projectiles, and take a hell of a lot more punishment to bring down.",
+		kill_desc       = "was immolated by a nightmare imp",
+		kill_desc_melee = "was slashed to ribbons by a nightmare imp",
 
 		weapon = {
 			damage     = "2d6",
@@ -615,9 +615,9 @@ function DoomRL.loadnpcs()
 		flags        = { BF_ENVIROSAFE },
 		ai_type      = "ranged_ai",
 
-		desc            = "Hell's latest improvement on demonic warfare - they're stronger, tougher, and angrier than ever.",
-		kill_desc       = "was fried by a nightmare cacodemon",
-		kill_desc_melee = "was flattened by a nightmare cacodemon",
+		desc            = "Those nightmarish meatballs seem to be getting rougher, tougher, and a Hell of a lot meaner.",
+		kill_desc       = "was immolated by a nightmare cacodemon",
+		kill_desc_melee = "was devoured by a nightmare cacodemon",
 
 		weapon = {
 			damage     = "2d7",
@@ -657,8 +657,8 @@ function DoomRL.loadnpcs()
 		flags        = { BF_CHARGE },
 		ai_type      = "demon_ai",
 
-		desc            = "You liked it better when these guys were pink. Meet the stronger, tougher, more resilient way to meet your death.",
-		kill_desc_melee = "was eaten alive by a nightmare demon",
+		desc            = "Just when you thought those pink monsters were getting manageable, now they hit like TWO trucks.",
+		kill_desc_melee = "was devoured by a nightmare demon",
 
 	}
 
@@ -682,8 +682,8 @@ function DoomRL.loadnpcs()
 		bulk         = 100,
 		ai_type      = "sequential_ai",
 
-		desc            = "Pure nightmare spiders. You'd wish they weren't there...",
-		kill_desc       = "let an nightmare arachnotron get him",
+		desc            = "Those spider monsters were bad enough already, but now they're even more like those things you saw during that bad LSD trip you tried to forget.",
+		kill_desc       = "was blasted by a nightmare arachnotron",
 
 		weapon = {
 			damage     = "1d6",
@@ -726,8 +726,8 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS, BF_SELFIMMUNE },
 		ai_type      = "archvile_ai",
 
-		desc            = "Oh God... *WHY* do they come in the nightmare variety too?",
-		kill_desc       = "faced a nightmare arch-vile",
+		desc            = "Hell's mightiest magic-wielding, dead-raising, flame-casting monsters are even tougher than before. Might as well kiss your ass goodbye.",
+		kill_desc       = "was cremated nightmare arch-vile",
 
 		weapon = {
 			damage     = "25d1",
@@ -773,10 +773,10 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS },
 		ai_type      = "former_ai",
 
-		desc         = "These are the elite among the former humans. As stupid as their regular counterparts, but more resilient and packing quite a punch. Too bad their weapons are set to self-destruct on death.",
+		desc         = "Elite infantry entrusted with powerful, high-tech weapons. Unfortunately, these weapons were designed to never fall into enemy hands, and due to recent events, that means you.",
 		-- Added to make sure we use the right article
-		kill_desc       = "was killed by an elite former human",
-		kill_desc_melee = "was killed by an elite former human",
+		kill_desc       = "was shot by an elite former human",
+		kill_desc_melee = "was beaten by an elite former human",
 
 		OnCreate = function (self)
 			self.eq.weapon = "ucpistol"
@@ -808,9 +808,9 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS },
 		ai_type      = "former_ai",
 
-		desc            = "These are the elite among the former sergeants. And they carry firepower to boot! Too bad their weapons are set to self-destruct on death.",
+		desc            = "Particularly ruthless former sergeants, trained for and entrusted with experimental weaponry. Unfortunately, these weapons were designed to never fall into enemy hands, and due to recent events, that means you.",
 		kill_desc       = "was shot by an elite sergeant",
-		kill_desc_melee = "was maimed by an elite sergeant",
+		kill_desc_melee = "was beaten by an elite sergeant",
 
 		OnCreate = function (self)
 			local wpammo = table.random_pick{
@@ -845,9 +845,9 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS },
 		ai_type      = "former_ai",
 
-		desc            = "These are the elite among the former captains. Beware of the superior firepower! Too bad their weapons are set to self-destruct on death.",
-		kill_desc       = "was perforated by an elite captain",
-		kill_desc_melee = "was maimed by an elite captain",
+		desc            = "Among the commanding officers of the UAC's ranks were those deemed exemplary, and trusted with the shiniest, deadliest variants to their chainguns the UAC weapons development department had to offer. Unfortunately, these weapons were designed to never fall into enemy hands, and due to recent events, that means you.",
+		kill_desc       = "was shredded by an elite captain",
+		kill_desc_melee = "was beaten by an elite captain",
 
 		OnCreate = function (self)
 			local wpammo = table.random_pick{
@@ -881,9 +881,9 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS, BF_ENVIROSAFE },
 		ai_type      = "former_ai",
 
-		desc            = "As expected, these ex-human soldiers are the best of the best! Armored, resilient and with superior firepower! Too bad their weapons are set to self-destruct on death.",
-		kill_desc       = "was melted by an elite commando's gun",
-		kill_desc_melee = "was killed by an elite commando",
+		desc            = "Among the commandos, the elites were the strongest of the strong, brutalest of the brutal, deadliest of the deadly, and toughest of the tough. Given the best kit the UAC had to offer to further push their killing power, they are the worst former humans you can run into. Unfortunately, these weapons were designed to never fall into enemy hands, and due to recent events, that means you.",
+		kill_desc       = "was obliterated by an elite commando",
+		kill_desc_melee = "was beaten by an elite commando",
 
 		OnCreate = function (self)
 			local wpammo = table.random_pick{
@@ -922,9 +922,9 @@ function DoomRL.loadnpcs()
 
 		resist = { acid = 50 },
 
-		desc            = "Tough as a dump truck and nearly as big, these Goliaths are the worst things on two legs since Tyrannosaurus Rex.",
-		kill_desc       = "was baptised by a bruiser brother",
-		kill_desc_melee = "was pounded rather hard by a bruiser brother",
+		desc            = "A pair of Hell's mightiest Barons, they work together like matches and lighter fluid. Split your focus between the two, and you might just be able to dodge their balls of acid.",
+		kill_desc       = "was melted by a bruiser brother",
+		kill_desc_melee = "was flattened by a bruiser brother",
 
 		weapon = {
 			damage     = "4d5",
@@ -970,7 +970,7 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS, BF_ENVIROSAFE, BF_HUNTING },
 		ai_type      = "teleboss_ai",
 
-		desc            = "Even other monsters fear him, so expect a clobbering. He shrugs off explosions. Good luck.",
+		desc            = "REWRITE TODO  Even other monsters fear him, so expect a clobbering. He shrugs off explosions. Good luck.",
 		kill_desc       = "was electrocuted by a shambler",
 		kill_desc_melee = "was consumed by a shambler",
 
@@ -1033,7 +1033,7 @@ function DoomRL.loadnpcs()
 
 		resist = { fire = 100 },
 
-		desc            = "Big ball of fire...",
+		desc            = "REWRITE TODO  Big ball of fire...",
 		kill_desc       = "was burned by a lava elemental",
 		kill_desc_melee = "was burned by a lava elemental",
 
@@ -1094,7 +1094,7 @@ function DoomRL.loadnpcs()
 		flags        = { BF_ENVIROSAFE },
 		ai_type      = "spawnonly_ai",
 
-		desc            = "Seems like the pain elementals' big momma!",
+		desc            = "REWRITE TODO  Seems like the pain elementals' big momma!",
 
 		OnCreate = function (self)
 			self.hpmax = self.hpmax + DIFFICULTY * DIFFICULTY * 5
@@ -1135,7 +1135,7 @@ function DoomRL.loadnpcs()
 		flags        = { BF_CHARGE, BF_ENVIROSAFE ,BF_HUNTING },
 		ai_type      = "melee_seek_ai",
 
-		desc            = "Why doesn't a BFG work when you really need it? As if from a half-forgotten nightmare, you encounter the harbinger of death...",
+		desc            = "REWRITE TODO  Why doesn't a BFG work when you really need it? As if from a half-forgotten nightmare, you encounter the harbinger of death...",
 		kill_desc_melee = "was ripped apart by the Angel of Death",
 
 		OnCreate = function (self)
@@ -1169,9 +1169,9 @@ function DoomRL.loadnpcs()
 		flags        = { F_LARGE, BF_OPENDOORS, BF_ENVIROSAFE, BF_SELFIMMUNE, BF_KNOCKIMMUNE },
 		ai_type      = "cyberdemon_ai",
 
-		desc            = "Monster and machine, combined. Equipped with a rocket launcher, this nightmare is the worst thing you can find in Hell. Or at least that is what you hope...",
-		kill_desc       = "was splattered by a Cyberdemon",
-		kill_desc_melee = "was ripped apart by a Cyberdemon",
+		desc            = "An enormous giant of flesh and steel, this beastly behemouth is well equipped to take down a whole platoon of UAC Marines. This towering monstrosity is going to take every ounce of firepower you have to bring down.",
+		kill_desc       = "was blown to bits by a Cyberdemon",
+		kill_desc_melee = "was splattered by a Cyberdemon",
 
 		OnCreate = function (self)
 			self.eq.weapon = "bazooka"
@@ -1219,8 +1219,8 @@ function DoomRL.loadnpcs()
 		flags        = { F_LARGE, BF_ENVIROSAFE, BF_SELFIMMUNE, BF_KNOCKIMMUNE },
 		ai_type      = "mastermind_ai",
 
-		desc            = "You guess the Arachnotrons had to come from somewhere. Hi, mom. She doesn't have a plasma gun, so thank heaven for small favors. Instead, she has a super-chaingun.",
-		kill_desc       = "let the Spider Mastermind pwn him",
+		desc            = "Much like the smaller, more manageable arachnotrons, this cabin-sized creature is just as capable of turning you into minced meat as it is of coordinating the lesser demons.",
+		kill_desc       = "was shredded by the spider mastermind",
 
 		weapon = {
 			damage     = "1d6",
@@ -1275,7 +1275,7 @@ function DoomRL.loadnpcs()
 		flags        = { BF_OPENDOORS, BF_UNIQUENAME, BF_SELFIMMUNE, BF_KNOCKIMMUNE },
 		ai_type      = "jc_ai",
 
-		desc            = "You knew it. This is the true EVIL behind the invasion! This is the true mastermind of Hell! Kill him for he knows not the meaning of mercy! Kill him!! Kill him NOW!!!",
+		desc            = "REWRITE TODO  You knew it. This is the true EVIL behind the invasion! This is the true mastermind of Hell! Kill him for he knows not the meaning of mercy! Kill him!! Kill him NOW!!!",
 		kill_desc       = "was pwned by John Carmack",
 
 		OnCreate = function (self)
@@ -1493,7 +1493,7 @@ function DoomRL.load_doom_npcs()
 		flags        = { BF_OPENDOORS, BF_SELFIMMUNE, BF_KNOCKIMMUNE },
 		ai_type      = "archvile_ai",
 
-		desc            = "This seems so unreal, as though from another story...",
+		desc            = "REWRITE TODO  This seems so unreal, as though from another story...",
 		kill_desc       = "was killed by the Apostle",
 
 		weapon = {

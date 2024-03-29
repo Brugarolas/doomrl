@@ -143,13 +143,13 @@ end
 function DoomRL.get_result_description( result, highscore )
 	local killed_by = "was killed by something"
 
-	    if result == "win"   then killed_by = "defeated the Mastermind"
-	elseif result == "final" then killed_by = "nuked the Mastermind"
-	elseif result == "nuke"  then killed_by = "nuked himself"
+	    if result == "win"   then killed_by = "brought down the Mastermind"
+	elseif result == "final" then killed_by = "annihilated the Mastermind"
+	elseif result == "nuke"  then killed_by = "annihilated themself"
 	elseif result == "sacrifice" then
-		if highscore then killed_by = "won by sacrifice" else killed_by = "sacrificed himself to kill the Mastermind" end
+		if highscore then killed_by = "sacrificed themselves" else killed_by = "sacrificed themself to bring down the Mastermind" end
 	elseif result == "suicide" then
-		if highscore then killed_by = "committed suicide" else killed_by = "committed a stupid suicide" end
+		if highscore then killed_by = "died in vain" else killed_by = "died before the Mastermind in an attempt to bring it with them" end
 	elseif result == "killed" then
 		local killer = beings[ player.killedby ]
 		if killer then
@@ -200,7 +200,7 @@ function DoomRL.print_mortem()
 
 
 	player:mortem_print( "--------------------------------------------------------------" )
-	player:mortem_print( " DRL ("..VERSION_STRING..") roguelike post-mortem character dump")
+	player:mortem_print( " DoomRL ("..VERSION_STRING..") obituary")
 	if game_type ~= GAMESTANDARD then
 		player:mortem_print( " Module : "..module.name.." ("..version_string(module.version)..")")
 		game_module = _G[module.id]
@@ -240,43 +240,43 @@ function DoomRL.print_mortem()
 		end
 	end
 
-	player:mortem_print( " He survived "..statistics.game_time.." turns and scored "..player.score.." points. ")
-	player:mortem_print( " He played for "..seconds_to_string(math.floor(statistics.real_time))..". ")
+	player:mortem_print( " They survived "..statistics.game_time.." turns and scored "..player.score.." points. ")
+	player:mortem_print( " They played for "..seconds_to_string(math.floor(statistics.real_time))..". ")
 	player:mortem_print( " "..diff[DIFFICULTY].description)
 	player:mortem_print()
 
 	local ratio = statistics.kills / statistics.max_kills
 
-	player:mortem_print( " He killed "..statistics.kills.." out of "..statistics.max_kills.." hellspawn. ("..math.floor(ratio*100).."%)" )
+	player:mortem_print( " They killed "..statistics.kills.." out of "..statistics.max_kills.." hellspawn. ("..math.floor(ratio*100).."%)" )
 
 		if statistics.kills == statistics.max_kills then
-			player:mortem_print( " This ass-kicking marine killed all of them!" )
+			player:mortem_print( " They wiped out every demon they came across, purging every road they walk of Hell's corruption!" )
 	elseif statistics.kills + 1 == statistics.max_kills then
-			player:mortem_print (" He missed one kill to totally be ass-kicking." )
+			player:mortem_print (" They spared a single demon to speak of their power!" )
 	elseif statistics.kills == 0 then
-			player:mortem_print( " Poor pacifist, didn't even get a single kill..." )
+			player:mortem_print( " With the spirit of a pacifist, they spared every condemned soul that crossed their path." )
 	elseif statistics.kills == 1 then
-			player:mortem_print( " Somehow, he managed only *one* kill." )
+			player:mortem_print( " They managed a single kill, and no others. Perhaps they tasted violence, and didn't like it." )
 	elseif ratio < 0.1    then
-			player:mortem_print( " My, wasn't he a wimpy chump." )
+			player:mortem_print( " A meager number of kills, but anything to beat back Hell." )
 	elseif ratio < 0.3    then
-			player:mortem_print( " Who gave him the ticket to Hell, anyway?" )
+			player:mortem_print( " A moderate number of kills, they were no stranger to violence." )
 	elseif ratio > 0.999  then
-			player:mortem_print( " A natural born killer!" )
+			player:mortem_print( " They were a force to be reckoned with, marching on Hell itself with an axe to grind." )
 	elseif ratio > 0.99   then
-			player:mortem_print( " He was a real killing machine..." )
+			player:mortem_print( " An absolute killing machine, they were almost enough to strike fear into demons." )
 	elseif ratio > 0.9    then
-			player:mortem_print( " He held his right to remain violent." )
+			player:mortem_print( " They ripped and teared, and they had no plans to stop, until it was done." )
 	end
 
 	if CHALLENGE ~= "" then
 		if ARCHANGEL then
-			player:mortem_print( " He was an "..chal[CHALLENGE].arch_name.."!")
+			player:mortem_print( " They were an "..chal[CHALLENGE].arch_name.."!")
 		else
-			player:mortem_print( " He was an "..chal[CHALLENGE].name.."!")
+			player:mortem_print( " They were an "..chal[CHALLENGE].name.."!")
 		end
 		if SCHALLENGE ~= "" then
-			player:mortem_print( " He was also an "..chal[SCHALLENGE].name.."!")
+			player:mortem_print( " They were also an "..chal[SCHALLENGE].name.."!")
 		end
 	end
 
@@ -291,10 +291,10 @@ function DoomRL.print_mortem()
 	if statistics.save_count > 0 or statistics.crash_count > 0 then
 		player:mortem_print()
 		if statistics.crash_count > 0 then
-			player:mortem_print(" The world crashed on him "..times( statistics.crash_count ).."." )
+			player:mortem_print(" The world crashed in upon them "..times( statistics.crash_count ).."." )
 		end
 		if statistics.save_count > 0 then
-			player:mortem_print(" He saved himself "..times( statistics.save_count )..".")
+			player:mortem_print(" They cheated death "..times( statistics.save_count )..".")
 		end
 	end
 	player:mortem_print()
@@ -484,9 +484,9 @@ function DoomRL.print_mortem()
 	end
 	if game_type == GAMESTANDARD then
 		if kills.get("jc") > 0 then
-			player:mortem_print( "  Then finally in Hell itself, he killed the final EVIL." )
+			player:mortem_print( "  At the end of it all, they conquered hell itself, and brought down the biggest, baddest evil of all." )
 		else
-			player:mortem_print( "  On level "..player.depth.." he finally "..death_reason..".")
+			player:mortem_print( "  On level "..player.depth.." they finally "..death_reason..".")
 		end
 	end
 	player:mortem_print()
@@ -519,9 +519,9 @@ function DoomRL.print_mortem()
 			end
 			player:mortem_print( " "..deaths.." brave souls have ventured into Phobos:" )
 			reason( "killed" ," @1 of those @was killed.")
-			reason( "unknown"," @1 of those @was killed by something unknown." )
-			reason( "nuke"   ," @1 didn't read the thermonuclear bomb manual." )
-			reason( "suicide"," And @1 couldn't handle the stress and committed a stupid suicide." )
+			reason( "unknown"," @1 of those @was taken by something they never even saw." )
+			reason( "nuke"   ," @1 was annihilated by nuclear fire." )
+			reason( "suicide"," And @1 got clumsy and killed themselves, perhaps saving themselves from greater horrors." )
 
 			local sacrifice = player_data.count('player/games/win[@id="sacrifice"]')
 			local win       = player_data.count('player/games/win[@id="win"]')
@@ -531,12 +531,12 @@ function DoomRL.print_mortem()
 			if wins > 0 then
 				player:mortem_print()
 				player:mortem_print(" "..wins.." souls destroyed the Mastermind...")
-				if sacrifice > 0 then player:mortem_print(" "..sacrifice.." sacrificed itself for the good of mankind." ) end
-				if win       > 0 then player:mortem_print(" "..win.." killed the bitch and survived." ) end
-				if fullwin   > 0 then player:mortem_print(" "..fullwin.." showed that it can outsmart Hell itself." ) end
+				if sacrifice > 0 then player:mortem_print(" "..sacrifice.." died, bringing the Mastermind with them." ) end
+				if win       > 0 then player:mortem_print(" "..win.." brought down the Mastermind and walked away to tell the tale." ) end
+				if fullwin   > 0 then player:mortem_print(" "..fullwin.." beat back everything Hell had to offer." ) end
 			end
 		else
-			player:mortem_print("  He's the first brave soul to have ventured into Hell...")
+			player:mortem_print("  They were the first living human to have ventured into Hell...")
 		end
 		player:mortem_print()
 	end
@@ -606,18 +606,18 @@ function DoomRL.loadbasedata()
 			-- Explosions can have sounds, but by the time the sound plays, the player has already moved
 			level:play_sound( core.resolve_sound_id( "teleport.use", "use" ), being.position )
 			level:explosion( being.position, 4, 50, 0, 0, GREEN, 0 )
-			being:msg( "You feel yanked away!", being:get_name(true,true).." suddenly disappears!" )
+			being:msg( "You are suddenly pulled away with great force!", being:get_name(true,true).." suddenly disappears!" )
 			local target = self.target
 			local empty = { EF_NOBEINGS, EF_NOITEMS, EF_NOSTAIRS, EF_NOBLOCK, EF_NOHARM, EF_NOSPAWN }
 			if cells[ level.map[ target ] ].flags[ CF_BLOCKMOVE ] then
-				being:msg("You feel out of place!")
+				being:msg("You suddenly feel out of place!")
 				being:apply_damage(15, TARGET_INTERNAL, DAMAGE_FIRE )
 				target = generator.random_empty_coord( empty )
 			end
 			if level:get_being( target ) then
 				local tgt = level:get_being( target )
-				being:msg("Suddenly you feel weird!")
-				tgt:msg("Argh! You feel like someone is trying to implode you!")
+				being:msg("You are abruptly filled with a bizarre and unpleasant feeling...")
+				tgt:msg("Surging pain surrounds you, and it feels like your body is going to implode!")
 				tgt:apply_damage(15, TARGET_INTERNAL, DAMAGE_FIRE )
 				target = generator.random_empty_coord( empty )
 			end
@@ -641,7 +641,7 @@ function DoomRL.loadbasedata()
 		weight       = 0,
 		xp           = 0,
 		flags        = { BF_OPENDOORS, BF_UNIQUENAME },
-		desc         = "You're a soldier. One of the best that the world could set against the demonic invasion.",
+		desc         = "You're a soldier, as standard as cannonfodder infantry come. Your like are the frontline defense against Hell's forces.",
 		ai_type      = "",
 
 		OnCreate = function(self)
@@ -737,6 +737,7 @@ function DoomRL.logo_text()
 [[@rAdd. coding : @ytehtmi@r, @yGame Hunter@r, @yshark20061@r and @yadd
 @rMusic tracks: @ySonic Clang@r (remixes), @ySimon Volpert@r (special levels)
 @rDoom HQ SFX : @yPer Kristian Risvik
+@rText rewrite: @yDax Fugue
 
 @rMajor changes since last version (see @yversion.txt@r for full list)
 @R  * mod-server! Dual-Angel, Archangel and Custom Challenges!
@@ -891,6 +892,10 @@ function DoomRL.quit_message()
 		"I wouldn't leave if I were you. Windows is much worse!",
 		"Get outta here and go back to your boring programs...!",
 		"Go ahead and leave. See if I care.",
+		"Don't look now, but there's an imp right behind you!",
+		"Oh, the horrors of Hell! Run while you still can!",
+		"Remember all the other stuff you had to do that you put off by playing this? Get on it.",
+		"HYDRATE, BITCH",
 		"Ya know. Next time ya gonna come here, I'm gonna toast ya."
 	}
 	return messages[math.random(#(messages))]
