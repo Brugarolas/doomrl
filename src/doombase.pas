@@ -218,6 +218,13 @@ begin
     GraphicsVersion := False;
     ForceConsole := True;
   end;
+  {$IFDEF TCOD}
+  if CP.isSet('tcod') then
+  begin
+    GraphicsVersion := False;
+    ForceTCOD := True;
+  end;
+  {$ENDIF}
   if CP.isSet('fullscreen') then
     ForceFullscreen := True;
   if CP.isSet('nosound') then
@@ -414,7 +421,7 @@ repeat
     if State = DSSaving then
     begin
       WriteSaveFile;
-      UI.MsgEnter('Game saved. Press <Enter> to exit.');
+      UI.MsgEnter('Game saved. Press <'+Config.GetKeyBinding(COMMAND_OK)+'> to exit.');
     end;
     if State = DSFinished then
     begin

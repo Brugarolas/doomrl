@@ -59,7 +59,7 @@ type
 
     procedure LookMode;
     function ChooseDirection(aActionName : string) : TDirection;
-    function ChooseTarget( aActionName : string; aRange : byte; aTargets : TAutoTarget; aShowLast : Boolean = False ) : TCoord2D;
+    function ChooseTarget( aActionName : string; aRange : byte; aLimitRange : boolean; aTargets : TAutoTarget; aShowLast : Boolean = False ) : TCoord2D;
 
     procedure Focus( aCoord : TCoord2D );
 
@@ -311,14 +311,14 @@ end;
 
 procedure TDoomUI.MsgEnter( const aText: AnsiString);
 begin
-  Msg(aText+' Press <Enter>...');
+  Msg(aText+' Press <'+Config.GetKeyBinding(COMMAND_OK)+'>...');
   IO.WaitForEnter;
   MsgUpDate;
 end;
 
 procedure TDoomUI.MsgEnter( const aText: AnsiString; const aParams: array of const);
 begin
-  Msg( aText+' Press <Enter>...', aParams );
+  Msg( aText+' Press <'+Config.GetKeyBinding(COMMAND_OK)+'>...', aParams );
   IO.WaitForEnter;
   MsgUpDate;
 end;
@@ -537,7 +537,7 @@ begin
   MsgUpDate;
 end;
 
-function TDoomUI.ChooseTarget(aActionName : string; aRange: byte;
+function TDoomUI.ChooseTarget(aActionName : string; aRange: byte; aLimitRange : boolean;
   aTargets: TAutoTarget; aShowLast: Boolean): TCoord2D;
 var Key : byte;
     Dir : TDirection;
@@ -608,14 +608,30 @@ begin
     Key := IO.WaitForCommand(COMMANDS_MOVE+[COMMAND_GRIDTOGGLE, COMMAND_ESCAPE,COMMAND_MORE,COMMAND_FIRE,COMMAND_ALTFIRE,COMMAND_TACTIC, COMMAND_MMOVE,COMMAND_MRIGHT, COMMAND_MLEFT]);
     if (Key = COMMAND_GRIDTOGGLE) and GraphicsVersion then SpriteMap.ToggleGrid;
     if Key in [ COMMAND_MMOVE, COMMAND_MRIGHT, COMMAND_MLEFT ] then
-       iTarget := SnapTarget( IO.MTarget );
+       begin
+         iTarget := IO.MTarget;
+         iDist := Distance(iTarget.x, iTarget.y, Position.x, Position.y);
+         if aLimitRange and (iDist > aRange - 1) then
+           begin
+             iDist := 0;
+             iTargetLine.Init(iLevel, Position, iTarget);
+             while iDist < (aRange - 1) do
+               begin
+                    iTargetLine.Next;
+                    iDist := Distance(iTargetLine.GetSource.x, iTargetLine.GetSource.y,  iTargetLine.GetC.x, iTargetLine.GetC.y);
+               end;
+             if Distance(iTargetLine.GetSource.x, iTargetLine.GetSource.y, iTargetLine.GetC.x, iTargetLine.GetC.y) > aRange-1
+             then iTarget := iTargetLine.prev
+             else iTarget := iTargetLine.GetC;
+           end;
+       end;
     if Key in [ COMMAND_ESCAPE, COMMAND_MRIGHT ] then begin iTarget.x := 0; Break; end;
     if Key = COMMAND_TACTIC then iTarget := aTargets.Next;
     if (Key in COMMANDS_MOVE) then
     begin
       Dir := CommandDirection( Key );
       if (iLevel.isProperCoord( iTarget + Dir ))
-        and (Distance((iTarget + Dir).x, (iTarget + Dir).y, Position.x, Position.y) <= aRange-1) then
+        and ((not aLimitRange) or (Distance((iTarget + Dir).x, (iTarget + Dir).y, Position.x, Position.y) <= aRange-1)) then
         iTarget += Dir;
     end;
     if (Key = COMMAND_MORE) then

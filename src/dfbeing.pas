@@ -94,7 +94,7 @@ TBeing = class(TThing,IPathQuery)
     // On success they do eat up action cost!
     function ActionQuickSwap : boolean;
     function ActionDrop( Item : TItem ) : boolean;
-    function ActionReload : Boolean;
+    function ActionReload( aItem : TItem = nil ) : Boolean;
     function ActionDualReload : Boolean;
     function ActionAltReload : Boolean;
     function ActionFire( aChooseTarget : Boolean; aTarget : TCoord2D; aWeapon : TItem; aAltFire : TAltFire = ALT_NONE ) : Boolean;
@@ -573,15 +573,16 @@ end;
   Exit( False );
 end;
 
-function TBeing.ActionReload : Boolean;
+function TBeing.ActionReload( aItem : TItem ) : Boolean;
 var Weapon   : TItem;
-    AItem    : TItem;
     iAmmoUID : TUID;
     iPack    : Boolean;
     AmmoName : AnsiString;
 begin
   Weapon := Inv.Slot[ efWeapon ];
   if ( Weapon = nil ) or ( not Weapon.isRanged ) then Exit( Fail( 'You have no weapon to reload.',[] ) );
+  if (aItem <> nil) and ((not aItem.isAmmo) or (aItem.NID <> Weapon.AmmoID)) then
+    Exit( Fail( 'Your %s doesn''t take %s%s.', [ Weapon.Name, aItem.Name, IIf(not aItem.Flags[ IF_PLURALNAME ], 's') ] ) );
   if (Weapon.Flags[ IF_RECHARGE ]) and ((not Weapon.Flags[ IF_CHAMBEREMPTY ]) or (Weapon.Ammo = 0)) then Exit( Fail( 'The weapon cannot be manually reloaded!', [] ) );
   if (Weapon.Flags[ IF_NOAMMO ]) and (not Weapon.Flags[ IF_CHAMBEREMPTY ])then Exit( Fail( 'The weapon doesn''t need to be reloaded!', [] ) );
   if ( Weapon.Ammo = Weapon.AmmoMax ) then Exit( Fail( 'Your %s is already loaded.', [ Weapon.Name ] ) );
@@ -595,30 +596,30 @@ begin
     Exit( Success( 'You pump a shell into the %s chamber.',[Weapon.Name],200 ) );
   end;
 
-  AItem := getAmmoItem( Weapon );
+  if aItem = nil then aItem := getAmmoItem( Weapon );
 
-  if AItem = nil then Exit( Fail( 'You have no more ammo for the %s!',[Weapon.Name] ) );
+  if aItem = nil then Exit( Fail( 'You have no more ammo for the %s!',[Weapon.Name] ) );
 
-  iAmmoUID := AItem.UID;
-  AmmoName := AItem.Name;
-  
-  iPack := AItem.isAmmoPack;
+  iAmmoUID := aItem.UID;
+  AmmoName := aItem.Name;
+
+  iPack := aItem.isAmmoPack;
 
   if Weapon.Flags[ IF_PUMPACTION ] then
   begin
     Weapon.Flags[ IF_CHAMBEREMPTY ] := False;
-    Reload( AItem, Weapon.Flags[ IF_SINGLERELOAD ] );
+    Reload( aItem, Weapon.Flags[ IF_SINGLERELOAD ] );
     Emote( 'You '+IIf(iPack,'quickly ')+'load a shell into the %s.', 'loads a shell into his %s.', [Weapon.Name] );
   end
   else
   begin
-    Reload( AItem, Weapon.Flags[ IF_SINGLERELOAD ] );
+    Reload( aItem, Weapon.Flags[ IF_SINGLERELOAD ] );
     Emote( 'You '+IIf(iPack,'quickly ')+'reload the %s.', 'reloads his %s.', [Weapon.Name] );
   end;
-  
+
   if iPack and ( UIDs[ iAmmoUID ] = nil ) and IsPlayer then
     UI.Msg( 'Your %s is depleted.', [AmmoName] );
-  
+
   Exit( True );
 end;
 
@@ -699,6 +700,7 @@ var iFireDesc  : AnsiString;
     iGunKata   : Boolean;
     iFireCost  : LongInt;
 	  iRange     : Byte;
+    iLimitRange: Boolean;
     iDist      : Byte;
 begin
   iChainOld  := FTargetPos;
@@ -722,6 +724,8 @@ begin
   else
       iRange := Missiles[ aWeapon.Missile ].Range;
   if iRange = 0 then iRange := self.Vision;
+  iLimitRange := (not aWeapon.Flags[ IF_SHOTGUN ]) and (MF_EXACT in Missiles[ aWeapon.Missile ].Flags);
+
   if aChooseTarget then
   begin
     iFireDesc := '';
@@ -739,17 +743,17 @@ begin
         1 : iFireDesc := ' (@Ywarming@>)';
         2 : iFireDesc := ' (@Rfull@>)';
       end;
-      if not Player.doChooseTarget( Format('Chain fire%s -- Choose target or abort...', [ iFireDesc ]), iRange ) then Exit( Fail( 'Targeting canceled.', [] ) );
+      if not Player.doChooseTarget( Format('Chain fire%s -- Choose target or abort...', [ iFireDesc ]), iRange, iLimitRange ) then
+        Exit( Fail( 'Targeting canceled.', [] ) );
     end
-    else
-      if not Player.doChooseTarget( Format('Fire%s -- Choose target...',[ iFireDesc ]), iRange ) then Exit( Fail( 'Targeting canceled.', [] ) );
+    else if not Player.doChooseTarget( Format('Fire%s -- Choose target...',[ iFireDesc ]), iRange, iLimitRange ) then
+      Exit( Fail( 'Targeting canceled.', [] ) );
     aTarget := FTargetPos;
   end;
 
   {**** See if target is in range.}
   iDist := Distance(self.Position.x, self.Position.y, aTarget.x, aTarget.y);
-      if iDist > iRange then Exit( Fail( 'Out of range!', [] ) );
-
+  if iLimitRange and (iDist > iRange) then Exit( Fail( 'Out of range!', [] ) );
 
   if (aAltFire = ALT_CHAIN) and ( iChainFire > 0 ) then FTargetPos := iChainOld;
   FChainFire := iChainFire;
@@ -785,6 +789,8 @@ end;
 
 function TBeing.ActionAltFire ( aChooseTarget : Boolean; aTarget : TCoord2D; aWeapon : TItem ) : Boolean;
 var iAlt : TAltFire;
+    iRange : Byte;
+    iLimitRange : Boolean;
 begin
   if (aWeapon = nil) or (not aWeapon.isWeapon) then Exit( Fail( 'You have no weapon.', [] ) );
   if aWeapon.AltFire = ALT_NONE then Exit( Fail('This weapon has no alternate fire mode.', [] ) );
@@ -803,7 +809,10 @@ begin
       begin
         if isPlayer and aChooseTarget then
         begin
-          if not Player.doChooseTarget( 'Throw -- Choose target...', Missiles[ aWeapon.Missile ].Range ) then Exit( Fail( 'Throwing canceled.', [] ) );
+          iRange := Missiles[ aWeapon.Missile ].Range;
+          iLimitRange := MF_EXACT in Missiles[ aWeapon.Missile ].Flags;
+          if not Player.doChooseTarget( 'Throw -- Choose target...', iRange, iLimitRange ) then
+            Exit( Fail( 'Throwing canceled.', [] ) );
           aTarget := FTargetPos;
         end;
         // thelaptop: If you can aim it, you should get a bonus for throwing it.
@@ -894,10 +903,14 @@ begin
   if Item = nil then
   begin
     Item := TLevel(Parent).Item[ FPosition ];
-    if ( Item <> nil ) and (Item.isLever or Item.isPack or Item.isWearable)
-	then isOnGround := True
-    else
-    if isPlayer then
+    if Item <> nil then
+    begin
+      if Item.isLever or Item.isPack or Item.isWearable then
+        isOnGround := True
+      else if Item.isAmmo then
+        Exit( ActionReload( Item ) );
+    end
+    else if isPlayer then
     begin
       Item := Inv.Choose([ITEMTYPE_PACK],'use');
       if Item = nil then Exit( False );
@@ -1248,10 +1261,19 @@ end;
 
 procedure TBeing.Action;
 var iThisUID : DWord;
+    iPlayer  : TPlayer;
+    iHideDesc: Boolean;
 begin
   FMeleeAttack := False;
   iThisUID := UID;
-  TLevel(Parent).CallHook( FPosition, Self, CellHook_OnEnter );
+  if isPlayer then
+  begin
+    iPlayer := Self as TPlayer;
+    iHideDesc := iPlayer.FPathRun or (iPlayer.FRun.Active and (iPlayer.FRun.Dir.code = 5));
+  end
+  else
+    iHideDesc := False;
+  TLevel(Parent).CallHook( FPosition, [ Self, iHideDesc ], CellHook_OnEnter );
   if UIDs[ iThisUID ] = nil then Exit;
   if isPlayer then
     (Self as TPlayer).AIControl
@@ -2516,7 +2538,7 @@ begin
     if MoveR = MoveDoor then
     begin
       if BF_OPENDOORS in Being.FFlags then
-        TLevel(Being.Parent).CallHook( FPath.Start.Coord, Being, CellHook_OnAct );
+        TLevel(Being.Parent).CallHook( FPath.Start.Coord, [ Being ], CellHook_OnAct );
       State.Push( Byte(MoveR) );
       State.PushCoord( Being.LastMove );
       Exit(2);

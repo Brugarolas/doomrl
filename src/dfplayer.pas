@@ -97,7 +97,7 @@ TPlayer = class(TBeing)
   procedure UpdateVisual;
   function ASCIIMoreCode : AnsiString; override;
   function CreateAutoTarget( aRange : Integer ): TAutoTarget;
-  function doChooseTarget( aActionName : string; aRadius : Byte ) : boolean;
+  function doChooseTarget( aActionName : string; aRadius : Byte; aLimitRange : Boolean ) : boolean;
   private
   function OnTraitConfirm( aSender : TUIElement ) : Boolean;
   procedure ExamineNPC;
@@ -483,11 +483,12 @@ begin
   FPathRun := False;
   if FEnemiesInVision > 1 then
   begin
-    Fail( 'Can''t run, there are enemies present.',[] );
+    UI.MsgEnter( 'Can''t run, there are enemies present.' );
     Exit;
   end;
-  Key := UI.MsgCommandChoice('Run - direction...',COMMANDS_MOVE+[COMMAND_ESCAPE,COMMAND_WAIT]);
+  Key := UI.MsgCommandChoice('Run - direction...',COMMANDS_MOVE+[COMMAND_ESCAPE,COMMAND_WAIT,COMMAND_RUNMODE]);
   if Key = COMMAND_ESCAPE then Exit;
+  if Key = COMMAND_RUNMODE then Key := COMMAND_WAIT;
   FRun.Start( CommandDirection(Key) );
 end;
 
@@ -517,7 +518,7 @@ begin
   end;
 
   if iLevel.isProperCoord( iAct ) and iLevel.cellFlagSet( iAct, aFlagID )
-    then iLevel.CallHook( iAct, Self, CellHook_OnAct )
+    then iLevel.CallHook( iAct, [ Self ], CellHook_OnAct )
     else Exit( Fail( 'You can''t %s that.', [ aActName ] ) );
   Exit( True );
 end;
@@ -548,7 +549,7 @@ begin
         Result.AddTarget( iCoord );
 end;
 
-function TPlayer.doChooseTarget( aActionName : string; aRadius : Byte ) : boolean;
+function TPlayer.doChooseTarget( aActionName : string; aRadius : Byte; aLimitRange : Boolean ) : boolean;
 var iTargets : TAutoTarget;
     iTarget  : TBeing;
     iLevel   : TLevel;
@@ -570,11 +571,9 @@ begin
 
   if FLastTargetPos.X*FLastTargetPos.Y <> 0 then
     if FLastTargetUID = 0 then
-      if iLevel.isVisible( FLastTargetPos ) then
-        if Distance( FLastTargetPos, FPosition ) <= aRadius then
-          iTargets.PriorityTarget( FLastTargetPos );
+      iTargets.PriorityTarget( FLastTargetPos );
 
-  FTargetPos := UI.ChooseTarget(aActionName, aRadius+1, iTargets, FChainFire > 0);
+  FTargetPos := UI.ChooseTarget(aActionName, aRadius+1, aLimitRange, iTargets, FChainFire > 0);
   FreeAndNil(iTargets);
   if FTargetPos.X = 0 then Exit( False );
 
@@ -585,7 +584,7 @@ begin
   end;
 
   FLastTargetUID := 0;
-  if iLevel.Being[ FTargetPos ] <> nil then
+  if iLevel.isVisible( FTargetPos ) and (iLevel.Being[ FTargetPos ] <> nil) then
     FLastTargetUID := iLevel.Being[ FTargetPos ].UID;
   FLastTargetPos := FTargetPos;
   Exit( True );
@@ -642,6 +641,7 @@ end;
 
 procedure TPlayer.AIControl;
 var iLevel      : TLevel;
+    iHideDesc   : Boolean;
     iCommand    : Byte;
     iDir        : TDirection;
     iMove       : TCoord2D;
@@ -679,13 +679,15 @@ repeat
   if FEnemiesInVision > 1 then begin FPathRun := False; FRun.Stop; end;
 
   if iLevel.Item[ FPosition ] <> nil then
+  begin
+    iHideDesc := FPathRun or (FRun.Active and (FRun.Dir.code = 5));
     if iLevel.Item[ FPosition ].Hooks[ Hook_OnEnter ] then
     begin
-      iLevel.Item[ FPosition ].CallHook( Hook_OnEnter, [ Self ] );
+      iLevel.Item[ FPosition ].CallHook( Hook_OnEnter, [ Self, iHideDesc ] );
       if (FSpeedCount < 5000) or (Doom.State <> DSPlaying) then Exit;
     end
     else
-    if not FPathRun then
+    if not iHideDesc then
       with iLevel.Item[ FPosition ] do
         if isLever then
            UI.Msg('There is a %s here.', [ DescribeLever( iLevel.Item[ FPosition ] ) ] )
@@ -693,6 +695,7 @@ repeat
           if Flags[ IF_PLURALNAME ]
             then UI.Msg('There are %s lying here.', [ GetName( False ) ] )
             else UI.Msg('There is %s lying here.', [ GetName( False ) ] );
+  end;
 
   if FRun.Active then
   begin
@@ -706,7 +709,7 @@ repeat
     begin
       iCommand := COMMAND_WALKNORTH;
 
-      if not GraphicsVersion then
+      if (not GraphicsVersion) and (FPathRun or (FRun.Dir.X <> 0) or (FRun.Dir.Y <> 0)) then
         IO.Delay( Option_RunDelay );
     end;
   end;
@@ -830,7 +833,7 @@ try
        MoveBlock :
          begin
            if iLevel.isProperCoord( iMove ) and iLevel.cellFlagSet( iMove, CF_PUSHABLE ) then
-             iLevel.CallHook( iMove, Self, CellHook_OnAct )
+             iLevel.CallHook( iMove, [ Self ], CellHook_OnAct )
            else
            begin
              if Option_Blindmode then UI.Msg( 'You bump into a wall.' );
@@ -885,7 +888,7 @@ try
          end;
        MoveBeing : Attack( iLevel.Being[ iMove ] );
        MoveDoor  :
-         if iLevel.CallHook( iMove, Self, CellHook_OnAct ) and (iStartNode <> nil) then
+         if iLevel.CallHook( iMove, [ Self ], CellHook_OnAct ) and (iStartNode <> nil) then
            FPath.Start := iStartNode
          else
          begin
@@ -1004,36 +1007,53 @@ end;
 procedure TPlayer.ExamineNPC;
 var iLevel : TLevel;
     iWhere : TCoord2D;
-    iCount  : Word;
+    iBeing : TBeing;
+    iBeingW: TCoord2D;
 begin
   iLevel := TLevel(Parent);
-  iCount := 0;
+  iBeing := nil;
   for iWhere in iLevel.Area do
+  begin
     if iLevel.isVisible(iWhere) and ( iLevel.Being[iWhere] <> nil ) and (iWhere <> FPosition) then
-    with iLevel.Being[iWhere] do
     begin
-      Inc(iCount);
-      UI.Msg('You see '+ GetName(false) + ' (' + WoundStatus + ') ' + BlindCoord(iWhere-Self.FPosition)+'.');
+      if iBeing = nil then
+        UI.Msg('You see:')
+      else
+        UI.Msg('%s (%s) %s,', [ iBeing.GetName(false), iBeing.WoundStatus, BlindCoord(iBeingW - Self.FPosition) ]);
+      iBeing := iLevel.Being[iWhere];
+      iBeingW := iWhere;
     end;
-  if iCount = 0 then UI.Msg('There are no monsters in sight.');
+  end;
+  if iBeing <> nil then
+    UI.Msg('%s (%s) %s.', [ iBeing.GetName(false), iBeing.WoundStatus, BlindCoord(iBeingW - Self.FPosition) ])
+  else
+    UI.Msg('There are no monsters in sight.');
 end;
 
 procedure TPlayer.ExamineItem;
 var iLevel : TLevel;
     iWhere : TCoord2D;
-    iCount : Word;
+    iItem  : TItem;
+    iItemW : TCoord2D;
 begin
   iLevel := TLevel(Parent);
-  iCount := 0;
+  iItem := nil;
   for iWhere in iLevel.Area do
-    if iLevel.isVisible(iWhere) then
-      if iLevel.Item[iWhere] <> nil then
-      with iLevel.Item[iWhere] do
-      begin
-        Inc(iCount);
-        UI.Msg('You see '+ GetName(false) + ' ' + BlindCoord(iWhere-Self.FPosition)+'.');
-      end;
-  if iCount = 0 then UI.Msg('There are no items in sight.');
+  begin
+    if iLevel.isVisible(iWhere) and ( iLevel.Item[iWhere] <> nil ) then
+    begin
+      if iItem = nil then
+        UI.Msg('You see:')
+      else
+        UI.Msg('%s %s,', [ iItem.GetName(false), BlindCoord(iItemW - Self.FPosition)]);
+      iItem := iLevel.Item[iWhere];
+      iItemW := iWhere;
+    end;
+  end;
+  if iItem <> nil then
+    UI.Msg('%s %s.', [ iItem.GetName(false), BlindCoord(iItemW - Self.FPosition) ])
+  else
+    UI.Msg('There are no items in sight.');
 end;
 
 // pieczarki oliwki szynka kielbasa peperoni motzarella //
@@ -1100,7 +1120,7 @@ begin
   Inc(Score,FExpLevel);
   Inc(Score,CurrentLevel*3);
 end;
-function lowASCII(c : char) : char; begin if c in ['ù',''] then Exit('.'); Exit(c); end;
+function lowASCII(c : char) : char; begin if c in ['ï¿½',''] then Exit('.'); Exit(c); end;
 
 begin
   if MemorialWritten then Exit;
