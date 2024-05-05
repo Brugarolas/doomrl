@@ -1,6 +1,18 @@
 0.9.9.8 BETA 4
 [new] -- BETA  : WARNING - speed/command system rewrites!
+[new] -- GH#093: The Vaults alternative added - House of Pain
+[mod] -- BETA  : House of Pain always generates instead of Vaults until balanced
+[mod] -- GH#107: ammo rooms can now contain a variety of ammo, even on Ao100/666
+[mod] -- GH#117: Technical mod packs on armors add resistances instead of knockback res
+[mod] -- GH#112: Survivalist - Ironman 2, and double heals from smed and globes
+[mod] -- GH#110: Scavenger - works on Melee, Boots and Armors (guaranteed mods added)
 [mod] -- GH#088: Juggler now makes all weapon swaps free
+[mod] -- GH#099: Conqueror and Explorer won't be awarded if no special levels were present
+[mod] -- GH#109: changed the color of the sniper mod pack to dark green (G-version)
+[mod] -- GH#116: buffs - bullet-proof vest, power armor
+[mod] -- GH#111: stat screen includes running dodge bonus
+[mod] -- GH#108: all elite formers deal 5 + 1d3 melee damage
+[mod] -- BETA  : duelist armor - 0/75/0
 [fix] -- BETA  : fixed SHIFT-L previous level feeling
 
 0.9.9.8 BETA 3
@@ -28,10 +40,13 @@
 [fix] -- GH#049: Deimos Lab conquered status only achieved by killing the Shamblers
 [fix] -- GH#040: fixed loud/silent sound for wall-destroying levers
 [fix] -  GH#052: fixed error message when attacking crates with a melee weapon on AoPc
+[fix] -- BETA  : fixed MIL and env boot assemblies
+[fix] -- BETA  : Medical Powerarmor heals to 50%
 [fix] -- BETA  : fixed on-kill effects (crash with DS/BA and Beretta wins and Megabuster)
 [fix] -- BETA  : fixed Backpack/Schematics bug
 [fix] -- BETA  : fixed Ironman + Berserk granting resistance above 95%
 [fix] -- BETA  : Vampyre blocks Ironman
+[fix] -- BETA  : yet another fix for the OnAttacked bug
 
 0.9.9.8 BETA 2
 [mod] -- GH#028: ported the game to SDL2

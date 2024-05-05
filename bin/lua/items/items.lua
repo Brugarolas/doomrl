@@ -151,7 +151,11 @@ function DoomRL.loaditems()
 		OnPickup = function(self,being)
 			being:msg("You feel better.")
 			being.tired = false
-			being.hp = math.min( being.hp + 10 * diff[DIFFICULTY].powerfactor, 2*being.hpmax )
+			local amount =  10 * diff[DIFFICULTY].powerfactor
+			if being.flags[ BF_MEDPLUS ] then
+				amount = amount * 2
+			end
+			being.hp = math.min( being.hp +  amount, 2*being.hpmax )
 		end,
 	}
 
@@ -223,7 +227,11 @@ function DoomRL.loaditems()
 		OnPickup = function(self,being)
 			being:msg("You feel like new!")
 			being.tired = false
-			being.hp = math.min( being.hp + 10 * diff[DIFFICULTY].powerfactor, 2*being.hpmax )
+			local amount =  10 * diff[DIFFICULTY].powerfactor
+			if being.flags[ BF_MEDPLUS ] then
+				amount = amount * 2
+			end
+			being.hp = math.min( being.hp + amount, 2*being.hpmax )
 			if being.hp < being.hpmax then
 				being.hp = being.hpmax
 			end
@@ -742,8 +750,11 @@ function DoomRL.loaditems()
 					being:msg("Nothing happens.")
 					return true
 				end
-				local heal = (being.hpmax * diff[DIFFICULTY].powerfactor) / 4 + 2
-				being.hp = math.min( being.hp + heal, being.hpmax * 2 )
+				local amount = (being.hpmax * diff[DIFFICULTY].powerfactor) / 4 + 2
+				if being.flags[ BF_MEDPLUS ] then
+					amount = amount * 2
+				end
+				being.hp = math.min( being.hp + amount, being.hpmax * 2 )
 				if not being.flags[ BF_MEDPLUS ] then being.hp = math.min( being.hp, being.hpmax ) end
 				being:msg("You feel healed.",being:get_name(true,true).." looks healthier!")
 			end
@@ -967,7 +978,7 @@ function DoomRL.loaditems()
 		coscolor = { 1.0,1.0,0.0,1.0 },
 		level    = 5,
 		weight   = 120,
-		desc     = "Technical modification kit -- decreases fire time for weapons, or increases armor knockback resistance.",
+		desc     = "Technical modification kit -- decreases fire time for weapons, or increases armor resistances.",
 
 		type       = ITEMTYPE_PACK,
 		mod_letter = "T",
@@ -985,7 +996,12 @@ function DoomRL.loaditems()
 			if (item.itype == ITEMTYPE_RANGED) or (item.itype == ITEMTYPE_MELEE) then
 				item.usetime = item.usetime * 0.85
 			elseif item.itype == ITEMTYPE_ARMOR or item.itype == ITEMTYPE_BOOTS then
-				item.knockmod = item.knockmod - 25
+				item.resist.bullet   = (item.resist.bullet or 0)   + 20
+				item.resist.melee    = (item.resist.melee or 0)    + 20
+				item.resist.shrapnel = (item.resist.shrapnel or 0) + 20
+				item.resist.acid     = (item.resist.acid or 0)     + 10
+				item.resist.fire     = (item.resist.fire or 0)     + 10
+				item.resist.plasma   = (item.resist.plasma or 0)   + 10
 			end
 			item:add_mod('T')
 			return true

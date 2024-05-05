@@ -74,7 +74,8 @@ TPlayer = class(TBeing)
   function PlayerTick : Boolean;
   procedure HandlePostMove; override;
   function HandleCommandValue( aCommand : Byte ) : Boolean;
-  procedure AIAction;
+  procedure PreAction;
+  procedure Action( aCommand : Byte );
   procedure LevelEnter;
   procedure doUpgradeTrait;
   procedure RegisterKill( const aKilledID : AnsiString; aKiller : TBeing; aWeapon : TItem );
@@ -455,6 +456,9 @@ begin
           iTargets.PriorityTarget( FLastTargetPos );
 
   FTargetPos := UI.ChooseTarget(aActionName, aRadius+1, aLimitRange, iTargets, FChainFire > 0 );
+  if FLastTargetPos.X*FLastTargetPos.Y <> 0
+     then FPrevTargetPos := FLastTargetPos
+     else FPrevTargetPos := FTargetPos;
   FreeAndNil(iTargets);
   if FTargetPos.X = 0 then Exit( False );
 
@@ -509,7 +513,6 @@ begin
   TLevel(Parent).CallHook( FPosition, Self, CellHook_OnEnter );
   if UIDs[ iThisUID ] = nil then Exit( False );
 
-  UI.WaitForAnimation;
   MasterDodge := False;
   FAffects.Tick;
   if Doom.State <> DSPlaying then Exit( False );
@@ -590,10 +593,12 @@ var iLevel      : TLevel;
     iFireDesc   : AnsiString;
     iCount      : Byte;
     iFlag       : byte;
+    iChainFire  : Byte;
     iScan       : TCoord2D;
     iTarget     : TCoord2D;
     iAlt        : Boolean;
     iAltFire    : TAltFire;
+    iItemTypes  : TItemTypeSet;
 
     iLimitRange : Boolean;
     iRange      : Byte;
@@ -601,6 +606,8 @@ var iLevel      : TLevel;
 begin
   iLevel := TLevel( Parent );
   iFlag  := 0;
+  iChainFire := FChainFire;
+  FChainFire := 0;
 
   if FRun.Active then
   begin
@@ -746,10 +753,13 @@ begin
 
   if ( aCommand = COMMAND_UNLOAD ) then
   begin
+    iItemTypes := [ ItemType_Ranged, ItemType_AmmoPack ];
+    if (BF_SCAVENGER in FFlags) then
+      iItemTypes := [ ItemType_Ranged, ItemType_AmmoPack, ItemType_Melee, ItemType_Armor, ItemType_Boots ];
     iItem := TLevel(Parent).Item[ FPosition ];
-    if (iItem = nil) or ( not (iItem.isRanged or iItem.isAmmoPack ) ) then
+    if (iItem = nil) or ( not (iItem.IType in iItemTypes) ) then
     begin
-      iItem := Inv.Choose( [ ItemType_Ranged, ItemType_AmmoPack ] , 'unload' );
+      iItem := Inv.Choose( iItemTypes, 'unload' );
       if iItem = nil then Exit( False );
     end;
     iName := iItem.Name;
@@ -767,6 +777,9 @@ begin
         if not UI.MsgConfirm('Do you want to disassemble the '+iName+'?', True) then
           iID := '';
     end;
+
+    if ( iID = '' ) and ( not( iItem.IType in [ ItemType_Ranged, ItemType_AmmoPack ] ) ) then
+       Exit( False );
   end;
 
   if ( aCommand in [ INPUT_FIRE, INPUT_ALTFIRE, INPUT_MFIRE, INPUT_MALTFIRE ] ) then
@@ -843,12 +856,13 @@ begin
 
             if iAltFire = ALT_CHAIN then
             begin
-              case FChainFire of
+              case iChainFire of
                 0 : iFireDesc := ' (@Ginitial@>)';
                 1 : iFireDesc := ' (@Ywarming@>)';
                 2 : iFireDesc := ' (@Rfull@>)';
               end;
-              if not Player.doChooseTarget( Format('Chain fire%s -- Choose target or abort...', [ iFireDesc ]), iRange, iLimitRange ) then Exit( Fail( 'Targeting canceled.', [] ) );
+              if not Player.doChooseTarget( Format('Chain fire%s -- Choose target or abort...', [ iFireDesc ]), iRange, iLimitRange ) then
+                Exit( Fail( 'Targeting canceled.', [] ) );
             end
             else
               if not Player.doChooseTarget( Format('Fire%s -- Choose target...',[ iFireDesc ]), iRange, iLimitRange ) then Exit( Fail( 'Targeting canceled.', [] ) );
@@ -938,6 +952,8 @@ begin
     if ( Inv.Slot[ efWeapon2 ] <> nil ) and ( Inv.Slot[ efWeapon2 ].isAmmoPack )        then Exit( Fail('Nothing to swap!',[]) );
   end;
 
+  FChainFire := iChainFire;
+
   if ( aCommand in [ COMMAND_QUICKKEY ] ) then
     Exit( HandleCommand( TCommand.Create( aCommand, iID ) ) );
 
@@ -956,25 +972,13 @@ begin
   Exit( Fail('Unknown command. Press "?" for help.', []) );
 end;
 
-procedure TPlayer.AIAction;
+procedure TPlayer.PreAction;
 var iLevel      : TLevel;
-    iCommand    : Byte;
-    iAlt        : Boolean;
 begin
-  iCommand := 0;
-  // FArmor color //
   iLevel := TLevel( Parent );
-  FEnemiesInVision := iLevel.BeingsVisible;
-  if FEnemiesInVision > 1 then begin FPathRun := False; FRun.Stop; end;
 
   if iLevel.Item[ FPosition ] <> nil then
   begin
-    if iLevel.Item[ FPosition ].Hooks[ Hook_OnEnter ] then
-    begin
-      iLevel.Item[ FPosition ].CallHook( Hook_OnEnter, [ Self ] );
-      if (FSpeedCount < 5000) or (Doom.State <> DSPlaying) then Exit;
-    end
-    else
     if not FPathRun then
       with iLevel.Item[ FPosition ] do
         if isLever then
@@ -985,37 +989,45 @@ begin
             else UI.Msg('There is %s lying here.', [ GetName( False ) ] );
   end;
 
-  if FRun.Active then
-  begin
-    if IO.CommandEventPending then
-    begin
-      FPathRun := False;
-      FRun.Stop;
-      IO.ClearEventBuffer;
-    end
-    else
-    begin
-      iCommand := INPUT_WALKNORTH;
-
-      if not GraphicsVersion then
-        IO.Delay( Option_RunDelay );
-    end;
-  end;
-
+  FEnemiesInVision := iLevel.BeingsVisible;
   if FEnemiesInVision < 2 then
   begin
     FChainFire := 0;
     if FBersekerLimit > 0 then Dec( FBersekerLimit );
   end;
 
+  if FEnemiesInVision > 1 then
+  begin
+    FPathRun := False;
+    FRun.Stop;
+  end;
+
+  if FRun.Active then
+  begin
+    if IO.CommandEventPending then
+    begin
+      UI.Msg('Pending stop');
+      FPathRun := False;
+      FRun.Stop;
+      IO.ClearEventBuffer;
+    end
+    else
+    begin
+      if not GraphicsVersion then
+        IO.Delay( Option_RunDelay );
+    end;
+  end;
+end;
+
+procedure TPlayer.Action( aCommand : Byte );
+var iLevel      : TLevel;
+    iCommand    : Byte;
+    iAlt        : Boolean;
+begin
 try
-
-  if FChainFire > 0 then
-    iCommand := COMMAND_ALTFIRE;
-
-  if iCommand = 0
-    then iCommand := IO.GetCommand
-    else UI.MsgUpDate;
+  iCommand := aCommand;
+  iLevel := TLevel( Parent );
+  // FArmor color //
 
   // === MOUSE HANDLING ===
   if iCommand in [ INPUT_MLEFT, INPUT_MRIGHT ] then
