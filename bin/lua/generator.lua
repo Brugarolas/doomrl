@@ -203,7 +203,7 @@ end
 -- TODO: use Cells generated cellsets!
 function generator.add_rooms()
 	core.log("generator.add_rooms()")
-	local cell_meta_list = { "wall", "rwall", "door", "odoor", "doorb", "odoorb" }
+	local cell_meta_list = { "wall", "rwall", "door", "odoor", }
 	local cell_meta = generator.cell_set( cell_meta_list )
 	local room_begin = function(c)
 		if c.x == MAXX or c.y == MAXY then return false end
@@ -362,7 +362,8 @@ function generator.generate_caves_dungeon()
 	if dlevel > 8  then style = 6 end
 	if dlevel > 16 then style = 7 end
 	if dlevel > 30 then style = math.random( 5, 7 ) end
-	level.style = style
+	
+	level:set_generator_style( style )
 
 	local wall_cell    = generator.styles[ level.style ].wall
 	local floor_cell   = generator.styles[ level.style ].floor
@@ -423,8 +424,8 @@ function generator.generate_caves_dungeon()
 		{ level = { 30 },     weight = 5, list = "ndemon",         history = "On level @1 he stumbled into a nightmare demon cave!" },
 		{ level = { 40 },     weight = 5, list = "narachno",       history = "On level @1 he stumbled into a nightmare arachnotron cave!" },
 		{ level = { 50 },     weight = 5, list = "ncacodemon",     history = "On level @1 he stumbled into a nightmare cacodemon cave!" },
-		{ level = { 60 },     weight = 1, list = "agony",          history = "On level @1 he stumbled into a agony elemental cave!", min_diff = 3 },
-		{ level = { 70 },     weight = 1, list = "lava_elemental", history = "On level @1 he stumbled into a lava elemental cave!", min_diff = 3 },
+		{ level = { 60 },     weight = 1, list = "agony",          history = "On level @1 he stumbled into a agony elemental cave!", min_diff = 3, feeling = "You hear echoing wails of agony!" },
+		{ level = { 70 },     weight = 1, list = "lava_elemental", history = "On level @1 he stumbled into a lava elemental cave!", min_diff = 3, feeling = "The cave temperature is insanely hot!" },
 	}
 
 	local mlevel = math.max( level.danger_level + (DIFFICULTY - 2)*3, 0 )
@@ -447,7 +448,7 @@ function generator.generate_caves_dungeon()
 		level:flood_monsters{ list = set.list, danger = amount }
 	end
 
-  	ui.msg_feel( "Twisted passages carry the smell of death..." )
+  	ui.msg_feel( set.feeling or "Twisted passages carry the smell of death..." )
 
 	generator.set_permanence( area.FULL )
 end
@@ -481,7 +482,7 @@ function generator.generate_caves_2_dungeon()
 	if dlevel > 8  then style = 6 end
 	if dlevel > 16 then style = 7 end
 	if dlevel > 30 then style = math.random( 5, 7 ) end
-	level.style = style
+	level:set_generator_style( style )
 
 	local floor_cell = cells[generator.styles[ level.style ].floor].nid
 	local cave_cell  = cells[generator.styles[ level.style ].wall ].nid

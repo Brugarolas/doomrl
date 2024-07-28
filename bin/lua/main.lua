@@ -75,14 +75,14 @@ function DoomRL.OnLoadBase()
 	DoomRL.load_rooms()
 
 	generator.styles = {
-		{ floor = "floor",  wall = "wall",  door="door",  odoor = "odoor"  },
-		{ floor = "floor",  wall = "dwall", door="door",  odoor = "odoor"  },
-		{ floor = "floorb", wall = "rwall", door="doorb", odoor = "odoorb" },
-		{ floor = "floor",  wall = "rwall", door="door",  odoor = "odoor"  },
+		{ floor = "floor", wall = "wall",  door="door",  odoor = "odoor",  style = 0,  },
+		{ floor = "floor", wall = "wall",  door="door",  odoor = "odoor",  style = 1,  },
+		{ floor = "floor", wall = "rwall", door="door",  odoor = "odoor",  style = 2, },
+		{ floor = "floor", wall = "rwall", door="door",  odoor = "odoor",  style = 0,  },
 		-- caves
-		{ floor = "floor",   wall = "cwall1", door="door",  odoor = "odoor"  },
-		{ floor = "floorc",  wall = "cwall2", door="door",  odoor = "odoor"  },
-		{ floor = "floorb",  wall = "cwall3", door="door",  odoor = "odoor"  },
+		{ floor = "floor",  wall = "cwall", door="door",  odoor = "odoor", style = 5,  },
+		{ floor = "floor",  wall = "cwall", door="door",  odoor = "odoor", style = 6,  },
+		{ floor = "floor",  wall = "cwall", door="door",  odoor = "odoor", style = 7,  },
 	}
 end
 
@@ -585,6 +585,7 @@ function DoomRL.loadbasedata()
 		name     = "teleport",
 		color    = LIGHTCYAN,
 		sprite   = SPRITE_TELEPORT,
+		sframes  = 2,
 		weight   = 0,
 		flags    = { IF_NODESTROY, IF_NUKERESIST },
 
@@ -630,6 +631,8 @@ function DoomRL.loadbasedata()
 		ascii        = "@" ,
 		color        = LIGHTGRAY,
 		sprite       = SPRITE_PLAYER,
+		sframes      = 2,
+		sftime       = 500,
 		min_lev      = 200,
 		corpse       = "corpse",
 		danger       = 0,

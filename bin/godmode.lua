@@ -26,8 +26,8 @@ SDLMixerFormat    = 32784
 SDLMixerChunkSize = 1024
 
 -- Windowed sizes
-WindowedWidth    = 800
-WindowedHeight   = 600
+WindowedWidth    = 1280
+WindowedHeight   = 720
 -- Multiplication values of font and tile display - use at most 2
 WindowedFontMult = 1
 WindowedTileMult = 1
@@ -167,7 +167,7 @@ SaveOnCrash      = false
 -- to use internet connection features. Think twice before disabling
 -- it, or you'll loose the features listed below and MOTD and ModServer
 -- support!
-NetworkConnection = true
+NetworkConnection = false
 
 -- Should DoomRL check if there's a new version at runtime. If 
 -- NetworkConnection is set to true this check is made regardless,

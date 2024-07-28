@@ -7,8 +7,9 @@ Copyright (c) 2002 by Kornel "Anubis" Kisielewicz
 }
 unit dfdata;
 interface
-uses Classes, SysUtils, idea, vgenerics, vcolor, vutil, vrltools,
-     doomconfig, vuitypes;
+uses Classes, SysUtils, idea,
+     vgenerics, vcolor, vutil, vrltools, vuitypes, vluatable,
+     doomconfig;
 
 const ConfigurationPath : AnsiString = 'config.lua';
       DataPath          : AnsiString = '';
@@ -22,7 +23,9 @@ var   MemorialWritten : Boolean;
 const PlayerSafeZone = 6;
 
 type
-  TIntHashMap  = specialize TGHashMap<Integer>;
+  TIntHashMap   = specialize TGHashMap<Integer>;
+  TStringGArray = specialize TGArray<AnsiString>;
+
 
 type
   // Error reporting.
@@ -103,9 +106,6 @@ const
   INPUT_MLEFT    = 243;
   INPUT_MSCRUP   = 244;
   INPUT_MSCRDOWN = 245;
-  INPUT_MFIRE    = 246;
-  INPUT_MALTFIRE = 247;
-  INPUT_MATTACK  = 248;
   COMMAND_NONE     = 0;
 
   KnockbackValue = 7;
@@ -180,17 +180,16 @@ const
 type TCellSet = set of Byte;
      TExplosionFlags = set of TExplosionFlag;
      TSprite = record
-       Large    : Boolean;
-       Overlay  : Boolean;
-       CosColor : Boolean;
-       Glow     : Boolean;
-       Color    : TColor;
-       GlowColor: TColor;
-       SpriteID : Word;
+       Color     : TColor;
+       GlowColor : TColor;
+       SpriteID  : DWord;
+       Flags     : TFlags;
+       Frames    : Word;
+       Frametime : Word;
      end;
 
-function NewSprite( ID : Word ) : TSprite;
-function NewSprite( ID : Word; Color : TColor ) : TSprite;
+function NewSprite( ID : DWord ) : TSprite;
+function NewSprite( ID : DWord; Color : TColor ) : TSprite;
 
 const
   ActionCostPickUp = 1000;
@@ -331,6 +330,7 @@ function MSecNow : Comp;
 function DurationString( aSeconds : int64 ) : Ansistring;
 function BlindCoord( const where : TCoord2D ) : string;
 function SlotName(slot : TEqSlot) : string;
+function ReadSprite( aTable : TLuaTable; var aSprite : TSprite ) : Boolean;
 
 var ColorOverrides : TIntHashMap;
 
@@ -501,23 +501,21 @@ begin
   end;
 end;
 
-function NewSprite ( ID : Word ) : TSprite;
+function NewSprite ( ID : DWord ) : TSprite;
 begin
-  NewSprite.CosColor := False;
-  NewSprite.Overlay  := False;
-  NewSprite.Glow     := False;
-  NewSprite.Large    := False;
-  NewSprite.SpriteID := ID;
+  NewSprite.Flags     := [];
+  NewSprite.SpriteID  := ID;
+  NewSprite.Frames    := 0;
+  NewSprite.Frametime := 0;
 end;
 
-function NewSprite ( ID : Word; Color : TColor ) : TSprite;
+function NewSprite ( ID : DWord; Color : TColor ) : TSprite;
 begin
-  NewSprite.Overlay  := False;
-  NewSprite.Glow     := False;
-  NewSprite.Large    := False;
-  NewSprite.CosColor := True;
-  NewSprite.Color    := Color;
-  NewSprite.SpriteID := ID;
+  NewSprite.Flags     := [ SF_COSPLAY ];
+  NewSprite.Color     := Color;
+  NewSprite.SpriteID  := ID;
+  NewSprite.Frames    := 0;
+  NewSprite.Frametime := 0;
 end;
 
 function Roll(stat : Integer) : Integer;
@@ -569,6 +567,45 @@ function BonusStr(i: integer): string;
 begin
   if i < 0 then BonusStr := IntToStr(i)
            else BonusStr := '+'+IntToStr(i);
+end;
+
+function ReadSprite( aTable : TLuaTable; var aSprite : TSprite ) : Boolean;
+var iTable : TLuaTable;
+begin
+  ReadSprite := False;
+  if aTable.IsNumber( 'sprite' ) then
+  begin
+    aSprite.SpriteID  := aTable.getInteger('sprite',0);
+    ReadSprite        := True;
+  end;
+  if aTable.IsTable( 'sflags' ) then
+    aSprite.Flags     := aTable.getFlags('sflags');
+  if aTable.IsNumber( 'sframes' ) then
+    aSprite.Frames    := aTable.getInteger('sframes',0);
+  if aTable.IsNumber( 'sftime' ) then
+    aSprite.Frametime := aTable.getInteger('sftime',FRAME_TIME);
+  if not aTable.isNil( 'overlay' ) then
+  begin
+    Include( aSprite.Flags, SF_OVERLAY );
+    aSprite.Color := NewColor( aTable.GetVec4f('overlay' ) );
+  end;
+  if not aTable.isNil( 'coscolor' ) then
+  begin
+    Include( aSprite.Flags, SF_COSPLAY );
+    aSprite.Color := NewColor( aTable.GetVec4f('coscolor' ) );
+  end;
+  if not aTable.isNil( 'glow' ) then
+  begin
+    Include( aSprite.Flags, SF_GLOW );
+    aSprite.GlowColor := NewColor( aTable.GetVec4f('glow' ) );
+  end;
+  // so we can later move to in-sprite table sprite info definitions slowly
+  if aTable.IsTable( 'sprite' ) then
+  begin
+    iTable := aTable.GetTable( 'sprite' );
+    Result := ReadSprite( iTable, aSprite );
+    iTable.Free;
+  end;
 end;
 
 end.

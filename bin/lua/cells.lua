@@ -3,80 +3,60 @@ function DoomRL.loadcells()
 	register_cell "floor"
 	{
 		name       = "floor",
-		ascii      = "ù",
+		ascii      = "\250",
 		asciilow   = '.',
 		set        = CELLSET_FLOORS,
 		blname     = "blood",
 		blcolor    = RED;
 		bloodto    = "bloodpool";
-		sprite     = SPRITE_FLOOR,
 		blsprite   = SPRITE_BLOOD;
+		sprite     = {
+			SPRITE_FLOOR, -- tech 0
+			SPRITE_FLOOR, -- tech 1
+			SPRITE_HELLFLOOR, -- tech hell
+			SPRITE_FLOOR, -- unused 3
+			SPRITE_FLOOR, -- unused 4
+			SPRITE_FLOOR,     -- cave 5
+			SPRITE_CAVEFLOOR, -- cave 6
+			SPRITE_HELLFLOOR, -- cave 7
+		}
 	}
 
-	register_cell "floorc"
+-- Tech Walls --
+
+	register_cell "wall_destroyed"
 	{
-		name       = "floor",
-		ascii      = "ù",
+		name       = "rubble",
+		blname     = "blooded rubble",
+		ascii      = "\250",
 		asciilow   = '.',
+		color 	   = DARKGRAY,
 		set        = CELLSET_FLOORS,
 		blname     = "blood",
-		blcolor    = RED;
-		bloodto    = "bloodpool";
-		sprite     = SPRITE_CAVEFLOOR,
-		blsprite   = SPRITE_BLOOD;
+		blcolor    = RED,
+		sprite     = SPRITE_RUBBLE,
+		blsprite   = SPRITE_BLOOD,
+		sflags     = { SF_MULTI, SF_FLOOR },
 	}
-
-	register_cell "floorb"
-	{
-		name       = "floor",
-		ascii      = "ù",
-		asciilow   = '.',
-		set        = CELLSET_FLOORS,
-		blname     = "blood",
-		blcolor    = RED;
-		bloodto    = "bloodpool";
-		sprite     = SPRITE_HELLFLOOR,
-		blsprite   = SPRITE_BLOOD;
-	}
-
--- Phobos Walls --
 
 	register_cell "wall"
-	{
-		name       = "stone wall",
-		blname     = "blooded wall",
-		ascii      = "#",
-		color      = LIGHTGRAY,
-		blcolor    = RED,
-		armor      = 10,
-		hp         = 10,
-		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_MULTISPRITE, CF_STICKWALL},
-		sprite     = SPRITE_WALL,
-		blsprite   = SPRITE_WALLBLOOD,
-	}
-
--- Phobos Walls End --
-
--- Deimos Walls --
-
-	register_cell "dwall"
 	{
 		name       = "base wall",
 		blname     = "blooded wall",
 		ascii      = "#",
-		color      = DARKGRAY,
+		color      = { LIGHTGRAY, DARKGRAY, },
 		blcolor    = RED,
 		armor      = 10,
 		hp         = 10,
 		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_MULTISPRITE, CF_STICKWALL},
-		sprite     = SPRITE_TECHWALL,
+		flags      = { CF_BLOCKLOS, CF_BLOCKMOVE, CF_STICKWALL },
+		sprite     = { SPRITE_WALL, SPRITE_TECHWALL },
 		blsprite   = SPRITE_WALLBLOOD,
+		destroyto  = "wall_destroyed",
+		sflags     = { SF_MULTI },
 	}
 
-
--- Deimos Walls End --
+-- Tech Walls End --
 
 -- Hell Walls --
 
@@ -90,10 +70,12 @@ function DoomRL.loadcells()
 		armor      = 10,
 		hp         = 15,
 		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_MULTISPRITE, CF_STICKWALL},
+		flags      = { CF_BLOCKLOS, CF_BLOCKMOVE, CF_STICKWALL },
 		coscolor   = { 1.0,0.2,0.2,1.0 },
 		sprite     = SPRITE_BRICKWALL,
 		blsprite   = SPRITE_WALLBLOOD,
+		destroyto  = "wall_destroyed",
+		sflags     = { SF_MULTI },
 	}
 
 -- Hell Walls End --
@@ -109,62 +91,45 @@ function DoomRL.loadcells()
 		armor      = 3,
 		hp         = 3,
 		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_MULTISPRITE, CF_STICKWALL, CF_FRAGILE },
+		flags      = { CF_BLOCKLOS, CF_BLOCKMOVE, CF_STICKWALL, CF_FRAGILE },
 		coscolor   = { 0.6,0.6,1.0,1.0 },
 		sprite     = SPRITE_CAVEWALL,
 		blsprite   = SPRITE_WALLBLOOD,
+		sflags     = { SF_MULTI },
+		destroyto  = "wall_destroyed",
 	}
 
 -- Ice Walls End --
 
 -- Cave Walls --
 
-	register_cell "cwall1"
+	register_cell "cwall"
 	{
 		name       = "cave wall",
 		blname     = "blooded cave wall",
 		ascii      = "#",
-		color      = DARKGRAY,
+		color      = { DARKGRAY, BROWN, RED },
+		sprite     = {
+			sprite = SPRITE_CAVEWALL, 
+			-- first five are in tech, rest in cave levels (for floor matching)
+			{ coscolor   = { 0.3,0.3,0.3,1.0 }, },
+			{ coscolor   = { 1.0,0.6,0.2,1.0 }, },
+			{ coscolor   = { 1.0,0.2,0.2,1.0 }, },
+			{ coscolor   = { 0.3,0.3,0.3,1.0 }, },
+			{ coscolor   = { 1.0,0.6,0.2,1.0 }, },
+
+			{ coscolor   = { 0.3,0.3,0.3,1.0 }, }, -- 5
+			{ coscolor   = { 1.0,0.6,0.2,1.0 }, }, -- 6
+			{ coscolor   = { 1.0,0.2,0.2,1.0 }, }, -- 7
+		},
+		destroyto  = "wall_destroyed",
 		blcolor    = RED,
 		armor      = 15,
 		hp         = 30,
 		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_MULTISPRITE, CF_STICKWALL},
-		coscolor   = { 0.3,0.3,0.3,1.0 },
-		sprite     = SPRITE_CAVEWALL,
+		flags      = { CF_BLOCKLOS, CF_BLOCKMOVE, CF_STICKWALL },
 		blsprite   = SPRITE_WALLBLOOD,
-	}
-
-	register_cell "cwall2"
-	{
-		name       = "cave wall",
-		blname     = "blooded cave wall",
-		ascii      = "#",
-		color      = BROWN,
-		blcolor    = RED,
-		armor      = 15,
-		hp         = 30,
-		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_MULTISPRITE, CF_STICKWALL},
-		coscolor   = { 1.0,0.6,0.2,1.0 },
-		sprite     = SPRITE_CAVEWALL,
-		blsprite   = SPRITE_WALLBLOOD,
-	}
-
-	register_cell "cwall3"
-	{
-		name       = "cave wall",
-		blname     = "blooded cave wall",
-		ascii      = "#",
-		color      = RED,
-		blcolor    = LIGHTRED,
-		armor      = 15,
-		hp         = 30,
-		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_MULTISPRITE, CF_STICKWALL},
-		coscolor   = { 1.0,0.2,0.2,1.0 },
-		sprite     = SPRITE_CAVEWALL,
-		blsprite   = SPRITE_WALLBLOOD,
+		sflags     = { SF_MULTI },
 	}
 
 -- Cave Walls End --
@@ -180,9 +145,12 @@ function DoomRL.loadcells()
 		armor      = 15,
 		hp         = 10,
 		set        = CELLSET_WALLS,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_MULTISPRITE, CF_STICKWALL},
+		flags      = { CF_BLOCKLOS, CF_BLOCKMOVE, CF_STICKWALL },
 		sprite     = SPRITE_BOSSWALL,
+		deco       = { SPRITE_DECO_SKULL_1, SPRITE_DECO_SKULL_2, SPRITE_DECO_SKULL_3, SPRITE_DECO_SKULL_4 },
 		blsprite   = SPRITE_WALLBLOOD,
+		sflags     = { SF_MULTI },
+		destroyto  = "wall_destroyed",
 	}
 
 -- Green Walls End --
@@ -232,13 +200,15 @@ function DoomRL.loadcells()
 		armor      = 4,
 		hp         = 6,
 		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_FRAGILE, CF_OVERLAY, CF_STICKWALL, CF_OPENABLE, CF_RUNSTOP, CF_HIGHLIGHT},
-		sprite     = SPRITE_DOOR,
+		sprite     = { SPRITE_DOOR, SPRITE_DOOR, SPRITE_HELLDOOR, },
+		sftime     = 25,
 
 		OnAct = function(c,being)
 			being:msg("You open the door.")
 			being:play_sound("door.open")
 			level.map[ c ] = "odoor"
 			being.scount = being.scount - 500
+			level:animate_cell( c, -3 )
 			return true
 		end,
 	}
@@ -249,7 +219,8 @@ function DoomRL.loadcells()
 		ascii      = "/",
 		color      = BROWN,
 		flags      = {CF_NOCHANGE, CF_NORUN, CF_OVERLAY, CF_STICKWALL, CF_CLOSABLE, CF_RUNSTOP, CF_NUKABLE, CF_HIGHLIGHT },
-		sprite     = SPRITE_OPENDOOR,
+		sprite     = { SPRITE_OPENDOOR, SPRITE_OPENDOOR, SPRITE_HELLOPENDOOR, },
+		sftime     = 25,
 
 		OnAct = function(c,being)
 			if level:get_being(c) == nil and level:get_item(c) == nil then
@@ -257,6 +228,7 @@ function DoomRL.loadcells()
 				being:play_sound("door.close")
 				level.map[ c ] = "door"
 				being.scount = being.scount - 500
+				level:animate_cell( c, 3 )
 				return true
 			else
 				being:msg("There's something blocking the door.")
@@ -273,52 +245,11 @@ function DoomRL.loadcells()
 		armor      = 6,
 		hp         = 6,
 		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_FRAGILE, CF_OVERLAY, CF_STICKWALL, CF_RUNSTOP},
-		sprite     = SPRITE_DOOR,
+		sprite     = { SPRITE_DOOR, SPRITE_DOOR, SPRITE_HELLDOOR, },
 
 		OnAct = function(c,being)
 			being:msg("The door is locked.")
 			return false
-		end,
-	}
-
-	register_cell "doorb"
-	{
-		name       = "closed door",
-		ascii      = "+",
-		color      = BROWN,
-		armor      = 4,
-		hp         = 6,
-		flags      = {CF_BLOCKLOS, CF_BLOCKMOVE, CF_FRAGILE, CF_OVERLAY, CF_STICKWALL, CF_OPENABLE, CF_RUNSTOP, CF_HIGHLIGHT},
-		sprite     = SPRITE_HELLDOOR,
-
-		OnAct = function(c,being)
-			being:msg("You open the door.")
-			being:play_sound("door.open")
-			level.map[ c ] = "odoorb"
-			being.scount = being.scount - 500
-			return true
-		end,
-	}
-
-	register_cell "odoorb"
-	{
-		name       = "open door",
-		ascii      = "/",
-		color      = BROWN,
-		flags      = {CF_NOCHANGE, CF_NORUN, CF_OVERLAY, CF_STICKWALL, CF_CLOSABLE, CF_RUNSTOP, CF_NUKABLE, CF_HIGHLIGHT },
-		sprite     = SPRITE_HELLOPENDOOR,
-
-		OnAct = function(c,being)
-			if level:get_being(c) == nil and level:get_item(c) == nil then
-				being:msg("You close the door.")
-				being:play_sound("door.close")
-				level.map[ c ] = "doorb"
-				being.scount = being.scount - 500
-				return true
-			else
-				being:msg("There's something blocking the door.")
-				return false
-			end
 		end,
 	}
 
@@ -414,6 +345,7 @@ function DoomRL.loadcells()
 		hp         = 2,
 		flags      = { CF_BLOCKMOVE, CF_PUSHABLE, CF_FRAGILE, CF_OVERLAY, CF_HIGHLIGHT},
 		sprite     = SPRITE_ACIDBARREL,
+		sframes    = 2,
 
 		OnAct = function(c,being)
 			local source = being.position
@@ -438,6 +370,7 @@ function DoomRL.loadcells()
 		hp         = 2,
 		flags      = { CF_BLOCKMOVE, CF_PUSHABLE, CF_FRAGILE, CF_OVERLAY, CF_HIGHLIGHT},
 		sprite     = SPRITE_LAVABARREL,
+		sframes    = 2,
 
 		OnAct = function(c,being)
 			local source = being.position
@@ -462,8 +395,9 @@ function DoomRL.loadcells()
 		name       = "water",
 		ascii      = "=",
 		color      = COLOR_WATER,
-		flags      = {F_GTSHIFT, F_GFLUID, CF_LIQUID, CF_NOCHANGE},
+		flags      = { CF_LIQUID, CF_NOCHANGE},
 		sprite     = SPRITE_WATER,
+		sflags     = { SF_FLOW, SF_FLUID },
 	}
 
 	register_cell "acid"
@@ -471,8 +405,9 @@ function DoomRL.loadcells()
 		name       = "acid",
 		ascii      = "=",
 		color      = COLOR_ACID,
-		flags      = {F_GTSHIFT, F_GFLUID, CF_LIQUID, CF_NOCHANGE, CF_NORUN, CF_HAZARD, CF_HIGHLIGHT},
+		flags      = { CF_LIQUID, CF_NOCHANGE, CF_NORUN, CF_HAZARD, CF_HIGHLIGHT},
 		sprite     = SPRITE_ACID,
+		sflags     = { SF_FLOW, SF_FLUID },
 
 		OnEnter = function(c,being)
 			local damage   = 6
@@ -496,8 +431,9 @@ function DoomRL.loadcells()
 		name       = "lava",
 		ascii      = "=",
 		color      = COLOR_LAVA,
-		flags      = {F_GTSHIFT, F_GFLUID, CF_LIQUID, CF_NOCHANGE, CF_NORUN, CF_HAZARD, CF_HIGHLIGHT},
+		flags      = { CF_LIQUID, CF_NOCHANGE, CF_NORUN, CF_HAZARD, CF_HIGHLIGHT},
 		sprite     = SPRITE_LAVA,
+		sflags     = { SF_FLOW, SF_FLUID },
 
 		OnEnter = function(c,being)
 			local damage = 12
@@ -523,8 +459,9 @@ function DoomRL.loadcells()
 		color      = COLOR_WATER,
 		color_id   = "water",
 		set        = CELLSET_WALLS,
-		flags      = {F_GTSHIFT, F_GFLUID, CF_BLOCKLOS, CF_BLOCKMOVE},
+		flags      = { CF_BLOCKLOS, CF_BLOCKMOVE},
 		sprite     = SPRITE_WATER,
+		sflags     = { SF_FLOW, SF_FLUID },
 	}
 
 	register_cell "pacid"
@@ -534,8 +471,9 @@ function DoomRL.loadcells()
 		color      = COLOR_ACID,
 		color_id   = "acid",
 		set        = CELLSET_WALLS,
-		flags      = {F_GTSHIFT, F_GFLUID, CF_BLOCKLOS, CF_BLOCKMOVE, CF_HIGHLIGHT},
+		flags      = { CF_BLOCKLOS, CF_BLOCKMOVE, CF_HIGHLIGHT},
 		sprite     = SPRITE_ACID,
+		sflags     = { SF_FLOW, SF_FLUID },
 	}
 
 	register_cell "plava"
@@ -545,8 +483,9 @@ function DoomRL.loadcells()
 		color      = COLOR_LAVA,
 		color_id   = "lava",
 		set        = CELLSET_WALLS,
-		flags      = {F_GTSHIFT, F_GFLUID, CF_BLOCKLOS, CF_BLOCKMOVE, CF_HIGHLIGHT},
+		flags      = { CF_BLOCKLOS, CF_BLOCKMOVE, CF_HIGHLIGHT},
 		sprite     = SPRITE_LAVA,
+		sflags     = { SF_FLOW, SF_FLUID },
 	}
 
 -- End Fluids --
@@ -563,7 +502,7 @@ function DoomRL.loadcells()
 		blname     = "blood",
 		blcolor    = RED;
 		blsprite   = SPRITE_BLOOD;
-		flags      = {F_GFLUID},
+		sflags     = { SF_FLUID },
 	}
 
 	register_cell "rock"
@@ -573,7 +512,7 @@ function DoomRL.loadcells()
 		color      = RED,
 		set        = CELLSET_FLOORS,
 		sprite     = SPRITE_CAVEFLOOR,
-		flags      = { F_GFLUID },
+		sflags     = { SF_FLUID },
 	}
 
 	register_cell "nukecell"
@@ -585,6 +524,7 @@ function DoomRL.loadcells()
 		color_dark = RED,
 		flags      = { CF_NOCHANGE, CF_NORUN, CF_OVERLAY, CF_NUKABLE, CF_CRITICAL, CF_HIGHLIGHT},
 		sprite     = SPRITE_NUKE,
+		sframes    = 2,
 	}
 
 	register_cell "tree"
@@ -595,9 +535,10 @@ function DoomRL.loadcells()
 		armor      = 5,
 		hp         = 5,
 		set        = CELLSET_WALLS,
-		flags      = { F_GFLUID, CF_BLOCKMOVE, CF_OVERLAY },
+		flags      = { CF_BLOCKMOVE, CF_OVERLAY },
 		destroyto  = "rock",
 		sprite     = SPRITE_TREE,
+		sflags     = { SF_FLUID },
 	}
 
 -- End Misc --

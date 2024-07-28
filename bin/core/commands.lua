@@ -61,9 +61,10 @@ INPUT_RELOAD            = 45;
 INPUT_ALTRELOAD         = 46;
 
 INPUT_HELP              = 47;
-INPUT_LEVEL_FEEL        = 48;
+
 INPUT_MESSAGES          = 49;
 INPUT_ASSEMBLIES        = 50;
+INPUT_MSCROLL           = 51;
 
 INPUT_QUICKKEY_0        = 60;
 INPUT_QUICKKEY_1        = 61;

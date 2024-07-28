@@ -7,7 +7,7 @@ function DoomRL.loaditems()
 		name     = "combat knife",
 		color    = WHITE,
 		sprite   = SPRITE_KNIFE,
-		psprite  = 2,
+		psprite  = SPRITE_PLAYER_KNIFE,
 		--glow     = { 1.0,1.0,1.0,1.0 },
 		level    = 1,
 		weight   = 640,
@@ -183,6 +183,7 @@ function DoomRL.loaditems()
 		name     = "Invulnerability Globe",
 		color    = WHITE,
 		sprite   = SPRITE_INV,
+		sframes  = 2,
 		level    = 7,
 		weight   = 200,
 
@@ -199,6 +200,7 @@ function DoomRL.loaditems()
 		name     = "Supercharge Globe",
 		color    = LIGHTBLUE ,
 		sprite   = SPRITE_SUPERCHARGE,
+		sframes  = 2,
 		level    = 4,
 		weight   = 150,
 		flags    = { IF_GLOBE },
@@ -243,6 +245,7 @@ function DoomRL.loaditems()
 		name     = "Megasphere",
 		color    = LIGHTMAGENTA,
 		sprite   = SPRITE_MEGASPHERE,
+		sframes  = 2,
 		level    = 16,
 		weight   = 60,
 
@@ -265,6 +268,7 @@ function DoomRL.loaditems()
 		name     = "Computer Map",
 		color    = GREEN,
 		sprite   = SPRITE_MAP,
+		sframes  = 2,
 		level    = 1,
 		weight   = 200,
 
@@ -292,6 +296,7 @@ function DoomRL.loaditems()
 		name     = "Tracking Map",
 		color    = LIGHTGREEN,
 		sprite   = SPRITE_TMAP,
+		sframes  = 2,
 		level    = 1,
 		weight   = 80,
 
@@ -316,6 +321,7 @@ function DoomRL.loaditems()
 		name     = "Light-Amp Goggles",
 		color    = BROWN,
 		sprite   = SPRITE_LIGHTAMP,
+		sframes  = 2,
 		level    = 1,
 		weight   = 80,
 
@@ -356,6 +362,7 @@ function DoomRL.loaditems()
 		name     = "armor shard",
 		color    = YELLOW,
 		sprite   = SPRITE_SHARD,
+		sframes  = 2,
 		level    = 5,
 		weight   = 700,
 
@@ -444,6 +451,7 @@ function DoomRL.loaditems()
 		name     = "power cell",
 		color    = CYAN,
 		sprite   = SPRITE_CELL,
+		sframes  = 2,
 		--glow     = { 1.0,1.0,1.0,1.0 },
 		level    = 8,
 		weight   = 200,
@@ -462,7 +470,7 @@ function DoomRL.loaditems()
 		--glow     = { 1.0,1.0,1.0,1.0 },
 		level    = 3,
 		weight   = 60,
-		desc     = "That reminds you about action films you've seen long ago.",
+		desc     = "That reminds you about action films you've seen long ago. Might be useful in the prepared slot.",
 
 		type    = ITEMTYPE_AMMOPACK,
 		ammo    = 250,
@@ -478,7 +486,7 @@ function DoomRL.loaditems()
 		--glow     = { 1.0,1.0,1.0,1.0 },
 		level    = 4,
 		weight   = 60,
-		desc     = "Packed shells, like sardines!",
+		desc     = "Packed shells, like sardines! Might be useful in the prepared slot.",
 
 		type    = ITEMTYPE_AMMOPACK,
 		ammo    = 100,
@@ -494,7 +502,7 @@ function DoomRL.loaditems()
 		--glow     = { 1.0,1.0,1.0,1.0 },
 		level    = 7,
 		weight   = 36,
-		desc     = "Now this is the REAL 'boombox'!",
+		desc     = "Now this is the REAL 'boombox'! Might be useful in the prepared slot.",
 
 		type    = ITEMTYPE_AMMOPACK,
 		ammo    = 25,
@@ -507,11 +515,12 @@ function DoomRL.loaditems()
 		name     = "power battery",
 		color    = CYAN,
 		sprite   = SPRITE_PCELL,
+		sframes  = 2,
 		--glow     = { 1.0,1.0,1.0,1.0 },
 		level    = 10,
 		weight   = 18,
 		--desc     = "Ampere-hours of pure energy!",
-		desc     = "Joules of energetic fun!",
+		desc     = "Joules of energetic fun! Might be useful in the prepared slot.",
 
 		type    = ITEMTYPE_AMMOPACK,
 		ammo    = 120,
@@ -800,6 +809,7 @@ function DoomRL.loaditems()
 		ascii    = "+",
 		color    = BLUE,
 		sprite   = SPRITE_PHASE,
+		sframes  = 2,
 		coscolor = { 0.0,0.0,0.7,1.0 },
 		level    = 5,
 		weight   = 200,
@@ -827,6 +837,7 @@ function DoomRL.loaditems()
 		level    = 7,
 		weight   = 100,
 		sprite   = SPRITE_PHASE,
+		sframes  = 2,
 		coscolor = { 0.3,0.3,1.0,1.0 },
 		desc = "This upgraded phase device will definitely save your skin.",
 		flags    = { IF_AIHEALPACK },
@@ -933,6 +944,7 @@ function DoomRL.loaditems()
 		ascii    = "\"",
 		color    = LIGHTRED,
 		sprite   = SPRITE_MOD,
+		sframes  = 2,
 		coscolor = { 1.0,0.0,0.0,1.0 },
 		level    = 7,
 		weight   = 120,		
@@ -975,6 +987,7 @@ function DoomRL.loaditems()
 		ascii    = "\"",
 		color    = YELLOW,
 		sprite   = SPRITE_MOD,
+		sframes  = 2,
 		coscolor = { 1.0,1.0,0.0,1.0 },
 		level    = 5,
 		weight   = 120,
@@ -1017,6 +1030,7 @@ function DoomRL.loaditems()
 		coscolor = { 0.0,1.0,1.0,1.0 },
 		level    = 6,
 		sprite   = SPRITE_MOD,
+		sframes  = 2,
 		desc     = "Agility modification kit -- increases weapon accuracy or quickens armor move speed modifier.",
 
 		type       = ITEMTYPE_PACK,
@@ -1054,6 +1068,7 @@ function DoomRL.loaditems()
 		ascii    = "\"",
 		color    = LIGHTBLUE,
 		sprite   = SPRITE_MOD,
+		sframes  = 2,
 		coscolor = { 0.0,0.0,1.0,1.0 },
 		level    = 6,
 		weight   = 120,
@@ -1409,11 +1424,50 @@ function DoomRL.loaditems()
 		end,
 	}
 
+	register_item "lever_ammo"
+	{
+		name     = "lever",
+		color    = WHITE,
+		sprite   = SPRITE_LEVER,
+		weight   = 0,
+		color_id = "lever",
+
+		type       = ITEMTYPE_LEVER,
+		good       = "beneficial",
+		desc       = "ammo dispenser",
+
+		OnCreate = function( self )
+			self:add_property( "charges", math.random(3) + 1 )
+		end,
+
+		OnUseCheck = function(self,being)
+			if not being.eq.weapon then
+				ui.msg("Nothing happens.")
+				return false
+			end
+			local weapon = being.eq.weapon
+			if weapon.ammoid == 0 then
+				ui.msg("Nothing happens.")
+				return false
+			end
+			return true
+		end,
+
+		OnUse = function(self,being)
+			ui.msg("Ammo dispenser. Dispensing requested ammo...")
+			self.charges = self.charges - 1
+			local ammo_id = items[being.eq.weapon.ammoid].id
+			level:drop_item( ammo_id, being.position )
+			return self.charges == 0
+		end,
+	}
+
 	register_item "schematic_0"
 	{
 		name     = "schematics",
 		color    = LIGHTGREEN,
 		sprite   = SPRITE_SCHEMATIC,
+		sframes  = 2,
 		level    = 9999,
 		weight   = 3,
 		flags  = { IF_NODESTROY },
@@ -1434,6 +1488,7 @@ function DoomRL.loaditems()
 		name     = "schematics",
 		color    = LIGHTGREEN,
 		sprite   = SPRITE_SCHEMATIC,
+		sframes  = 2,
 		level    = 9999,
 		weight   = 2,
 		flags  = { IF_NODESTROY },
@@ -1454,6 +1509,7 @@ function DoomRL.loaditems()
 		name     = "schematics",
 		color    = LIGHTGREEN,
 		sprite   = SPRITE_SCHEMATIC,
+		sframes  = 2,
 		level    = 9999,
 		weight   = 1,
 		flags  = { IF_NODESTROY },
@@ -1476,6 +1532,7 @@ function DoomRL.loaditems()
 		color  = WHITE,
 		level  = 200,
 		sprite = SPRITE_LAVAINV,
+		sflags = { SF_LARGE },
 		weight = 0,
 		type   = ITEMTYPE_PACK,
 		ascii  = "+",
