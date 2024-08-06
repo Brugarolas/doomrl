@@ -4,9 +4,9 @@ interface
 
 uses vsystems, vsystem, vutil, vuid, vrltools, vluasystem, vioevent,
      dflevel, dfdata, dfhof, dfitem,
-     doomhooks, doomlua, doommodule, doommenuview, doomcommand;
+     doomhooks, doomlua, doommodule, doommenuview, doomcommand, doomkeybindings;
 
-type TDoomState = ( DSStart,      DSMenu,    DSLoading,
+type TDoomState = ( DSStart,      DSMenu,    DSLoading,   DSCrashLoading,
                     DSPlaying,    DSSaving,  DSNextLevel,
                     DSQuit,       DSFinished );
 
@@ -21,22 +21,24 @@ TDoom = class(TSystem)
        ArchAngel     : Boolean;
        DataLoaded    : Boolean;
        GameWon       : Boolean;
+       CrashSave     : Boolean;
        GameType      : TDoomGameType;
        Module        : TDoomModule;
        NVersion      : TVersion;
        ModuleID      : AnsiString;
        constructor Create; override;
+       procedure Reconfigure;
        procedure CreateIO;
        procedure Apply( aResult : TMenuResult );
        procedure Load;
        procedure UnLoad;
        function LoadSaveFile : Boolean;
-       procedure WriteSaveFile;
+       procedure WriteSaveFile( aCrash : Boolean );
        function SaveExists : Boolean;
        procedure SetupLuaConstants;
-       function Action( aCommand : Byte ) : Boolean;
-       function HandleActionCommand( aCommand : Byte ) : Boolean;
-       function HandleMoveCommand( aCommand : Byte ) : Boolean;
+       function Action( aInput : TInputKey ) : Boolean;
+       function HandleActionCommand( aInput : TInputKey ) : Boolean;
+       function HandleMoveCommand( aInput : TInputKey ) : Boolean;
        function HandleFireCommand( aAlt : Boolean; aMouse : Boolean ) : Boolean;
        function HandleUnloadCommand( aItem : TItem ) : Boolean;
        function HandleSwapWeaponCommand : Boolean;
@@ -83,7 +85,7 @@ uses Classes, SysUtils,
      doomio, doomgfxio, doomtextio, zstream,
      doomspritemap, // remove
      doomplayerview, doomingamemenuview, doomhelpview, doomassemblyview,
-     doomhelp, doomconfig, doomviews, dfplayer;
+     doomconfiguration, doomhelp, doomconfig, doomviews, dfplayer;
 
 
 procedure TDoom.ModuleMainHook(Hook: AnsiString; const Params: array of const);
@@ -152,6 +154,7 @@ begin
   ColorOverrides := TIntHashMap.Create( );
   Config := TDoomConfig.Create( ConfigurationPath, True );
   IO.Configure( Config, True );
+  Reconfigure;
 
   FCoreHooks := [];
   FModuleHooks := [];
@@ -197,11 +200,26 @@ begin
   GameType   := GameStandard;
   GameWon    := False;
   DataLoaded := False;
+  CrashSave  := False;
   SetState( DSStart );
   FModuleHooks := [];
   FChallengeHooks := [];
   NVersion := ArrayToVersion(VERSION_ARRAY);
   Log( VersionToString( NVersion ) );
+  Reconfigure;
+end;
+
+procedure TDoom.Reconfigure;
+begin
+  if Assigned( IO ) then
+    (IO as TDoomIO).Reconfigure( Config );
+  Setting_AlwaysRandomName := Configuration.GetBoolean( 'always_random_name' );
+  Setting_NoIntro          := Configuration.GetBoolean( 'skip_intro' );
+  Setting_NoFlash          := Configuration.GetBoolean( 'no_flashing' );
+  Setting_RunOverItems     := Configuration.GetBoolean( 'run_over_items' );
+  Setting_HideHints        := Configuration.GetBoolean( 'hide_hints' );
+  Setting_EmptyConfirm     := Configuration.GetBoolean( 'empty_confirm' );
+  Setting_UnlockAll        := Configuration.GetBoolean( 'unlock_all' );
 end;
 
 procedure TDoom.CreateIO;
@@ -211,6 +229,7 @@ begin
     else IO := TDoomTextIO.Create;
   ProgramRealTime := MSecNow();
   IO.Configure( Config );
+  (IO as TDoomIO).Reconfigure( Config );
 end;
 
 procedure TDoom.Apply ( aResult : TMenuResult ) ;
@@ -246,19 +265,17 @@ begin
   Player.PreAction;
 end;
 
-function TDoom.Action( aCommand : Byte ) : Boolean;
+function TDoom.Action( aInput : TInputKey ) : Boolean;
 var iItem : TItem;
 begin
 
-  if aCommand in INPUT_MOVE then
-    Exit( HandleMoveCommand( aCommand ) );
+  if aInput in INPUT_MOVE then
+    Exit( HandleMoveCommand( aInput ) );
 
-  case aCommand of
+  case aInput of
     INPUT_FIRE       : Exit( HandleFireCommand( False, False ) );
     INPUT_ALTFIRE    : Exit( HandleFireCommand( True, False ) );
     INPUT_ACTION     : Exit( HandleActionCommand( INPUT_ACTION ) );
-    INPUT_OPEN       : Exit( HandleActionCommand( INPUT_OPEN ) );
-    INPUT_CLOSE      : Exit( HandleActionCommand( INPUT_CLOSE ) );
 //    INPUT_QUICKKEY_0 : Exit( HandleCommand( TCommand.Create( COMMAND_QUICKKEY, 'chainsaw' ) ) );
     INPUT_QUICKKEY_1 : Exit( HandleCommand( TCommand.Create( COMMAND_QUICKKEY, '1' ) ) );
     INPUT_QUICKKEY_2 : Exit( HandleCommand( TCommand.Create( COMMAND_QUICKKEY, '2' ) ) );
@@ -275,7 +292,6 @@ begin
     INPUT_RELOAD     : Exit( HandleCommand( TCommand.Create( COMMAND_RELOAD ) ) );
     INPUT_ALTRELOAD  : Exit( HandleCommand( TCommand.Create( COMMAND_ALTRELOAD ) ) );
     INPUT_PICKUP     : Exit( HandleCommand( TCommand.Create( COMMAND_PICKUP ) ) );
-    INPUT_ENTER      : Exit( HandleCommand( TCommand.Create( COMMAND_ENTER ) ) );
     INPUT_ALTPICKUP  : begin
       iItem := Level.Item[ Player.Position ];
       if ( iItem = nil ) or (not (iItem.isLever or iItem.isPack or iItem.isWearable) ) then
@@ -286,15 +302,14 @@ begin
       Exit( HandleCommand( TCommand.Create( COMMAND_USE, iItem ) ) );
     end;
 
-    INPUT_MSCROLL     : Exit( HandleCommand( Player.Inv.DoScrollSwap ) );
     INPUT_SWAPWEAPON  : Exit( HandleSwapWeaponCommand );
   end;
 
-  IO.Msg('Unknown command. Press "?" for help.' );
+  IO.Msg('Unknown command. Press "h" for help.' );
   Exit( False );
 end;
 
-function TDoom.HandleActionCommand( aCommand : Byte ) : Boolean;
+function TDoom.HandleActionCommand( aInput : TInputKey ) : Boolean;
 var iItem   : TItem;
     iID     : AnsiString;
     iFlag   : Byte;
@@ -305,7 +320,7 @@ var iItem   : TItem;
 begin
   iFlag := 0;
 
-  if aCommand = INPUT_ACTION then
+  if aInput = INPUT_ACTION then
   begin
     if Level.cellFlagSet( Player.Position, CF_STAIRS ) then
       Exit( HandleCommand( TCommand.Create( COMMAND_ENTER ) ) )
@@ -317,17 +332,19 @@ begin
     end;
   end;
 
-  if ( aCommand = INPUT_OPEN ) then
+  {
+  if ( aInput = INPUT_OPEN ) then
   begin
     iID := 'open';
     iFlag := CF_OPENABLE;
   end;
 
-  if ( aCommand = INPUT_CLOSE ) then
+  if ( aInput = INPUT_CLOSE ) then
   begin
     iID := 'close';
     iFlag := CF_CLOSABLE;
   end;
+  }
 
   iCount := 0;
   if iFlag = 0 then
@@ -384,7 +401,7 @@ begin
   Exit( False );
 end;
 
-function TDoom.HandleMoveCommand( aCommand : Byte ) : Boolean;
+function TDoom.HandleMoveCommand( aInput : TInputKey ) : Boolean;
 var iDir        : TDirection;
     iTarget     : TCoord2D;
     iMoveResult : TMoveResult;
@@ -396,7 +413,7 @@ begin
     Exit( False );
   end;
 
-  iDir := InputDirection( aCommand );
+  iDir := InputDirection( aInput );
   iTarget := Player.Position + iDir;
   iMoveResult := Player.TryMove( iTarget );
 
@@ -727,31 +744,31 @@ begin
 end;
 
 function TDoom.HandleKeyEvent( aEvent : TIOEvent ) : Boolean;
-var iCommand : Byte;
+var iInput : TInputKey;
 begin
   IO.KeyCode := IOKeyEventToIOKeyCode( aEvent.Key );
-  iCommand := Config.Commands[ IO.KeyCode ];
-  if ( iCommand = 255 ) then // GodMode Keys
+  iInput     := TInputKey( Config.Commands[ IO.KeyCode ] );
+  if ( Byte(iInput) = 255 ) then // GodMode Keys
   begin
     Config.RunKey( IO.KeyCode );
-    Action( 0 );
+    Action( INPUT_NONE );
     Exit( True );
   end;
-  if iCommand > 0 then
+  if iInput <> INPUT_NONE then
   begin
     // Handle commands that should be handled by the UI
     // TODO: Fix
-    case iCommand of
+    case iInput of
 //      INPUT_ESCAPE     : begin if GodMode then Doom.SetState( DSQuit ); Exit; end;
       INPUT_ESCAPE     : begin IO.PushLayer( TInGameMenuView.Create ); Exit; end;
       INPUT_QUIT       : begin Player.doQuit; Exit; end;
       INPUT_HELP       : begin IO.PushLayer( THelpView.Create ); Exit; end;
-      INPUT_LOOK       : begin IO.Msg( '-' ); IO.LookMode; Exit; end;
+      INPUT_LOOKMODE   : begin IO.Msg( '-' ); IO.LookMode; Exit; end;
       INPUT_PLAYERINFO : begin IO.PushLayer( TPlayerView.Create( PLAYERVIEW_CHARACTER ) ); Exit; end;
       INPUT_INVENTORY  : begin IO.PushLayer( TPlayerView.Create( PLAYERVIEW_INVENTORY ) ); Exit; end;
       INPUT_EQUIPMENT  : begin IO.PushLayer( TPlayerView.Create( PLAYERVIEW_EQUIPMENT ) ); Exit; end;
       INPUT_ASSEMBLIES : begin IO.PushLayer( TAssemblyView.Create ); Exit; end;
-      INPUT_USE        : begin IO.PushLayer( TPlayerView.CreateCommand( COMMAND_USE ) ); Exit; end;
+//      INPUT_USE        : begin IO.PushLayer( TPlayerView.CreateCommand( COMMAND_USE ) ); Exit; end;
       INPUT_DROP       : begin IO.PushLayer( TPlayerView.CreateCommand( COMMAND_DROP ) ); Exit; end;
       INPUT_UNLOAD     : begin HandleUnloadCommand( nil ); Exit; end;
 
@@ -762,13 +779,14 @@ begin
         Player.doQuit(True);
         Exit;
       end;
-      INPUT_SAVE      : begin Player.doSave; Exit; end;
+
+      //      INPUT_SAVE      : begin Player.doSave; Exit; end;
       INPUT_TRAITS    : begin IO.PushLayer( TPlayerView.Create( PLAYERVIEW_TRAITS ) ); Exit; end;
-      INPUT_RUNMODE   : begin Player.doRun;Exit; end;
+      INPUT_RUN       : begin Player.doRun;Exit; end;
 
       INPUT_EXAMINENPC   : begin Player.ExamineNPC; Exit; end;
       INPUT_EXAMINEITEM  : begin Player.ExamineItem; Exit; end;
-      INPUT_GRIDTOGGLE: begin if GraphicsVersion then SpriteMap.ToggleGrid; Exit; end;
+      INPUT_TOGGLEGRID   : begin if GraphicsVersion then SpriteMap.ToggleGrid; Exit; end;
       INPUT_SOUNDTOGGLE  : begin SoundOff := not SoundOff; Exit; end;
       INPUT_MUSICTOGGLE  : begin
                                MusicOff := not MusicOff;
@@ -777,7 +795,7 @@ begin
                                Exit;
                              end;
     end;
-    Exit( Action( iCommand ) );
+    Exit( Action( iInput ) );
   end;
   Exit( False );
 end;
@@ -787,7 +805,8 @@ procedure TDoom.Run;
 var iRank       : THOFRank;
     iResult     : TMenuResult;
     iEvent      : TIOEvent;
-    iCommand    : Byte;
+    iInput      : TInputKey;
+    iFullLoad   : Boolean;
 begin
   iResult    := TMenuResult.Create;
   Doom.Load;
@@ -824,7 +843,9 @@ repeat
 
   if iResult.Loaded then
   begin
-    SetState( DSLoading );
+    if CrashSave
+      then SetState( DSCrashLoading )
+      else SetState( DSLoading );
     SetupLuaConstants;
   end
   else
@@ -838,93 +859,98 @@ repeat
 
   if GameType = GameEpisode then LoadModule( False );
 
-  if (not (State = DSLoading)) then
-    CallHookCheck( Hook_OnIntro, [Option_NoIntro] );
+  if (not (State in [DSLoading, DSCrashLoading])) then
+    CallHookCheck( Hook_OnIntro, [Setting_NoIntro] );
 
-
-  if (GameType <> GameSingle) and (State <> DSLoading) then
+  if (GameType <> GameSingle) and (not(State in [DSLoading, DSCrashLoading])) then
   begin
     CallHook( Hook_OnCreateEpisode, [] );
   end;
-  CallHook( Hook_OnLoaded, [State = DSLoading] );
+  CallHook( Hook_OnLoaded, [(State in [DSLoading, DSCrashLoading])] );
 
   GameRealTime := MSecNow();
   try
   repeat
-    if Player.NukeActivated > 0 then
+    if State <> DSLoading then
     begin
-      IO.Msg('You hear a gigantic explosion above!');
-      Inc(Player.FScore,1000);
-      Player.IncStatistic('levels_nuked');
-      Player.NukeActivated := 0;
-    end;
-
-    with Player do
-    begin
-      FStatistics.Update;
-    end;
-
-    if GameType = GameSingle then
-       RunSingle
-    else
-    begin
-      if Player.SpecExit = '' then
-        Inc(Player.CurrentLevel)
-      else
-        Player.IncStatistic('bonus_levels_visited');
-
-      with LuaSystem.GetTable(['player','episode',Player.CurrentLevel]) do
-      try
-        FLevel.Init(getInteger('style',0),
-                   getInteger('number',0),
-                   getString('name',''),
-                   getString('special',''),
-                   Player.CurrentLevel,
-                   getInteger('danger',0));
-
-        if Player.SpecExit <> ''
-          then FLevel.Flags[ LF_BONUS ] := True
-          else Player.SpecExit := getString('script','');
-
-      finally
-        Free;
+      if (Player.NukeActivated > 0) then
+      begin
+        IO.Msg('You hear a gigantic explosion above!');
+        Inc(Player.FScore,1000);
+        Player.IncStatistic('levels_nuked');
+        Player.NukeActivated := 0;
       end;
 
-      if Player.SpecExit <> ''
-        then
-          FLevel.ScriptLevel(Player.SpecExit)
+      with Player do
+      begin
+        FStatistics.Update;
+      end;
+
+      if GameType = GameSingle then
+         RunSingle
+      else
+      begin
+        if Player.SpecExit = '' then
+          Inc(Player.CurrentLevel)
         else
-        begin
-          if FLevel.Name_Number <> 0 then IO.Msg('You enter %s, level %d.',[ FLevel.Name, FLevel.Name_Number ]);
-          CallHookCheck(Hook_OnGenerate,[]);
-          FLevel.AfterGeneration( True );
+          Player.IncStatistic('bonus_levels_visited');
+
+        with LuaSystem.GetTable(['player','episode',Player.CurrentLevel]) do
+        try
+          FLevel.Init(getInteger('style',0),
+                     getInteger('number',0),
+                     getString('name',''),
+                     getString('special',''),
+                     Player.CurrentLevel,
+                     getInteger('danger',0));
+
+          if Player.SpecExit <> ''
+            then FLevel.Flags[ LF_BONUS ] := True
+            else Player.SpecExit := getString('script','');
+
+        finally
+          Free;
         end;
-      Player.SpecExit := '';
+
+        if Player.SpecExit <> ''
+          then
+            FLevel.ScriptLevel(Player.SpecExit)
+          else
+          begin
+            if FLevel.Name_Number <> 0 then IO.Msg('You enter %s, level %d.',[ FLevel.Name, FLevel.Name_Number ]);
+            CallHookCheck(Hook_OnGenerate,[]);
+            FLevel.AfterGeneration( True );
+          end;
+        Player.SpecExit := '';
+      end;
     end;
-    
+    iFullLoad := State = DSLoading;
+
     FLevel.CalculateVision( Player.Position );
     SetState( DSPlaying );
     IO.BloodSlideDown(20);
-    
     IO.Audio.PlayMusic(FLevel.ID);
-    FLevel.PreEnter;
 
-    FLevel.Tick;
+    if not iFullLoad then
+    begin
+      FLevel.PreEnter;
+      FLevel.Tick;
+    end;
     PreAction;
 
     while ( State = DSPlaying ) do
     begin
       if Player.ChainFire > 0 then
       begin
-        Action( COMMAND_ALTFIRE );
+        Action( INPUT_ALTFIRE );
         Continue;
       end;
 
       if ( Player.FRun.Active ) then
       begin
-        iCommand := Player.GetRunInput;
-        if iCommand <> 0 then
-          Action( iCommand );
+        iInput := Player.GetRunInput;
+        if iInput <> INPUT_NONE then
+          Action( iInput );
         Continue;
       end;
 
@@ -958,12 +984,15 @@ repeat
         HandleKeyEvent( iEvent );
     end;
 
-    if State in [ DSNextLevel, DSSaving ] then
+    if State = DSNextLevel then
       FLevel.Leave;
 
-    Inc(Player.FScore,100);
+    if State = DSSaving
+      then
+      else Inc(Player.FScore,100);
     if GameWon and (State <> DSNextLevel) then Player.WriteMemorial;
-    FLevel.Clear;
+    if State <> DSSaving then
+      FLevel.Clear;
     IO.SetHint('');
   until (State <> DSNextLevel) or (GameType = GameSingle);
   except on e : Exception do
@@ -975,7 +1004,7 @@ repeat
       if Player.CurrentLevel <> 1 then Dec(Player.CurrentLevel);
       Player.IncStatistic('crash_count');
       Player.SpecExit := '';
-      WriteSaveFile;
+      WriteSaveFile( True );
     end;
     raise;
   end;
@@ -985,7 +1014,7 @@ repeat
   begin
     if State = DSSaving then
     begin
-      WriteSaveFile;
+      WriteSaveFile( False );
       IO.MsgEnter('Game saved. Press <Enter> to exit.');
     end;
     if State = DSFinished then
@@ -1040,7 +1069,7 @@ begin
   if Option_AlwaysName <> '' then
     Player.Name := Option_AlwaysName
   else
-    if (Option_AlwaysRandomName) or (aResult.Name = '')
+    if (Setting_AlwaysRandomName) or (aResult.Name = '')
       then Player.Name := LuaSystem.ProtectedCall(['DoomRL','random_name'],[])
       else Player.Name := aResult.Name;
 
@@ -1051,11 +1080,12 @@ begin
 end;
 
 function TDoom.LoadSaveFile: Boolean;
-var Stream : TStream;
+var Stream    : TStream;
 begin
   try
     try
       Stream := TGZFileStream.Create( WritePath + 'save',gzOpenRead );
+      //      Stream := TDebugStream.Create( Stream );
 
       ModuleID        := Stream.ReadAnsiString;
       UIDs            := TUIDStore.CreateFromStream( Stream );
@@ -1067,6 +1097,14 @@ begin
       SChallenge      := Stream.ReadAnsiString;
 
       Player := TPlayer.CreateFromStream( Stream );
+      CrashSave := Stream.ReadByte <> 0;
+
+      if not CrashSave then
+      begin
+        FreeAndNil( FLevel );
+        FLevel := TLevel.CreateFromStream( Stream );
+        FLevel.Place( Player, Player.Position );
+      end;
     finally
       Stream.Destroy;
     end;
@@ -1096,13 +1134,14 @@ begin
   end;
 end;
 
-procedure TDoom.WriteSaveFile;
+procedure TDoom.WriteSaveFile( aCrash : Boolean );
 var Stream : TStream;
 begin
   Player.FStatistics.RealTime += MSecNow() - GameRealTime;
   Player.IncStatistic('save_count');
 
   Stream := TGZFileStream.Create( WritePath + 'save',gzOpenWrite );
+  //      Stream := TDebugStream.Create( Stream );
 
   Stream.WriteAnsiString( ModuleID );
   UIDs.WriteToStream( Stream );
@@ -1114,8 +1153,16 @@ begin
   Stream.WriteAnsiString( SChallenge );
 
   Player.WriteToStream(Stream);
+  Player.Detach;
+  if aCrash
+    then Stream.WriteByte( 1 )
+    else Stream.WriteByte( 0 );
+
+  if not aCrash then
+    FLevel.WriteToStream( Stream );
 
   FreeAndNil( Stream );
+  FLevel.Clear;
 end;
 
 function TDoom.SaveExists : Boolean;
