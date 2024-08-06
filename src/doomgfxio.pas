@@ -205,7 +205,7 @@ begin
     iImage := LoadImage(iFontName)
   else
   begin
-    iCoreData := TVDataFile.Create(DataPath+'doomrl.wad');
+    iCoreData := TVDataFile.Create(DataPath+'drl.wad');
     iCoreData.DKKey := LoveLace;
     iStream := iCoreData.GetFile( iFontName, 'fonts' );
     iImage := LoadImage( iStream, iStream.Size );
@@ -399,6 +399,12 @@ var iMousePos : TIOPoint;
     iP1, iP2  : TIOPoint;
 begin
   if not Assigned( FQuadRenderer ) then Exit;
+
+  if FTime - FLastMouseTime > 3000 then
+  begin
+    FMCursor.Active := False;
+    SetTempHint('');
+  end;
 
   if (FMCursor.Active) and FIODriver.GetMousePos( iPoint ) and (not FMouseLock) and (not isModal) then
   begin

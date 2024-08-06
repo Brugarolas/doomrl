@@ -17,11 +17,12 @@ constructor TDoomConfiguration.Create;
 var iGroup : TConfigurationGroup;
     iInput : TInputKey;
     iID    : Ansistring;
-const CInputGroups : array[1..4] of Ansistring = (
+const CInputGroups : array[1..5] of Ansistring = (
   'keybindings_movement',
   'keybindings_actions',
   'keybindings_ui',
-  'keybindings_helper'
+  'keybindings_helper',
+  'keybindings_legacy'
 );
 begin
   inherited Create;
@@ -94,7 +95,7 @@ begin
     .SetName('Sound volume')
     .SetDescription('Control sound volume. Set to {!0} to turn off sounds.')
     ;
-  iGroup.AddInteger( 'music_volume', 25 )
+  iGroup.AddInteger( 'music_volume', 10 )
     .SetRange(0,25)
     .SetName('Music volume')
     .SetDescription('Control music volume. Set to {!0} to turn off music.')

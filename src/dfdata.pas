@@ -63,7 +63,6 @@ const
   EXCEPTEMMITED   : Boolean = False;
   GraphicsVersion : Boolean = True;
   SoundVersion    : Boolean = True;
-  ForceNoNet      : Boolean = False;
   ForceNoAudio    : Boolean = False;
   ForceConsole    : Boolean = False;
   ForceGraphics   : Boolean = False;
@@ -141,19 +140,10 @@ const
   Option_SoundEngine      : string = 'DEFAULT';
   Option_AlwaysName       : string = '';
   Option_TimeStamp        : string = 'yyyy/mm/dd hh:nn:ss';
-  Option_SDLMixerFreq     : Integer = 22050;
-  Option_SDLMixerFormat   : Word = $8010;
-  Option_SDLMixerChunkSize: Integer = 1024;
   Option_PlayerBackups    : DWord = 7;
   Option_ScoreBackups     : DWord = 7;
   Option_IntuitionColor   : Byte = LIGHTGRAY;
   Option_IntuitionChar    : Char = '.';
-  Option_NetworkConnection: Boolean = True;
-  Option_VersionCheck     : Boolean = True;
-  Option_AlertCheck       : Boolean = True;
-  Option_BetaCheck        : Boolean = False;
-  Option_CustomModServer  : AnsiString = '';
-
 
 var
   SoundOff  : boolean = False;

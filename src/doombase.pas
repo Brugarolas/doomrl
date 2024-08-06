@@ -220,6 +220,7 @@ begin
   Setting_HideHints        := Configuration.GetBoolean( 'hide_hints' );
   Setting_EmptyConfirm     := Configuration.GetBoolean( 'empty_confirm' );
   Setting_UnlockAll        := Configuration.GetBoolean( 'unlock_all' );
+  Setting_MenuSound        := Configuration.GetBoolean( 'menu_sound' );
 end;
 
 procedure TDoom.CreateIO;
@@ -268,7 +269,6 @@ end;
 function TDoom.Action( aInput : TInputKey ) : Boolean;
 var iItem : TItem;
 begin
-
   if aInput in INPUT_MOVE then
     Exit( HandleMoveCommand( aInput ) );
 
@@ -276,6 +276,8 @@ begin
     INPUT_FIRE       : Exit( HandleFireCommand( False, False ) );
     INPUT_ALTFIRE    : Exit( HandleFireCommand( True, False ) );
     INPUT_ACTION     : Exit( HandleActionCommand( INPUT_ACTION ) );
+    INPUT_LEGACYOPEN : Exit( HandleActionCommand( INPUT_LEGACYOPEN ) );
+    INPUT_LEGACYCLOSE: Exit( HandleActionCommand( INPUT_LEGACYCLOSE ) );
 //    INPUT_QUICKKEY_0 : Exit( HandleCommand( TCommand.Create( COMMAND_QUICKKEY, 'chainsaw' ) ) );
     INPUT_QUICKKEY_1 : Exit( HandleCommand( TCommand.Create( COMMAND_QUICKKEY, '1' ) ) );
     INPUT_QUICKKEY_2 : Exit( HandleCommand( TCommand.Create( COMMAND_QUICKKEY, '2' ) ) );
@@ -303,8 +305,9 @@ begin
     end;
 
     INPUT_SWAPWEAPON  : Exit( HandleSwapWeaponCommand );
+    INPUT_NONE        : Exit;
   end;
-
+  IO.MsgUpDate;
   IO.Msg('Unknown command. Press "h" for help.' );
   Exit( False );
 end;
@@ -332,19 +335,17 @@ begin
     end;
   end;
 
-  {
-  if ( aInput = INPUT_OPEN ) then
+  if ( aInput = INPUT_LEGACYOPEN ) then
   begin
     iID := 'open';
     iFlag := CF_OPENABLE;
   end;
 
-  if ( aInput = INPUT_CLOSE ) then
+  if ( aInput = INPUT_LEGACYCLOSE ) then
   begin
     iID := 'close';
     iFlag := CF_CLOSABLE;
   end;
-  }
 
   iCount := 0;
   if iFlag = 0 then
@@ -746,6 +747,7 @@ end;
 function TDoom.HandleKeyEvent( aEvent : TIOEvent ) : Boolean;
 var iInput : TInputKey;
 begin
+  if aEvent.Key.Code = 0 then Exit;
   IO.KeyCode := IOKeyEventToIOKeyCode( aEvent.Key );
   iInput     := TInputKey( Config.Commands[ IO.KeyCode ] );
   if ( Byte(iInput) = 255 ) then // GodMode Keys
@@ -768,8 +770,8 @@ begin
       INPUT_INVENTORY  : begin IO.PushLayer( TPlayerView.Create( PLAYERVIEW_INVENTORY ) ); Exit; end;
       INPUT_EQUIPMENT  : begin IO.PushLayer( TPlayerView.Create( PLAYERVIEW_EQUIPMENT ) ); Exit; end;
       INPUT_ASSEMBLIES : begin IO.PushLayer( TAssemblyView.Create ); Exit; end;
-//      INPUT_USE        : begin IO.PushLayer( TPlayerView.CreateCommand( COMMAND_USE ) ); Exit; end;
-      INPUT_DROP       : begin IO.PushLayer( TPlayerView.CreateCommand( COMMAND_DROP ) ); Exit; end;
+      INPUT_LEGACYUSE  : begin IO.PushLayer( TPlayerView.CreateCommand( COMMAND_USE ) ); Exit; end;
+      INPUT_LEGACYDROP : begin IO.PushLayer( TPlayerView.CreateCommand( COMMAND_DROP ) ); Exit; end;
       INPUT_UNLOAD     : begin HandleUnloadCommand( nil ); Exit; end;
 
       INPUT_MESSAGES   : begin IO.RunUILoop( TUIMessagesViewer.Create( IO.Root, IO.MsgGetRecent ) ); Exit; end;
@@ -780,7 +782,7 @@ begin
         Exit;
       end;
 
-      //      INPUT_SAVE      : begin Player.doSave; Exit; end;
+      INPUT_LEGACYSAVE: begin Player.doSave; Exit; end;
       INPUT_TRAITS    : begin IO.PushLayer( TPlayerView.Create( PLAYERVIEW_TRAITS ) ); Exit; end;
       INPUT_RUN       : begin Player.doRun;Exit; end;
 
@@ -796,7 +798,13 @@ begin
                              end;
     end;
     Exit( Action( iInput ) );
-  end;
+  end
+    else
+    begin
+      IO.MsgUpDate;
+      IO.Msg('Unknown command. Press "h" for help.' );
+    end;
+
   Exit( False );
 end;
 
@@ -811,11 +819,10 @@ begin
   iResult    := TMenuResult.Create;
   Doom.Load;
 
-  if not FileExists( WritePath + 'doom.prc' ) then DoomFirst;
+  if not FileExists( WritePath + 'drl.prc' ) then
+    DoomFirst;
 
   IO.RunUILoop( TMainMenuViewer.CreateMain( IO.Root ) );
-  if FState <> DSQuit then
-    IO.RunUILoop( TMainMenuViewer.CreateDonator( IO.Root ) );
   if FState <> DSQuit then
 repeat
   if not DataLoaded then
@@ -1104,6 +1111,8 @@ begin
         FreeAndNil( FLevel );
         FLevel := TLevel.CreateFromStream( Stream );
         FLevel.Place( Player, Player.Position );
+        LuaSystem.SetValue('level', FLevel );
+        LuaSystem.ProtectedCall( [ 'generator', 'on_load' ], [] );
       end;
     finally
       Stream.Destroy;
@@ -1137,6 +1146,8 @@ end;
 procedure TDoom.WriteSaveFile( aCrash : Boolean );
 var Stream : TStream;
 begin
+  LuaSystem.ProtectedCall( [ 'generator', 'on_save' ], [] );
+
   Player.FStatistics.RealTime += MSecNow() - GameRealTime;
   Player.IncStatistic('save_count');
 
@@ -1181,9 +1192,9 @@ end;
 procedure TDoom.DoomFirst;
 var T : Text;
 begin
-  Assign(T, WritePath + 'doom.prc');
+  Assign(T, WritePath + 'drl.prc');
   Rewrite(T);
-  Writeln(T,'Doom was already run.');
+  Writeln(T,'DRL was already run.');
   Close(T);
   IO.RunUILoop( TMainMenuViewer.CreateFirst( IO.Root ) );
 end;

@@ -155,7 +155,7 @@ procedure EmitCrashInfo( const aInfo : AnsiString; aInGame : Boolean  );
 implementation
 
 uses math, video, dateutils, variants,
-     vluasystem, vlog, vdebug, vuiconsole, vcolor, vmath, vtigstyle,
+     vsound, vluasystem, vlog, vdebug, vuiconsole, vcolor, vmath, vtigstyle,
      vsdlio, vglconsole, vtig, vvision, vconuirl, vtigio,
      dflevel, dfplayer, dfitem,
      doomconfiguration, doombase, doommoreview, doomlua;
@@ -318,7 +318,7 @@ begin
   FStoredHint := '';
   FHint       := '';
 
-  FIODriver.SetTitle('Doom, the Roguelike','DoomRL');
+  FIODriver.SetTitle('DRL','DRL');
 
   iStyle := TUIStyle.Create('default');
   iStyle.Add('','fore_color', LightGray );
@@ -547,7 +547,7 @@ begin
      then iExt := '.png'
      else iExt := '.txt';
 
-  iName := 'DoomRL';
+  iName := 'DRL';
   if Player <> nil then iName := Player.Name;
   iFName := 'screenshot'+PathDelim+ToProperFilename('['+FormatDateTime(Option_TimeStamp,Now)+'] '+iName)+iExt;
   iCount := 1;
@@ -849,6 +849,9 @@ var iLayer  : TInterfaceLayer;
     i,j     : Integer;
     iMEvent : TIOEvent;
 begin
+  if Assigned( Sound ) then
+    Sound.Update;
+
   if FUIMouse <> FUIMouseLast then
   begin
     iMEvent.EType:= VEVENT_MOUSEMOVE;
@@ -1373,17 +1376,27 @@ begin
   Result := 1;
 end;
 
-const lua_ui_lib : array[0..10] of luaL_Reg = (
-      ( name : 'msg';         func : @lua_ui_msg ),
-      ( name : 'msg_clear';   func : @lua_ui_msg_clear ),
-      ( name : 'msg_enter';   func : @lua_ui_msg_enter ),
-      ( name : 'msg_choice';  func : @lua_ui_msg_choice ),
-      ( name : 'msg_confirm'; func : @lua_ui_msg_confirm ),
-      ( name : 'msg_history'; func : @lua_ui_msg_history ),
-      ( name : 'blood_slide'; func : @lua_ui_blood_slide),
-      ( name : 'blink';       func : @lua_ui_blink),
-      ( name : 'plot_screen'; func : @lua_ui_plot_screen),
-      ( name : 'set_hint';    func : @lua_ui_set_hint ),
+function lua_ui_strip_enc(L: Plua_State): Integer; cdecl;
+var State : TDoomLuaState;
+begin
+  State.Init(L);
+  if State.StackSize = 0 then Exit(0);
+  State.Push( StripEncoding(State.ToString(1) ) );
+  Result := 1;
+end;
+
+const lua_ui_lib : array[0..11] of luaL_Reg = (
+      ( name : 'msg';           func : @lua_ui_msg ),
+      ( name : 'msg_clear';     func : @lua_ui_msg_clear ),
+      ( name : 'msg_enter';     func : @lua_ui_msg_enter ),
+      ( name : 'msg_choice';    func : @lua_ui_msg_choice ),
+      ( name : 'msg_confirm';   func : @lua_ui_msg_confirm ),
+      ( name : 'msg_history';   func : @lua_ui_msg_history ),
+      ( name : 'blood_slide';   func : @lua_ui_blood_slide),
+      ( name : 'blink';         func : @lua_ui_blink),
+      ( name : 'plot_screen';   func : @lua_ui_plot_screen),
+      ( name : 'set_hint';      func : @lua_ui_set_hint ),
+      ( name : 'strip_encoding';func : @lua_ui_strip_enc ),
       ( name : nil;          func : nil; )
 );
 
@@ -1402,12 +1415,12 @@ begin
   {$IFDEF WINDOWS}
   if GraphicsVersion then
   begin
-    iErrorMessage := 'DoomRL crashed!'#10#10'Reason : '+aInfo+#10#10
+    iErrorMessage := 'DRL crashed!'#10#10'Reason : '+aInfo+#10#10
      +'If this reason doesn''t seem your fault, please submit a bug report at http://forum.chaosforge.org/'#10
      +'Be sure to include the last entries in your error.log that will get created once you hit OK.'
-     +Iff(aInGame and Option_SaveOnCrash,#10'DoomRL will also attempt to save your game, so you may continue on the next level.');
+     +Iff(aInGame and Option_SaveOnCrash,#10'DRL will also attempt to save your game, so you may continue on the next level.');
     MessageBox( 0, PChar(iErrorMessage),
-     'DoomRL - Fatal Error!', MB_OK or MB_ICONERROR );
+     'DRL - Fatal Error!', MB_OK or MB_ICONERROR );
   end
   else
   {$ENDIF}
@@ -1425,7 +1438,7 @@ begin
     Writeln('your error.log that will get created once you hit Enter.');
     if aInGame and Option_SaveOnCrash then
     begin
-      Writeln( 'DoomRL will also attempt to save your game, so you may continue on' );
+      Writeln( 'DRL will also attempt to save your game, so you may continue on' );
       Writeln( 'the next level.' );
     end;
     Readln;

@@ -1,5 +1,5 @@
 -- ----------------------------------------------------------------------
---  This is the DoomRL initialization file. Modify at your own risk :). 
+--  This is the DRL initialization file. Modify at your own risk :). 
 --  If you mess up something overwrite with a new config.lua.
 -- ----------------------------------------------------------------------
 
@@ -17,14 +17,7 @@ Graphics = "TILES"
 -- Windows you'll need SDL_mixer.dll and smpeg.dll from SDL_mixer website.
 -- For using FMOD on *nix systems you'll need the proper packages.
 -- Possible values are FMOD, SDL, NONE, DEFAULT
-SoundEngine = "SDL"
-
--- SDL sound only options. See SDL_mixer manual on what to put here if
--- defaults don't get you working audio. Format needs to be decoded because
--- Lua doesn't support hex notation.
-SDLMixerFreq      = 44100
-SDLMixerFormat    = 32784
-SDLMixerChunkSize = 1024
+SoundEngine = "DEFAULT"
 
 -- Whether to allow high-ASCII signs. Set to false if you see weird signs 
 -- on the screen. Not setting it at all will use the default which
@@ -46,14 +39,14 @@ GameMusic        = true
 GameSound        = true
 
 -- Setting to true will turn on enhancements for blind people playing
--- DoomRL using a screen reader. Yes, some do.
+-- DRL using a screen reader. Yes, some do.
 BlindMode        = false
 
 -- Setting to true will make old messages disappear from the screen 
 -- (useful in BlindMode)
 ClearMessages    = false
 
--- Setting to false will prevent DoomRL from waiting for confirmation
+-- Setting to false will prevent DRL from waiting for confirmation
 -- when too many messages are printed in a turn. Usefull for Speedrunning.
 MorePrompt       = true
 
@@ -87,7 +80,7 @@ PlayerBackups    = 7
 -- is held for a given day.
 ScoreBackups     = 7
 
--- If set to false DoomRL will quit on death and quitting. Normally it will go back
+-- If set to false DRL will quit on death and quitting. Normally it will go back
 -- to the main menu.
 MenuReturn       = true
 
@@ -102,7 +95,7 @@ MaxWait          = 20
 -- true by default.
 LockBreak        = true
 
--- Windows only - Disables closing of DoomRL by console close button. 
+-- Windows only - Disables closing of DRL by console close button. 
 -- true by default.
 LockClose        = true
 
@@ -120,38 +113,6 @@ TimeStamp        = "yyyy/mm/dd hh:nn:ss"
 -- Controls whether the game will attempt to save the game on crash, set to false
 -- to turn this off
 SaveOnCrash      = true
-
--- This is the global internet connection switch, allowing DoomRL
--- to use internet connection features. Think twice before disabling
--- it, or you'll loose the features listed below and MOTD and ModServer
--- support!
-NetworkConnection = false
-
--- Should DoomRL check if there's a new version at runtime. If 
--- NetworkConnection is set to true this check is made regardless,
--- but there will be no alert if set to false.
-VersionCheck = true
-
--- Should DoomRL check if there's a new BETA version at runtime. If 
--- NetworkConnection is set to true this check is made regardless,
--- but there will be no alert if set to false. BETA versions are only
--- available to Supporters, but why not hop in and join the fun?
--- By default it's set to VERSION_BETA which is true for beta releases
--- and false for stable releases. Set to true, to get notified of the
--- next BETA batch!
-BetaCheck = VERSION_BETA
-
--- Should DoomRL check for other alerts. Sometimes we will want to
--- point you out to a major ChaosForge release or news flash. This feature
--- will not be abused, and each alert will be displayed only once, so 
--- please consider leaving this set to true! :)
-AlertCheck = true
-
--- DoomRL by default uses it's own mod server, where we host only screened
--- mods from the DoomRL community. A day may come when there will be an
--- unofficial server, for example for mods in testing. You can specify it 
--- here. Note that this overrides the default server.
-CustomModServer = ''
 
 -- Message coloring system. Works only if MessageColoring
 -- variable is set to true. Use basic color names available in 
